@@ -22,10 +22,13 @@
   <FILE>Lab03- A.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <rev_string><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>20</LINE></rev_string>
-  <start><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>26</LINE></start>
-  <string><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>24</LINE></string>
-  <loop_start><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>36</LINE></loop_start>
-  <end_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>44</LINE></end_loop>
+  <rev_string><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>22</LINE></rev_string>
+  <start><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>28</LINE></start>
+  <string><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>26</LINE></string>
+  <loop_start><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>38</LINE></loop_start>
+  <end_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>46</LINE></end_loop>
+  <rev_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>54</LINE></rev_loop>
+  <end_rev_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>63</LINE></end_rev_loop>
+  <end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm</FILE><LINE>66</LINE></end>
  </LABELS>
 </ASSEMBLER_INFO>

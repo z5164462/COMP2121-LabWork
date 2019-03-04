@@ -15,13 +15,15 @@
 
 .def letter = r16
 .def len = r17
+.def counter = r18
+
 .dseg
-.org 0x200
+.org 0x300
 	rev_string: .byte 4
 
 .cseg
 	rjmp start
-	string: .db "abc",0
+	string: .db "abd",0
 
 start:
 	ldi ZL, low(string<<1)	;load address of first character
@@ -40,6 +42,26 @@ loop_start:
 	push letter
 	inc len
 	rjmp loop_start
-
+	
 end_loop:
+	clr counter
 
+	ldi XL, low(rev_string)
+	ldi XH, high(rev_string)
+	
+	;add XL, len
+	;adiw X, 1
+rev_loop:	
+	pop letter
+	cp counter, len
+	breq end_rev_loop
+	st X+, letter
+	;ld r22, X+
+	inc counter
+	rjmp rev_loop
+	
+end_rev_loop:
+	ldi letter, 0
+	st X+, letter
+end:
+	rjmp end

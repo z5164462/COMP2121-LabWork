@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm Mon Mar 04 15:37:30 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm Mon Mar 04 16:11:07 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1361,8 +1361,12 @@ EQU  UTXC3addr    00000070
 EQU  INT_VECTORS_SIZE 00000072
 DEF  letter       r16
 DEF  len          r17
-DSEG rev_string   00000200
+DEF  counter      r18
+DSEG rev_string   00000300
 CSEG start        00000003
 CSEG string       00000001
 CSEG loop_start   0000000a
 CSEG end_loop     00000010
+CSEG rev_loop     00000013
+CSEG end_rev_loop 00000019
+CSEG end          0000001b
