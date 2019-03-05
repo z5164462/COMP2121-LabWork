@@ -5,14 +5,20 @@
 ; Author : andre
 ;
 
+.equ i_a_len = 7
+.equ e_a_len = 5
+.equ o_a_len = 15
+
 .dseg 
 	
 	output_array:
-		.BYTE 15
+		.BYTE o_a_len
 
 ; set up initial input array, and the enter array
 .cseg
+	
 	rjmp main
+
 	initial_array:
 				.dw 1
 				.dw 2
@@ -21,7 +27,6 @@
 				.dw 8
 				.dw 12
 				.dw 20
-
 
 
 
@@ -52,18 +57,41 @@ main:
 	ldi ZL, low(intial_array<<1)	;load Z with the address from the program memory
 	ldi ZH, high(initial_array<<1)
 
-read_insert_loop:
+	ldi XL, low(outpuy_array)
+	ldi XH, high(output_array)
+
+	
+
+
+
+
+
+;arguments Z = address of program memory array, r18:19 = len of things being inserted,  r20 (RETURN VALUE) = number being loaded, r24:25 (RETURN VALUE) = new len of list
+;local parameters, address, len, counter
+read_insert_function:
+	;prologue
+	push ZL
+	push ZH
+	push r18
+	push r19
+	in YL, SPL
+	in YH, SPH
+	sbiw Y, 6		;carve space for addres, len and counter
+	out SPL, YL
+	out SPH, YH
 
 
 	
 
 
 
-;arguments r16:17 = address of array, r18 = len, r19 = number to be inserted
-insert_function:
+;arguments X = address of array, r18 = len, r19 = number to be inserted
+insert_request_function:
 	;prologue
 	push r16
 	push r17
+	push r18
+	push r19
 
 
 	;body
