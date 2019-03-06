@@ -44,15 +44,13 @@
 
 ; Replace with your application code
 main:
-	ldi YL, low(RAMEND - 2)		;carve out space on the stack for 1  int (2 byte), len
-	ldi YH, high(RAMEND - 2)	; Y = SP,  int len
+	ldi YL, low(RAMEND - 1)		;carve out space on the stack for 1  short int (1 byte), len
+	ldi YH, high(RAMEND - 1)	; Y = SP,  int len
     out SPL, YL					
 	out SPH, YH
 		
 	clr r16					;len = 0
-	clr r17
-	std Y+1, r16			;store inside stack frame
-	std Y+2, r17			
+	std Y+1, r16			;store inside stack frame		
 
 	ldi ZL, low(intial_array<<1)	;load Z with the address from the program memory
 	ldi ZH, high(initial_array<<1)
@@ -62,39 +60,66 @@ main:
 
 	
 
+; ASSUMPTION. List length fits in 1 byte, all inserted numbers fit inside 1 byte
 
 
 
-
-;arguments Z = address of program memory array, r18:19 = len of things being inserted,  r20 (RETURN VALUE) = number being loaded, r24:25 (RETURN VALUE) = new len of list
+;arguments Z = address of program memory array, X = address of data memory,  r18 = current len 19 = len of things being inserted,  r22 (RETURN VALUE) = new len of list
 ;local parameters, address, len, counter
 read_insert_function:
 	;prologue
 	push r16
-	push r17
 	in YL, SPL		; Y = SP
 	in YH, SP
-	sbiw Y, 6		;carve space for address(Z), len(r18:19) and counter (local)
+	sbiw Y, 5		;carve space for address(Z), current len (r18), inserting len (r19) and counter (local)
 	out SPL, YL
 	out SPH, YH		;SP = Y
-					;currently moved 8 bytes   (top) 0XHigh-8 |ZH |ZL |r19 |r18	|counter	2|r17	|r16	|(bottom) 0XHigh
+					;currently moved 10 bytes   (top) 0XHigh-10 |ZH |ZL |XH | XL| r19 |r18	|counter|r16	|(bottom) 0XHigh
 	std Y+1, ZL
 	std Y+2, ZH
-	std Y+3, r19
-	std Y+4, r18
+	std Y+3, XH
+	std Y+4, XL
+	std Y+5, r19
+	std Y+6, r18
 	
 	;end prologue
 
 	;body
 
-	ldd ZH, Y+1
+	ldd ZH, Y+1		;local Z = Z
 	ldd ZL, Y+2
+	ldd r19, Y+5	;in_len = arg len of things coming in
+	ldd r18, Y+6	;old_len = arg current len
+	clr r16	; counter = 0
+	
 
-begin_extract:
-	lpm
+extract_loop:
+	cp r16, r19		;while all numbers are not inserted
+	breq end_extract
+	lpm r20, Z		;load number into r20
+	adiw Z, 2		;Z = Z + 2 (word)
+	
+	;insert
+	inc r16			;count++
+	rjmp exctract_loop
+
+	mov r20, r18
+	add r20, r19	; return old_len + in_len
+
+	;end body
+
+	;epilogue
+	adiw Y, 8
+	out SPH, YH
+	out SPL, YL
+	pop
 
 
-;arguments X = address of array, r18 = len, r19 = number to be inserted
+	ret
+
+end_extract:
+
+;arguments X = address of array, r18:19 = len
 insert_request_function:
 	;prologue
 	push r16
