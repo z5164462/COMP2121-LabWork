@@ -70,19 +70,28 @@ main:
 ;local parameters, address, len, counter
 read_insert_function:
 	;prologue
-	push ZL
-	push ZH
-	push r18
-	push r19
-	in YL, SPL
-	in YH, SPH
-	sbiw Y, 6		;carve space for addres, len and counter
+	push r16
+	push r17
+	in YL, SPL		; Y = SP
+	in YH, SP
+	sbiw Y, 6		;carve space for address(Z), len(r18:19) and counter (local)
 	out SPL, YL
-	out SPH, YH
-
-
+	out SPH, YH		;SP = Y
+					;currently moved 8 bytes   (top) 0XHigh-8 |ZH |ZL |r19 |r18	|counter	2|r17	|r16	|(bottom) 0XHigh
+	std Y+1, ZL
+	std Y+2, ZH
+	std Y+3, r19
+	std Y+4, r18
 	
+	;end prologue
 
+	;body
+
+	ldd ZH, Y+1
+	ldd ZL, Y+2
+
+begin_extract:
+	lpm
 
 
 ;arguments X = address of array, r18 = len, r19 = number to be inserted
