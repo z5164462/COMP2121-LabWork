@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm Thu Mar 07 14:36:30 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm Thu Mar 07 14:47:23 2019
 
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
@@ -1849,7 +1849,7 @@ AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\C
                                  ;
                                  
                                  .equ i_a_len = 7
-                                 .equ e_a_len = 5
+                                 .equ e_a_len = 6
                                  .equ o_a_len = 15
                                  
                                  .dseg 
@@ -1860,7 +1860,7 @@ AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\C
                                  ; set up initial input array, and the enter array
                                  .cseg
                                  	
-000000 c00c                      	rjmp main
+000000 c00d                      	rjmp main
                                  
                                  	initial_array:
 000001 0001                      				.dw 1
@@ -1874,11 +1874,12 @@ AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\C
                                  
                                  
                                  	enter_array:
-000008 0000                      				.dw 0
-000009 0001                      				.dw 1
-00000a 000a                      				.dw 10
-00000b 0019                      				.dw 25
-00000c 0006                      				.dw 6
+000008 0006                      				.dw 6
+000009 0014                      				.dw 20
+00000a 000b                      				.dw 11
+00000b 00ff                      				.dw 255
+00000c 001e                      				.dw 30
+00000d 0000                      				.dw 0
                                  
                                  
                                  
@@ -1887,51 +1888,51 @@ AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\C
                                  
                                  ; Replace with your application code
                                  main:
-00000d efce                      	ldi YL, low(RAMEND - 1)		;carve out space on the stack for 1  short int (1 byte), len
-00000e e2d1                      	ldi YH, high(RAMEND - 1)	; Y = SP,  int len
-00000f bfcd                          out SPL, YL					
-000010 bfde                      	out SPH, YH
+00000e efce                      	ldi YL, low(RAMEND - 1)		;carve out space on the stack for 1  short int (1 byte), len
+00000f e2d1                      	ldi YH, high(RAMEND - 1)	; Y = SP,  int len
+000010 bfcd                          out SPL, YL					
+000011 bfde                      	out SPH, YH
                                  		
-000011 2700                      	clr r16					;len = 0
-000012 2711                      	clr r17					;
-000013 8309                      	std Y+1, r16			;store inside stack frame		
+000012 2700                      	clr r16					;len = 0
+000013 2711                      	clr r17					;
+000014 8309                      	std Y+1, r16			;store inside stack frame		
                                  
-000014 e0e2                      	ldi ZL, low(initial_array<<1)	;load Z with the address from the program memory
-000015 e0f0                      	ldi ZH, high(initial_array<<1)
+000015 e0e2                      	ldi ZL, low(initial_array<<1)	;load Z with the address from the program memory
+000016 e0f0                      	ldi ZH, high(initial_array<<1)
                                  
                                  
-                                 
+000017 e0a0                      	ldi XL, low(output_array)
+000018 e0b3                      	ldi XH, high(output_array)
                                  	
                                  load_loop:
-000016 3007                      	cpi r16, i_a_len
-000017 f031                      	breq end_load_loop
-000018 9114                      	lpm r17, Z
-000019 9632                      	adiw Z, 2
-00001a e0a0                      	ldi XL, low(output_array)
-00001b e0b3                      	ldi XH, high(output_array)
-00001c d00e                      	rcall insert_request
-00001d cff8                      	rjmp load_loop
+000019 3007                      	cpi r16, i_a_len
+00001a f021                      	breq end_load_loop
+00001b 9114                      	lpm r17, Z
+00001c 9632                      	adiw Z, 2
+                                 
+00001d d00e                      	rcall insert_request
+00001e cffa                      	rjmp load_loop
                                  
                                  end_load_loop:
                                  	
-00001e e1e0                      	ldi ZL, low(enter_array<<1)	;load Z with the address from the program memory
-00001f e0f0                      	ldi ZH, high(enter_array<<1)
+00001f e1e0                      	ldi ZL, low(enter_array<<1)	;load Z with the address from the program memory
+000020 e0f0                      	ldi ZH, high(enter_array<<1)
                                  
-000020 2744                      	clr r20
+000021 2744                      	clr r20
                                  enter_loop:
                                  
-000021 3045                      	cpi r20, e_a_len
-000022 f039                      	breq end_enter_loop
-000023 9115                      	lpm r17, Z+
-000024 9631                      	adiw Z, 1
-000025 e0a0                      	ldi XL, low(output_array)
-000026 e0b3                      	ldi XH, high(output_array)
-000027 d003                      	rcall insert_request
-000028 9543                      	inc r20
-000029 cff7                      	rjmp enter_loop
+000022 3046                      	cpi r20, e_a_len
+000023 f039                      	breq end_enter_loop
+000024 9115                      	lpm r17, Z+
+000025 9631                      	adiw Z, 1
+000026 e0a0                      	ldi XL, low(output_array)
+000027 e0b3                      	ldi XH, high(output_array)
+000028 d003                      	rcall insert_request
+000029 9543                      	inc r20
+00002a cff7                      	rjmp enter_loop
                                  
                                  	end_enter_loop:
-00002a cfff                      		rjmp end_enter_loop
+00002b cfff                      		rjmp end_enter_loop
                                  
                                  ;ASSUMPTION. List length fits in 1 byte, all inserted numbers fit inside 1 byte
                                  
@@ -1939,63 +1940,73 @@ AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\C
                                  
                                  insert_request:
                                  	;prologue
-00002b 93cf                      	push YL
-00002c 93df                      	push YH
-00002d 931f                      	push r17
-00002e b7cd                      	in YL, SPL
-00002f b7de                      	in YH, SPH
+00002c 93cf                      	push YL
+00002d 93df                      	push YH
+00002e 931f                      	push r17
+00002f 932f                      	push r18
+000030 933f                      	push r19
+000031 934f                      	push r20
+000032 93af                      	push XL
+000033 93bf                      	push XH
+000034 b7cd                      	in YL, SPL
+000035 b7de                      	in YH, SPH
                                  	
-000030 9721                      	sbiw Y, 1	;local counter
-000031 9724                      	sbiw Y, 4	;args Address(2) len input_val
-000032 bfcd                      	out SPL, YL
-000033 bfde                      	out SPH, YH
+000036 9721                      	sbiw Y, 1	;local counter
+000037 9724                      	sbiw Y, 4	;args Address(2) len input_val
+000038 bfcd                      	out SPL, YL
+000039 bfde                      	out SPH, YH
                                  
                                  
-000034 83f9                      	std Y+1, ZH
-000035 83ea                      	std Y+2, ZL
-000036 830b                      	std Y+3, r16
-000037 831c                      	std Y+4, r17
+00003a 83f9                      	std Y+1, ZH
+00003b 83ea                      	std Y+2, ZL
+00003c 830b                      	std Y+3, r16
+00003d 831c                      	std Y+4, r17
                                  
                                  	;end prologue
                                  		
                                  
                                  	;body
-000038 2722                      	clr r18		;counter = 0
+00003e 2722                      	clr r18		;counter = 0
                                  
                                  
                                  search_loop:
-000039 1720                      	cp r18, r16				; check if last element of output array has been reached by comparing index and list length
-00003a f039                      	breq end_search_loop	; if they are equal, that means the end of the output list has been reached without a match or insert, therefore the element needs to be inserted at the end of the list
-00003b 913c                      	ld r19, X				; load the output_array value for comparison r19 = output_array[r18] and Z++ 
-00003c 1713                      	cp r17, r19				; compare inserting number with i-th number
-00003d f061                      	breq end_insert_loop	; if the numbers match, it already exists in list, therefore dont insert
-00003e f018                      	brlo end_search_loop	; if the insert number is smaller than the existing comparison number, insert it here
-00003f 9611                      	adiw X, 1
-000040 9523                      	inc r18					; counter++
-000041 cff7                      	rjmp search_loop		
+00003f 1720                      	cp r18, r16				; check if last element of output array has been reached by comparing index and list length
+000040 f039                      	breq end_search_loop	; if they are equal, that means the end of the output list has been reached without a match or insert, therefore the element needs to be inserted at the end of the list
+000041 913c                      	ld r19, X				; load the output_array value for comparison r19 = output_array[r18] and Z++ 
+000042 1713                      	cp r17, r19				; compare inserting number with i-th number
+000043 f061                      	breq end_insert_loop	; if the numbers match, it already exists in list, therefore dont insert
+000044 f018                      	brlo end_search_loop	; if the insert number is smaller than the existing comparison number, insert it here
+000045 9611                      	adiw X, 1
+000046 9523                      	inc r18					; counter++
+000047 cff7                      	rjmp search_loop		
                                  end_search_loop:
-000042 9503                      	inc r16	;len++
+000048 9503                      	inc r16	;len++
                                  	
                                  
                                  insert_loop:
-000043 1720                      	cp r18, r16				; comparison of index and list length to check if the end of the list has been reached
-000044 f029                      	breq end_insert_loop	
-000045 931d                      	st X+, r17
-000046 2f13                      	mov r17, r19
-000047 913c                      	ld r19, X
-000048 9523                      	inc r18
-000049 cff9                      	rjmp insert_loop
+000049 1720                      	cp r18, r16				; comparison of index and list length to check if the end of the list has been reached
+00004a f029                      	breq end_insert_loop	
+00004b 931d                      	st X+, r17
+00004c 2f13                      	mov r17, r19
+00004d 913c                      	ld r19, X
+00004e 9523                      	inc r18
+00004f cff9                      	rjmp insert_loop
                                  
                                  end_insert_loop:
                                  
                                  	;epilogue
-00004a 9625                      	adiw Y, 5
-00004b bfde                      	out SPH, YH
-00004c bfcd                      	out SPL, YL
-00004d 911f                      	pop r17
-00004e 91df                      	pop YH
-00004f 91cf                      	pop YL
-000050 9508                      	ret
+000050 9625                      	adiw Y, 5
+000051 bfde                      	out SPH, YH
+000052 bfcd                      	out SPL, YL
+000053 91bf                      	pop XH
+000054 91af                      	pop XL
+000055 914f                      	pop r20
+000056 913f                      	pop r19
+000057 912f                      	pop r18
+000058 911f                      	pop r17
+000059 91df                      	pop YH
+00005a 91cf                      	pop YL
+00005b 9508                      	ret
                                  	
                                  
                                  
@@ -2100,8 +2111,8 @@ counted separately from r26..r31 here.
 "ATmega2560" register use summary:
 x  :   4 y  :   8 z  :   4 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:   7 r17:   9 r18:   5 r19:   4 r20:   3 
-r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   2 r27:   2 r28:   7 
+r13:   0 r14:   0 r15:   0 r16:   7 r17:   9 r18:   7 r19:   6 r20:   5 
+r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   4 r27:   4 r28:   7 
 r29:   7 r30:   3 r31:   3 
 Registers used: 14 out of 35 (40.0%)
 
@@ -2119,7 +2130,7 @@ eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0
 in    :   2 inc   :   4 jmp   :   0 ld    :   2 ldd   :   0 ldi   :  10 
 lds   :   0 lpm   :   3 lsl   :   0 lsr   :   0 mov   :   1 movw  :   0 
 mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   :   0 or    :   0 
-ori   :   0 out   :   6 pop   :   3 push  :   3 rcall :   2 ret   :   1 
+ori   :   0 out   :   6 pop   :   8 push  :   8 rcall :   2 ret   :   1 
 reti  :   0 rjmp  :   6 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 
 sbi   :   0 sbic  :   0 sbis  :   0 sbiw  :   2 sbr   :   0 sbrc  :   0 
 sbrs  :   0 sec   :   0 seh   :   0 sei   :   0 sen   :   0 ser   :   0 
@@ -2131,7 +2142,7 @@ Instructions used: 21 out of 116 (18.1%)
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x0000a2    138     24    162  262144   0.1%
+[.cseg] 0x000000 0x0000b8    158     26    184  262144   0.1%
 [.dseg] 0x000200 0x00030f      0     15     15    8192   0.2%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 

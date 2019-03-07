@@ -23,17 +23,17 @@
  </OUTPUT_FILES>
  <LABELS>
   <output_array><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>14</LINE></output_array>
-  <main><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>46</LINE></main>
+  <main><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>47</LINE></main>
   <initial_array><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>22</LINE></initial_array>
   <enter_array><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>33</LINE></enter_array>
-  <load_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>62</LINE></load_loop>
-  <end_load_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>72</LINE></end_load_loop>
-  <insert_request><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>97</LINE></insert_request>
-  <enter_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>78</LINE></enter_loop>
-  <end_enter_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>90</LINE></end_enter_loop>
-  <search_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>123</LINE></search_loop>
-  <end_search_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>133</LINE></end_search_loop>
-  <end_insert_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>146</LINE></end_insert_loop>
-  <insert_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>137</LINE></insert_loop>
+  <load_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>64</LINE></load_loop>
+  <end_load_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>73</LINE></end_load_loop>
+  <insert_request><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>98</LINE></insert_request>
+  <enter_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>79</LINE></enter_loop>
+  <end_enter_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>91</LINE></end_enter_loop>
+  <search_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>129</LINE></search_loop>
+  <end_search_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>139</LINE></end_search_loop>
+  <end_insert_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>152</LINE></end_insert_loop>
+  <insert_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm</FILE><LINE>143</LINE></insert_loop>
  </LABELS>
 </ASSEMBLER_INFO>

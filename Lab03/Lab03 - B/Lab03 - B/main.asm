@@ -6,7 +6,7 @@
 ;
 
 .equ i_a_len = 7
-.equ e_a_len = 5
+.equ e_a_len = 6
 .equ o_a_len = 15
 
 .dseg 
@@ -31,11 +31,12 @@
 
 
 	enter_array:
-				.dw 0
-				.dw 1
-				.dw 10
-				.dw 25
 				.dw 6
+				.dw 20
+				.dw 11
+				.dw 255
+				.dw 30
+				.dw 0
 
 
 
@@ -57,15 +58,15 @@ main:
 	ldi ZH, high(initial_array<<1)
 
 
-
+	ldi XL, low(output_array)
+	ldi XH, high(output_array)
 	
 load_loop:
 	cpi r16, i_a_len
 	breq end_load_loop
 	lpm r17, Z
 	adiw Z, 2
-	ldi XL, low(output_array)
-	ldi XH, high(output_array)
+
 	rcall insert_request
 	rjmp load_loop
 
@@ -99,6 +100,11 @@ insert_request:
 	push YL
 	push YH
 	push r17
+	push r18
+	push r19
+	push r20
+	push XL
+	push XH
 	in YL, SPL
 	in YH, SPH
 	
@@ -149,6 +155,11 @@ end_insert_loop:
 	adiw Y, 5
 	out SPH, YH
 	out SPL, YL
+	pop XH
+	pop XL
+	pop r20
+	pop r19
+	pop r18
 	pop r17
 	pop YH
 	pop YL
