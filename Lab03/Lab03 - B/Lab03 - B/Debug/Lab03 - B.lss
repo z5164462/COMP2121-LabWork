@@ -1,10 +1,8 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm Thu Mar 07 13:28:09 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - B\Lab03 - B\main.asm Thu Mar 07 14:36:30 2019
 
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
-C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm(12): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
-C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03- A\Lab03- A\main.asm(12): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
                                  
                                  ;
                                  
@@ -1844,218 +1842,245 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  
                                  ; ***** END OF FILE ******************************************************
                                  
-                                 ; Lab03- A.asm
+                                 ; Lab03 - B.asm
                                  ;
-                                 ; Created: 4/03/2019 2:54:54 PM
+                                 ; Created: 5/03/2019 12:10:18 PM
                                  ; Author : andre
                                  ;
                                  
+                                 .equ i_a_len = 7
+                                 .equ e_a_len = 5
+                                 .equ o_a_len = 15
+                                 
+                                 .dseg 
+                                 .org 0x300
+                                 	output_array:
+000300                           		.BYTE o_a_len
+                                 
+                                 ; set up initial input array, and the enter array
+                                 .cseg
+                                 	
+000000 c00c                      	rjmp main
+                                 
+                                 	initial_array:
+000001 0001                      				.dw 1
+000002 0002                      				.dw 2
+000003 0005                      				.dw 5
+000004 0007                      				.dw 7
+000005 0008                      				.dw 8
+000006 000c                      				.dw 12
+000007 0014                      				.dw 20
+                                 
+                                 
+                                 
+                                 	enter_array:
+000008 0000                      				.dw 0
+000009 0001                      				.dw 1
+00000a 000a                      				.dw 10
+00000b 0019                      				.dw 25
+00000c 0006                      				.dw 6
+                                 
+                                 
+                                 
+                                 
+                                 
                                  
                                  ; Replace with your application code
+                                 main:
+00000d efce                      	ldi YL, low(RAMEND - 1)		;carve out space on the stack for 1  short int (1 byte), len
+00000e e2d1                      	ldi YH, high(RAMEND - 1)	; Y = SP,  int len
+00000f bfcd                          out SPL, YL					
+000010 bfde                      	out SPH, YH
+                                 		
+000011 2700                      	clr r16					;len = 0
+000012 2711                      	clr r17					;
+000013 8309                      	std Y+1, r16			;store inside stack frame		
                                  
-                                 
-                                 .include "m2560def.inc"
-                                 
-                                 ;***** Created: 2011-02-09 12:03 ******* Source: ATmega2560.xml **********
-                                 ;*************************************************************************
-                                 ;* A P P L I C A T I O N   N O T E   F O R   T H E   A V R   F A M I L Y
-                                 ;* 
-                                 ;* Number            : AVR000
-                                 ;* File Name         : "m2560def.inc"
-                                 ;* Title             : Register/Bit Definitions for the ATmega2560
-                                 ;* Date              : 2011-02-09
-                                 ;* Version           : 2.35
-                                 ;* Support E-mail    : avr@atmel.com
-                                 ;* Target MCU        : ATmega2560
-                                 ;* 
-                                 ;* DESCRIPTION
-                                 ;* When including this file in the assembly program file, all I/O register 
-                                 ;* names and I/O register bit names appearing in the data book can be used.
-                                 ;* In addition, the six registers forming the three data pointers X, Y and 
-                                 ;* Z have been assigned names XL - ZH. Highest RAM address for Internal 
-                                 ;* SRAM is also defined 
-                                 ;* 
-                                 ;* The Register names are represented by their hexadecimal address.
-                                 ;* 
-                                 ;* The Register Bit names are represented by their bit number (0-7).
-                                 ;* 
-                                 ;* Please observe the difference in using the bit names with instructions
-                                 ;* such as "sbr"/"cbr" (set/clear bit in register) and "sbrs"/"sbrc"
-                                 ;* (skip if bit in register set/cleared). The following example illustrates
-                                 ;* this:
-                                 ;* 
-                                 ;* in    r16,PORTB             ;read PORTB latch
-                                 ;* sbr   r16,(1<<PB6)+(1<<PB5) ;set PB6 and PB5 (use masks, not bit#)
-                                 ;* out   PORTB,r16             ;output to PORTB
-                                 ;* 
-                                 ;* in    r16,TIFR              ;read the Timer Interrupt Flag Register
-                                 ;* sbrc  r16,TOV0              ;test the overflow flag (use bit#)
-                                 ;* rjmp  TOV0_is_set           ;jump if set
-                                 ;* ...                         ;otherwise do something else
-                                 ;*************************************************************************
-                                 
-                                 #ifndef _M2560DEF_INC_
-                                 #endif  /* _M2560DEF_INC_ */
-                                 
-                                 ; ***** END OF FILE ******************************************************
+000014 e0e2                      	ldi ZL, low(initial_array<<1)	;load Z with the address from the program memory
+000015 e0f0                      	ldi ZH, high(initial_array<<1)
                                  
                                  
                                  
-                                 .def letter = r16
-                                 .def len = r17
-                                 .def counter = r18
-                                 
-                                 .dseg
-                                 .org 0x300
-000300                           	rev_string: .byte 4
-                                 
-                                 .cseg
-000000 c069                      	rjmp start
-000001 6d49
-000002 6c70
-000003 6d65
-000004 6e65
-000005 2074
-000006 2061
-000007 7270
-000008 676f
-000009 6172
-00000a 206d
-00000b 6874
-00000c 7461
-00000d 6c20
-00000e 616f
-00000f 7364
-000010 6120
-000011 6e20
-000012 6c75
-000013 2d6c
-000014 6574
-000015 6d72
-000016 6e69
-000017 7461
-000018 6465
-000019 7320
-00001a 7274
-00001b 6e69
-00001c 2067
-00001d 7266
-00001e 6d6f
-00001f 7020
-000020 6f72
-000021 7267
-000022 6d61
-000023 6d20
-000024 6d65
-000025 726f
-000026 2079
-000027 6e61
-000028 2064
-000029 7570
-00002a 6873
-00002b 7365
-00002c 6920
-00002d 2074
-00002e 6e6f
-00002f 6f74
-000030 7420
-000031 6568
-000032 7320
-000033 6174
-000034 6b63
-000035 202c
-000036 6874
-000037 6e65
-000038 7720
-000039 6972
-00003a 6574
-00003b 2073
-00003c 756f
-00003d 2074
-00003e 6874
-00003f 2065
-000040 6572
-000041 6576
-000042 7372
-000043 6465
-000044 7320
-000045 7274
-000046 6e69
-000047 2067
-000048 6e69
-000049 6f74
-00004a 6420
-00004b 7461
-00004c 2061
-00004d 656d
-00004e 6f6d
-00004f 7972
-000050 202e
-000051 6854
-000052 2065
-000053 7473
-000054 6361
-000055 206b
-000056 6f70
-000057 6e69
-000058 6574
-000059 2072
-00005a 756d
-00005b 7473
-00005c 6220
-00005d 2065
-00005e 6e69
-00005f 7469
-000060 6169
-000061 696c
-000062 657a
-000063 2064
-000064 6562
-000065 6f66
-000066 6572
-000067 7520
-000068 6573
-000069 002e                      	string: .db "Implement a program that loads a null-terminated string from program memory and pushes it onto the stack, then writes out the reversed string into data memory. The stack pointer must be initialized before use.",0
-                                 
-                                 start:
-00006a e0e2                      	ldi ZL, low(string<<1)	;load address of first character
-00006b e0f0                      	ldi ZH, High(string<<1)
                                  	
-00006c efcf                      	ldi YL, low(RAMEND)		;initialise stack pointer
-00006d e2d1                      	ldi YH, high(RAMEND)
-00006e bfcd                      	out SPL, YL
-00006f bfde                      	out SPH, YH
-                                 	
-000070 2711                      	clr len
-                                 loop_start:
-000071 9105                      	lpm letter, Z+
-000072 3000                      	cpi letter, 0
-000073 f019                      	breq end_loop
-000074 930f                      	push letter
-000075 9513                      	inc len
-000076 cffa                      	rjmp loop_start
-                                 	
-                                 end_loop:
-000077 2722                      	clr counter
+                                 load_loop:
+000016 3007                      	cpi r16, i_a_len
+000017 f031                      	breq end_load_loop
+000018 9114                      	lpm r17, Z
+000019 9632                      	adiw Z, 2
+00001a e0a0                      	ldi XL, low(output_array)
+00001b e0b3                      	ldi XH, high(output_array)
+00001c d00e                      	rcall insert_request
+00001d cff8                      	rjmp load_loop
                                  
-000078 e0a0                      	ldi XL, low(rev_string)
-000079 e0b3                      	ldi XH, high(rev_string)
+                                 end_load_loop:
                                  	
-                                 	;add XL, len
-                                 	;adiw X, 1
-                                 rev_loop:	
-00007a 910f                      	pop letter
-00007b 1721                      	cp counter, len
-00007c f019                      	breq end_rev_loop
-00007d 930d                      	st X+, letter
-                                 	;ld r22, X+
-00007e 9523                      	inc counter
-00007f cffa                      	rjmp rev_loop
+00001e e1e0                      	ldi ZL, low(enter_array<<1)	;load Z with the address from the program memory
+00001f e0f0                      	ldi ZH, high(enter_array<<1)
+                                 
+000020 2744                      	clr r20
+                                 enter_loop:
+                                 
+000021 3045                      	cpi r20, e_a_len
+000022 f039                      	breq end_enter_loop
+000023 9115                      	lpm r17, Z+
+000024 9631                      	adiw Z, 1
+000025 e0a0                      	ldi XL, low(output_array)
+000026 e0b3                      	ldi XH, high(output_array)
+000027 d003                      	rcall insert_request
+000028 9543                      	inc r20
+000029 cff7                      	rjmp enter_loop
+                                 
+                                 	end_enter_loop:
+00002a cfff                      		rjmp end_enter_loop
+                                 
+                                 ;ASSUMPTION. List length fits in 1 byte, all inserted numbers fit inside 1 byte
+                                 
+                                 ;parameters(address, len, num), returns new_len in r16
+                                 
+                                 insert_request:
+                                 	;prologue
+00002b 93cf                      	push YL
+00002c 93df                      	push YH
+00002d 931f                      	push r17
+00002e b7cd                      	in YL, SPL
+00002f b7de                      	in YH, SPH
                                  	
-                                 end_rev_loop:
-000080 e000                      	ldi letter, 0
-000081 930d                      	st X+, letter
-                                 end:
+000030 9721                      	sbiw Y, 1	;local counter
+000031 9724                      	sbiw Y, 4	;args Address(2) len input_val
+000032 bfcd                      	out SPL, YL
+000033 bfde                      	out SPH, YH
+                                 
+                                 
+000034 83f9                      	std Y+1, ZH
+000035 83ea                      	std Y+2, ZL
+000036 830b                      	std Y+3, r16
+000037 831c                      	std Y+4, r17
+                                 
+                                 	;end prologue
+                                 		
+                                 
+                                 	;body
+000038 2722                      	clr r18		;counter = 0
+                                 
+                                 
+                                 search_loop:
+000039 1720                      	cp r18, r16				; check if last element of output array has been reached by comparing index and list length
+00003a f039                      	breq end_search_loop	; if they are equal, that means the end of the output list has been reached without a match or insert, therefore the element needs to be inserted at the end of the list
+00003b 913c                      	ld r19, X				; load the output_array value for comparison r19 = output_array[r18] and Z++ 
+00003c 1713                      	cp r17, r19				; compare inserting number with i-th number
+00003d f061                      	breq end_insert_loop	; if the numbers match, it already exists in list, therefore dont insert
+00003e f018                      	brlo end_search_loop	; if the insert number is smaller than the existing comparison number, insert it here
+00003f 9611                      	adiw X, 1
+000040 9523                      	inc r18					; counter++
+000041 cff7                      	rjmp search_loop		
+                                 end_search_loop:
+000042 9503                      	inc r16	;len++
+                                 	
+                                 
+                                 insert_loop:
+000043 1720                      	cp r18, r16				; comparison of index and list length to check if the end of the list has been reached
+000044 f029                      	breq end_insert_loop	
+000045 931d                      	st X+, r17
+000046 2f13                      	mov r17, r19
+000047 913c                      	ld r19, X
+000048 9523                      	inc r18
+000049 cff9                      	rjmp insert_loop
+                                 
+                                 end_insert_loop:
+                                 
+                                 	;epilogue
+00004a 9625                      	adiw Y, 5
+00004b bfde                      	out SPH, YH
+00004c bfcd                      	out SPL, YL
+00004d 911f                      	pop r17
+00004e 91df                      	pop YH
+00004f 91cf                      	pop YL
+000050 9508                      	ret
+                                 	
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 ;arguments Z = address of program memory array, X = address of data memory,  r18 = current len 19 = len of things being inserted,  r22 (RETURN VALUE) = new len of list
+                                 ;local parameters, address, len, counter
+                                 /*read_insert_function:
+                                 	;prologue
+                                 	push r16
+                                 	in YL, SPL		; Y = SP
+                                 	in YH, SP
+                                 	sbiw Y, 5		;carve space for address(Z), current len (r18), inserting len (r19) and counter (local)
+                                 	out SPL, YL
+                                 	out SPH, YH		;SP = Y
+                                 					;currently moved 10 bytes   (top) 0XHigh-10 |ZH |ZL |XH | XL| r19 |r18	|counter|r16	|(bottom) 0XHigh
+                                 	std Y+1, ZL
+                                 	std Y+2, ZH
+                                 	std Y+3, XH
+                                 	std Y+4, XL
+                                 	std Y+5, r19
+                                 	std Y+6, r18
+                                 	
+                                 	;end prologue
+                                 
+                                 	;body
+                                 
+                                 	ldd ZH, Y+1		;local Z = Z
+                                 	ldd ZL, Y+2
+                                 	ldd r19, Y+5	;in_len = arg len of things coming in
+                                 	ldd r18, Y+6	;old_len = arg current len
+                                 	clr r16	; counter = 0
+                                 	
+                                 
+                                 extract_loop:
+                                 	cp r16, r19		;while all numbers are not inserted
+                                 	breq end_extract
+                                 	lpm r20, Z		;load number into r20
+                                 	adiw Z, 2		;Z = Z + 2 (word)
+                                 	
+                                 	;insert
+                                 	inc r16			;count++
+                                 	rjmp exctract_loop
+                                 
+                                 end_extract:
+                                 	mov r20, r18
+                                 	add r20, r19	; return old_len + in_len
+                                 
+                                 	;end body
+                                 
+                                 	;epilogue
+                                 	adiw Y, 8
+                                 	out SPH, YH
+                                 	out SPL, YL
+                                 	pop r16
+                                 	ret*/
+                                 
+                                 
+                                 
+                                 ;arguments X = address of array, r18:19 = len
 
 
 RESOURCE USE INFORMATION
@@ -2073,41 +2098,41 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega2560" register use summary:
-x  :   2 y  :   0 z  :   1 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
+x  :   4 y  :   8 z  :   4 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:   7 r17:   3 r18:   3 r19:   0 r20:   0 
-r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   1 r27:   1 r28:   2 
-r29:   2 r30:   1 r31:   1 
-Registers used: 11 out of 35 (31.4%)
+r13:   0 r14:   0 r15:   0 r16:   7 r17:   9 r18:   5 r19:   4 r20:   3 
+r21:   0 r22:   0 r23:   0 r24:   0 r25:   0 r26:   2 r27:   2 r28:   7 
+r29:   7 r30:   3 r31:   3 
+Registers used: 14 out of 35 (40.0%)
 
 "ATmega2560" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
+.lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   4 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :   2 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :   5 brge  :   0 brhc  :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   1 brlt  :   0 brmi  :   0 
 brne  :   0 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   2 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   1 cpc   :   0 
-cpi   :   1 cpse  :   0 dec   :   0 eicall:   0 eijmp :   0 elpm  :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   4 cls   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   3 cpc   :   0 
+cpi   :   2 cpse  :   0 dec   :   0 eicall:   0 eijmp :   0 elpm  :   0 
 eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
-in    :   0 inc   :   2 jmp   :   0 ld    :   0 ldd   :   0 ldi   :   7 
-lds   :   0 lpm   :   1 lsl   :   0 lsr   :   0 mov   :   0 movw  :   0 
+in    :   2 inc   :   4 jmp   :   0 ld    :   2 ldd   :   0 ldi   :  10 
+lds   :   0 lpm   :   3 lsl   :   0 lsr   :   0 mov   :   1 movw  :   0 
 mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   :   0 or    :   0 
-ori   :   0 out   :   2 pop   :   1 push  :   1 rcall :   0 ret   :   0 
-reti  :   0 rjmp  :   4 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 
-sbi   :   0 sbic  :   0 sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   0 
+ori   :   0 out   :   6 pop   :   3 push  :   3 rcall :   2 ret   :   1 
+reti  :   0 rjmp  :   6 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 
+sbi   :   0 sbic  :   0 sbis  :   0 sbiw  :   2 sbr   :   0 sbrc  :   0 
 sbrs  :   0 sec   :   0 seh   :   0 sei   :   0 sen   :   0 ser   :   0 
 ses   :   0 set   :   0 sev   :   0 sez   :   0 sleep :   0 spm   :   0 
-st    :   2 std   :   0 sts   :   0 sub   :   0 subi  :   0 swap  :   0 
+st    :   1 std   :   5 sts   :   0 sub   :   0 subi  :   0 swap  :   0 
 tst   :   0 wdr   :   0 
-Instructions used: 12 out of 116 (10.3%)
+Instructions used: 21 out of 116 (18.1%)
 
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000106     52    210    262  262144   0.1%
-[.dseg] 0x000200 0x000304      0      4      4    8192   0.0%
+[.cseg] 0x000000 0x0000a2    138     24    162  262144   0.1%
+[.dseg] 0x000200 0x00030f      0     15     15    8192   0.2%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 
 Assembly complete, 0 errors, 0 warnings

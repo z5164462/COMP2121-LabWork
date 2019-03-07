@@ -23,7 +23,7 @@
 
 .cseg
 	rjmp start
-	string: .db "abd",0
+	string: .db "Implement a program that loads a null-terminated string from program memory and pushes it onto the stack, then writes out the reversed string into data memory. The stack pointer must be initialized before use.",0
 
 start:
 	ldi ZL, low(string<<1)	;load address of first character

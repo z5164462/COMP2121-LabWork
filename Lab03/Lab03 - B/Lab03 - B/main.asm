@@ -10,7 +10,7 @@
 .equ o_a_len = 15
 
 .dseg 
-	
+.org 0x300
 	output_array:
 		.BYTE o_a_len
 
@@ -50,23 +50,142 @@ main:
 	out SPH, YH
 		
 	clr r16					;len = 0
+	clr r17					;
 	std Y+1, r16			;store inside stack frame		
 
-	ldi ZL, low(intial_array<<1)	;load Z with the address from the program memory
+	ldi ZL, low(initial_array<<1)	;load Z with the address from the program memory
 	ldi ZH, high(initial_array<<1)
 
-	ldi XL, low(outpuy_array)
-	ldi XH, high(output_array)
+
 
 	
+load_loop:
+	cpi r16, i_a_len
+	breq end_load_loop
+	lpm r17, Z
+	adiw Z, 2
+	ldi XL, low(output_array)
+	ldi XH, high(output_array)
+	rcall insert_request
+	rjmp load_loop
 
-; ASSUMPTION. List length fits in 1 byte, all inserted numbers fit inside 1 byte
+end_load_loop:
+	
+	ldi ZL, low(enter_array<<1)	;load Z with the address from the program memory
+	ldi ZH, high(enter_array<<1)
+
+	clr r20
+enter_loop:
+
+	cpi r20, e_a_len
+	breq end_enter_loop
+	lpm r17, Z+
+	adiw Z, 1
+	ldi XL, low(output_array)
+	ldi XH, high(output_array)
+	rcall insert_request
+	inc r20
+	rjmp enter_loop
+
+	end_enter_loop:
+		rjmp end_enter_loop
+
+;ASSUMPTION. List length fits in 1 byte, all inserted numbers fit inside 1 byte
+
+;parameters(address, len, num), returns new_len in r16
+
+insert_request:
+	;prologue
+	push YL
+	push YH
+	push r17
+	in YL, SPL
+	in YH, SPH
+	
+	sbiw Y, 1	;local counter
+	sbiw Y, 4	;args Address(2) len input_val
+	out SPL, YL
+	out SPH, YH
+
+
+	std Y+1, ZH
+	std Y+2, ZL
+	std Y+3, r16
+	std Y+4, r17
+
+	;end prologue
+		
+
+	;body
+	clr r18		;counter = 0
+
+
+search_loop:
+	cp r18, r16				; check if last element of output array has been reached by comparing index and list length
+	breq end_search_loop	; if they are equal, that means the end of the output list has been reached without a match or insert, therefore the element needs to be inserted at the end of the list
+	ld r19, X				; load the output_array value for comparison r19 = output_array[r18] and Z++ 
+	cp r17, r19				; compare inserting number with i-th number
+	breq end_insert_loop	; if the numbers match, it already exists in list, therefore dont insert
+	brlo end_search_loop	; if the insert number is smaller than the existing comparison number, insert it here
+	adiw X, 1
+	inc r18					; counter++
+	rjmp search_loop		
+end_search_loop:
+	inc r16	;len++
+	
+
+insert_loop:
+	cp r18, r16				; comparison of index and list length to check if the end of the list has been reached
+	breq end_insert_loop	
+	st X+, r17
+	mov r17, r19
+	ld r19, X
+	inc r18
+	rjmp insert_loop
+
+end_insert_loop:
+
+	;epilogue
+	adiw Y, 5
+	out SPH, YH
+	out SPL, YL
+	pop r17
+	pop YH
+	pop YL
+	ret
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 ;arguments Z = address of program memory array, X = address of data memory,  r18 = current len 19 = len of things being inserted,  r22 (RETURN VALUE) = new len of list
 ;local parameters, address, len, counter
-read_insert_function:
+/*read_insert_function:
 	;prologue
 	push r16
 	in YL, SPL		; Y = SP
@@ -103,6 +222,7 @@ extract_loop:
 	inc r16			;count++
 	rjmp exctract_loop
 
+end_extract:
 	mov r20, r18
 	add r20, r19	; return old_len + in_len
 
@@ -112,26 +232,9 @@ extract_loop:
 	adiw Y, 8
 	out SPH, YH
 	out SPL, YL
-	pop
+	pop r16
+	ret*/
 
 
-	ret
-
-end_extract:
 
 ;arguments X = address of array, r18:19 = len
-insert_request_function:
-	;prologue
-	push r16
-	push r17
-	push r18
-	push r19
-
-
-	;body
-
-	;function
-
-
-
-end_insert:
