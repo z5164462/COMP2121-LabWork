@@ -35,33 +35,33 @@ start:
 	out SPH, YH
 	
 	clr len
-loop_start:
-	lpm letter, Z+
-	cpi letter, 0
+loop_start:	; loop for loading string
+	lpm letter, Z+	; load character from program memory
+	cpi letter, 0	; check its not null terminator (0)
 	breq end_loop
-	push letter
-	inc len
+	push letter		; if not '0' push onto stack
+	inc len			; increment length of string
 	rjmp loop_start
 	
 end_loop:
-	clr counter
+	clr counter					; counter to check all letters have been stored
 
-	ldi XL, low(rev_string)
+	ldi XL, low(rev_string)		; space to store the reversed string
 	ldi XH, high(rev_string)
 	
 	;add XL, len
 	;adiw X, 1
-rev_loop:	
-	pop letter
-	cp counter, len
+rev_loop:		
+	pop letter					; pop letter from stack
+	cp counter, len				; check that all letters havent been popped yet
 	breq end_rev_loop
-	st X+, letter
+	st X+, letter				; store the letter in the allocated space and increment array pointer
 	;ld r22, X+
 	inc counter
 	rjmp rev_loop
 	
 end_rev_loop:
-	ldi letter, 0
+	ldi letter, 0				; add a null terminator to the end of the string
 	st X+, letter
 end:
 	rjmp end
