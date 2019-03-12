@@ -92,8 +92,14 @@ enter_loop:
 		rjmp end_enter_loop
 
 ;ASSUMPTION. List length fits in 1 byte, all inserted numbers fit inside 1 byte
+;ASSUMPTION. If current floor is requested, request is ignored
 
-;parameters(address, len, num), returns new_len in r16
+
+;EXTENDED INSERT REQUEST
+
+;parameters(address, len, input_floor, current_floor, direction), returns new_len in r16
+;			X		r16		r17				r20				r21
+
 
 insert_request:
 	;prologue
@@ -103,21 +109,24 @@ insert_request:
 	push r18
 	push r19
 	push r20
+	push r21
 	push XL
 	push XH
 	in YL, SPL
 	in YH, SPH
 	
 	sbiw Y, 1	;local counter
-	sbiw Y, 4	;args Address(2) len input_val
+	sbiw Y, 6	;args Address(2), len, input_floor, current_floor, direction
 	out SPL, YL
 	out SPH, YH
 
 
-	std Y+1, ZH
-	std Y+2, ZL
-	std Y+3, r16
-	std Y+4, r17
+	std Y+1, XH		;address
+	std Y+2, XL
+	std Y+3, r16	;len
+	std Y+4, r17	;input_floor
+	std Y+5, r20	;current_floor
+	std Y+6, r21	;direction
 
 	;end prologue
 		
@@ -125,10 +134,80 @@ insert_request:
 	;body
 	clr r18		;counter = 0
 
+	cp r17, r20
+	breq end_insert_request
 
+	cpi r21, 1
+	breq up_search
+	rjmp down_search
+
+
+up_search:
+	cp r17, r20
+	brlt up_descending_loop
+up_ascending_loop:
+	cp r18, r16
+	breq end_search
+	ld r19, X
+	cp r17, r19
+	breq end_insert_request
+	brlo insert_start
+	adiw X, 1
+	inc r18
+	rjmp up_ascending_loop
+
+up_descending_loop:
+	cp r18, r16
+	breq end_up_search
+	ld r19, X
+	cp r17, r19
+	breq end_insert_request
+	cp r19, r20
+	brlo down_search
+	adiw X, 1
+	inc r18
+	rjmp up_descending_loop
+
+
+
+down_search:
+	cp r20, r17
+	brlt down_ascending_loop
+down_descending_loop:
+	cp r18, r16
+	breq end_down_search
+	ld r19, X
+	cp r19, r17
+	breq end_insert_request
+	brlo insert_start
+	adiw X, 1
+	inc r18
+	rjmp down_descending_loop
+
+down_ascending_loop:
+	cp r18, r16
+	breq end_search
+	ld r19, X
+	cp r19, r17
+	breq end_insert_request
+	cp r20, r19
+	brlo up_search
+	adiw X, 1
+	inc r18
+	rjmp down_ascending_loop
+
+end_search:
+	rjmp insert_start
+
+
+
+/*
 search_loop:
 	cp r18, r16				; check if last element of output array has been reached by comparing index and list length
 	breq end_search_loop	; if they are equal, that means the end of the output list has been reached without a match or insert, therefore the element needs to be inserted at the end of the list
+	
+	
+	
 	ld r19, X				; load the output_array value for comparison r19 = output_array[r18] and Z++ 
 	cp r17, r19				; compare inserting number with i-th number
 	breq end_insert_loop	; if the numbers match, it already exists in list, therefore dont insert
@@ -136,7 +215,9 @@ search_loop:
 	adiw X, 1
 	inc r18					; counter++
 	rjmp search_loop		
-end_search_loop:
+end_search_loop:*/
+	
+insert_start:	
 	inc r16	;len++
 	
 
@@ -150,13 +231,18 @@ insert_loop:
 	rjmp insert_loop
 
 end_insert_loop:
+	nop
+end_insert_request:
+
+
 
 	;epilogue
-	adiw Y, 5
+	adiw Y, 7
 	out SPH, YH
 	out SPL, YL
 	pop XH
 	pop XL
+	pop r21
 	pop r20
 	pop r19
 	pop r18
@@ -166,86 +252,36 @@ end_insert_loop:
 	ret
 	
 
+/*
 
+(5,6,7,8,9,10,11, 3) inserting 1 , on floor 4 going up
 
+if(going up)
+jmp upsearch
+if(going down)
+jmp downsearch
 
+up search
+	if (inserting_floor > current_floor)
+		while(i < len)
+			if (ith > inserting)
+				shift insert at i
+	if(inserting_floor < current_floor)
+		while(i < len)
+			if(ith_floor < current_floor)
+				down search			
+	shift insert at i  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-;arguments Z = address of program memory array, X = address of data memory,  r18 = current len 19 = len of things being inserted,  r22 (RETURN VALUE) = new len of list
-;local parameters, address, len, counter
-/*read_insert_function:
-	;prologue
-	push r16
-	in YL, SPL		; Y = SP
-	in YH, SP
-	sbiw Y, 5		;carve space for address(Z), current len (r18), inserting len (r19) and counter (local)
-	out SPL, YL
-	out SPH, YH		;SP = Y
-					;currently moved 10 bytes   (top) 0XHigh-10 |ZH |ZL |XH | XL| r19 |r18	|counter|r16	|(bottom) 0XHigh
-	std Y+1, ZL
-	std Y+2, ZH
-	std Y+3, XH
-	std Y+4, XL
-	std Y+5, r19
-	std Y+6, r18
-	
-	;end prologue
-
-	;body
-
-	ldd ZH, Y+1		;local Z = Z
-	ldd ZL, Y+2
-	ldd r19, Y+5	;in_len = arg len of things coming in
-	ldd r18, Y+6	;old_len = arg current len
-	clr r16	; counter = 0
+down search
+	if (inserting_floor < current_floor)
+		while(i < len)
+			if (ith < inserting)
+				shift insert at i
+	if(inserting_floor > current_floor)
+		while(i < len)
+			if(ith_floor > current_floor)
+				up search		
+	shift insert at i
 	
 
-extract_loop:
-	cp r16, r19		;while all numbers are not inserted
-	breq end_extract
-	lpm r20, Z		;load number into r20
-	adiw Z, 2		;Z = Z + 2 (word)
-	
-	;insert
-	inc r16			;count++
-	rjmp exctract_loop
-
-end_extract:
-	mov r20, r18
-	add r20, r19	; return old_len + in_len
-
-	;end body
-
-	;epilogue
-	adiw Y, 8
-	out SPH, YH
-	out SPL, YL
-	pop r16
-	ret*/
-
-
-
-;arguments X = address of array, r18:19 = len
+*/
