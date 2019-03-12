@@ -5,8 +5,8 @@
 ; Author : andre
 ;
 
-.equ i_a_len = 7
-.equ e_a_len = 6
+.equ i_a_len = 4
+.equ e_a_len = 3
 .equ o_a_len = 15
 
 .dseg 
@@ -20,23 +20,18 @@
 	rjmp main
 
 	initial_array:
-				.dw 1
-				.dw 2
 				.dw 5
 				.dw 7
 				.dw 8
-				.dw 12
-				.dw 20
+				.dw 1
 
 
 
 	enter_array:
+				.dw 10
 				.dw 6
-				.dw 20
-				.dw 11
-				.dw 255
-				.dw 30
-				.dw 0
+				.dw 7
+
 
 
 
@@ -61,6 +56,9 @@ main:
 	ldi XL, low(output_array)
 	ldi XH, high(output_array)
 	
+	ldi r20, 3
+	ldi r21, 1
+
 load_loop:
 	cpi r16, i_a_len
 	breq end_load_loop
@@ -75,7 +73,7 @@ end_load_loop:
 	ldi ZL, low(enter_array<<1)	;load Z with the address from the program memory
 	ldi ZH, high(enter_array<<1)
 
-	clr r20
+	clr r20	;clear enter_array_counter
 enter_loop:
 
 	cpi r20, e_a_len
