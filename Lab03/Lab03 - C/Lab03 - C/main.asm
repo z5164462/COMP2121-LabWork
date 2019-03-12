@@ -14,9 +14,11 @@
 ; Author : andre
 ;
 
-.equ i_a_len = 4
-.equ e_a_len = 3
+.equ i_a_len = 6
+.equ e_a_len = 2
 .equ o_a_len = 15
+.equ floor = 8
+.equ direction = 0
 
 .dseg 
 .org 0x300
@@ -30,16 +32,17 @@
 
 	initial_array:
 				.dw 5
-				.dw 7
-				.dw 8
-				.dw 1
+				.dw 3
+				.dw 2
+				.dw 10
+				.dw 11
+				.dw 15
 
 
 
 	enter_array:
-				.dw 10
-				.dw 6
-				.dw 7
+				.dw 13
+				.dw 4
 
 
 
@@ -65,8 +68,8 @@ main:
 	ldi XL, low(output_array)
 	ldi XH, high(output_array)
 	
-	ldi r20, 3
-	ldi r21, 1
+	ldi r20, floor
+	ldi r21, direction
 
 load_loop:
 	cpi r16, i_a_len

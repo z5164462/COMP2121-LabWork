@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Wed Mar 13 10:15:45 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Wed Mar 13 10:19:23 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1359,26 +1359,28 @@ EQU  URXC3addr    0000006c
 EQU  UDRE3addr    0000006e
 EQU  UTXC3addr    00000070
 EQU  INT_VECTORS_SIZE 00000072
-EQU  i_a_len      00000004
-EQU  e_a_len      00000003
+EQU  i_a_len      00000006
+EQU  e_a_len      00000002
 EQU  o_a_len      0000000f
+EQU  floor        00000008
+EQU  direction    00000000
 DSEG output_array 00000300
-CSEG main         00000008
+CSEG main         00000009
 CSEG initial_array 00000001
-CSEG enter_array  00000005
-CSEG load_loop    00000015
-CSEG end_load_loop 0000001b
-CSEG insert_request 00000028
-CSEG enter_loop   0000001e
-CSEG end_enter_loop 00000027
-CSEG end_insert_request 0000007b
-CSEG up_search    00000043
-CSEG down_search  0000005a
-CSEG up_descending_loop 00000050
-CSEG up_ascending_loop 00000045
-CSEG end_search   00000071
-CSEG insert_start 00000072
-CSEG down_ascending_loop 00000067
-CSEG down_descending_loop 0000005c
-CSEG insert_loop  00000073
-CSEG end_insert_loop 0000007a
+CSEG enter_array  00000007
+CSEG load_loop    00000016
+CSEG end_load_loop 0000001c
+CSEG insert_request 00000029
+CSEG enter_loop   0000001f
+CSEG end_enter_loop 00000028
+CSEG end_insert_request 0000007c
+CSEG up_search    00000044
+CSEG down_search  0000005b
+CSEG up_descending_loop 00000051
+CSEG up_ascending_loop 00000046
+CSEG end_search   00000072
+CSEG insert_start 00000073
+CSEG down_ascending_loop 00000068
+CSEG down_descending_loop 0000005d
+CSEG insert_loop  00000074
+CSEG end_insert_loop 0000007b
