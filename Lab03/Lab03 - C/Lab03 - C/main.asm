@@ -12,8 +12,9 @@
 .equ i_a_len = 6
 .equ e_a_len = 2
 .equ o_a_len = 15
-.equ floor = 8
-.equ direction = 0
+.equ floor = 3
+; 0 - DOWN, 1 - UP
+.equ direction = 1
 
 .dseg 
 .org 0x300
@@ -27,18 +28,18 @@
 
 	initial_array:
 				.dw 5
-				.dw 3
-				.dw 2
-				.dw 10
-				.dw 11
-				.dw 15
+				.dw 7
+				.dw 8
+				.dw 1
+				;.dw 11
+				;.dw 15
 
 
 
 	enter_array:
-				.dw 13
-				.dw 4
-
+				.dw 10
+				.dw 6
+				.dw 7
 
 
 

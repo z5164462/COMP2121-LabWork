@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Thu Mar 14 10:35:28 2019
+AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Thu Mar 14 10:51:39 2019
 
 [builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 [builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
@@ -1855,8 +1855,8 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
                                  .equ i_a_len = 6
                                  .equ e_a_len = 2
                                  .equ o_a_len = 15
-                                 .equ floor = 8
-                                 .equ direction = 0
+                                 .equ floor = 1
+                                 .equ direction = 1
                                  
                                  .dseg 
                                  .org 0x300
@@ -1869,9 +1869,9 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
 000000 c008                      	rjmp main
                                  
                                  	initial_array:
-000001 0005                      				.dw 5
+000001 0002                      				.dw 2
 000002 0003                      				.dw 3
-000003 0002                      				.dw 2
+000003 0004                      				.dw 4
 000004 000a                      				.dw 10
 000005 000b                      				.dw 11
 000006 000f                      				.dw 15
@@ -1906,8 +1906,8 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
 000012 e0a0                      	ldi XL, low(output_array)	; load X with address for output
 000013 e0b3                      	ldi XH, high(output_array)
                                  	
-000014 e048                      	ldi r20, floor				; register for input floor
-000015 e050                      	ldi r21, direction			; register for direction of travel (UP/DOWN)
+000014 e041                      	ldi r20, floor				; register for input floor
+000015 e051                      	ldi r21, direction			; register for direction of travel (UP/DOWN)
                                  
                                  load_loop:
 000016 3006                      	cpi r16, i_a_len			; check if all inital array elements have been loaded by comparing with initial len
@@ -2001,7 +2001,7 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
 000048 913c                      	ld r19, X			; load floor from output array
 000049 1713                      	cp r17, r19			; check if input floor already exists
 00004a f189                      	breq end_insert_request	; quit if it does
-00004b f138                      	brlo insert_start	; if input floor lower than ith floor, insert (when  input floor > current floor and input floor < ith floor)
+00004b f138                      	brlo insert_start	; if input floor lower than ith floor, insert 
 00004c 1734                      	cp r19, r20			; compare ith floor to current floor
 00004d f128                      	brlo insert_start	; if ith < current, insert
 00004e 9611                      	adiw X, 1			; increment output array
@@ -2031,9 +2031,9 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
 00005f 913c                      	ld r19, X			; load floor from output array
 000060 1731                      	cp r19, r17			; check if input floor already exists
 000061 f0d1                      	breq end_insert_request	; quit if it does
-000062 f080                      	brlo insert_start	; if input floor lo
+000062 f080                      	brlo insert_start	; if current floor < input floor insert here
 000063 1743                      	cp r20, r19			; compare current floor to ith floor
-000064 f070                      	brlo insert_start	; 
+000064 f070                      	brlo insert_start	
 000065 9611                      	adiw X, 1			; increment output array
 000066 9523                      	inc r18				; increment counter
 000067 cff5                      	rjmp down_descending_loop
@@ -2044,8 +2044,8 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
 00006a 913c                      	ld r19, X			; load floor from output array
 00006b 1731                      	cp r19, r17			; check if input floor already exists
 00006c f079                      	breq end_insert_request	; quit if it does
-00006d 1743                      	cp r20, r19
-00006e f2a8                      	brlo up_search
+00006d 1743                      	cp r20, r19			; compare ith floor to current floor
+00006e f2a8                      	brlo up_search		; if ith floor > current and input floor > current floor, jmp to upsearch
 00006f 9611                      	adiw X, 1			; increment output array
 000070 9523                      	inc r18				; increment counter
 000071 cff6                      	rjmp down_ascending_loop
