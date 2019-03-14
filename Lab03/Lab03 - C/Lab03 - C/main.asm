@@ -1,24 +1,20 @@
-;
-; Lab03 - C.asm
-;
-; Created: 12/03/2019 12:07:13 PM
-; Author : andre
-;
+
 
 
 ; Replace with your application code
 ;
-; Lab03 - B.asm
+; Lab03 - C.asm
 ;
-; Created: 5/03/2019 12:10:18 PM
-; Author : andre
+; Created: 12/03/2019 12:10:18 PM
+; Author : andrudh
 ;
 
 .equ i_a_len = 6
 .equ e_a_len = 2
 .equ o_a_len = 15
-.equ floor = 8
-.equ direction = 0
+.equ floor = 3
+; 0 - DOWN, 1 - UP
+.equ direction = 1
 
 .dseg 
 .org 0x300
@@ -32,18 +28,18 @@
 
 	initial_array:
 				.dw 5
-				.dw 3
-				.dw 2
-				.dw 10
-				.dw 11
-				.dw 15
+				.dw 7
+				.dw 8
+				.dw 1
+				;.dw 11
+				;.dw 15
 
 
 
 	enter_array:
-				.dw 13
-				.dw 4
-
+				.dw 10
+				.dw 6
+				.dw 7
 
 
 
@@ -52,7 +48,7 @@
 
 ; Replace with your application code
 main:
-	ldi YL, low(RAMEND - 1)		;carve out space on the stack for 1  short int (1 byte), len
+	ldi YL, low(RAMEND - 1)		;carve out space on the stack for 1 short int (1 byte), len
 	ldi YH, high(RAMEND - 1)	; Y = SP,  int len
     out SPL, YL					
 	out SPH, YH
@@ -65,37 +61,38 @@ main:
 	ldi ZH, high(initial_array<<1)
 
 
-	ldi XL, low(output_array)
+	ldi XL, low(output_array)	; load X with address for output
 	ldi XH, high(output_array)
 	
-	ldi r20, floor
-	ldi r21, direction
+	ldi r20, floor				; register for input floor
+	ldi r21, direction			; register for direction of travel (UP/DOWN)
 
 load_loop:
-	cpi r16, i_a_len
+	cpi r16, i_a_len			; check if all inital array elements have been loaded by comparing with initial len
 	breq end_load_loop
-	lpm r17, Z
-	adiw Z, 2
+	lpm r17, Z					; load next inital array element
+	adiw Z, 2					; increment to next array element (Add 2 because word)
 
 	rcall insert_request
+
 	rjmp load_loop
 
 end_load_loop:
 	
-	ldi ZL, low(enter_array<<1)	;load Z with the address from the program memory
+	ldi ZL, low(enter_array<<1)	  ; load Z with the address from the program memory (reset pointer location to beginning)
 	ldi ZH, high(enter_array<<1)
 
-	clr r22	;clear enter_array_counter
+	clr r22	; clear enter_array_counter
 enter_loop:
 
-	cpi r22, e_a_len
+	cpi r22, e_a_len			; check if all elements of enter array have been insterted
 	breq end_enter_loop
-	lpm r17, Z+
+	lpm r17, Z+					; insert next element from enter array
 	adiw Z, 1
-	ldi XL, low(output_array)
+	ldi XL, low(output_array)	; load X with address of output array from program memory (reset pointer to beginning)
 	ldi XH, high(output_array)
 	rcall insert_request
-	inc r22
+	inc r22						; increment enter_array_counter
 	rjmp enter_loop
 
 	end_enter_loop:
@@ -109,7 +106,8 @@ enter_loop:
 
 ;parameters(address, len, input_floor, current_floor, direction), returns new_len in r16
 ;			X		r16		r17				r20				r21
-
+; r18 holds counter
+; r19 holds ith floor
 
 insert_request:
 	;prologue
@@ -144,40 +142,40 @@ insert_request:
 	;body
 	clr r18		;counter = 0
 
-	cp r17, r20
+	cp r17, r20			; if input floor is current floor, quit request
 	breq end_insert_request
 
-	cpi r21, 1
+	cpi r21, 1			; direction check: if direction register holds 1, do  up_search, else down_search
 	breq up_search
 	rjmp down_search
 
 
 up_search:
-	cp r17, r20
+	cp r17, r20			; if input floor < current floor, jump to up_descending_loop, else up_ascending_loop
 	brlt up_descending_loop
 up_ascending_loop:
-	cp r18, r16
+	cp r18, r16			; compare counter to len (check if end of list reached)
 	breq end_search
-	ld r19, X
-	cp r17, r19
-	breq end_insert_request
-	brlo insert_start
-	cp r19, r20
-	brlo insert_start
-	adiw X, 1
-	inc r18
+	ld r19, X			; load floor from output array
+	cp r17, r19			; check if input floor already exists
+	breq end_insert_request	; quit if it does
+	brlo insert_start	; if input floor lower than ith floor, insert 
+	cp r19, r20			; compare ith floor to current floor
+	brlo insert_start	; if ith < current, insert
+	adiw X, 1			; increment output array
+	inc r18				; increment counter
 	rjmp up_ascending_loop
 
 up_descending_loop:
-	cp r18, r16
-	breq end_search
-	ld r19, X
-	cp r17, r19
-	breq end_insert_request
-	cp r19, r20
-	brlo down_search
-	adiw X, 1
-	inc r18
+	cp r18, r16			; compare counter to len (check if end of list reached)
+	breq end_search		
+	ld r19, X			; load floor from output array
+	cp r17, r19			; check if input floor already exists
+	breq end_insert_request	; quit if it does
+	cp r19, r20			; compare ith floor to current floor
+	brlo down_search	; if input floor < current floor and ith floor < current floor jmp to down search
+	adiw X, 1			; increment output array
+	inc r18				; increment counter
 	rjmp up_descending_loop
 
 
@@ -186,28 +184,28 @@ down_search:
 	cp r20, r17
 	brlt down_ascending_loop
 down_descending_loop:
-	cp r18, r16
-	breq end_search
-	ld r19, X
-	cp r19, r17
-	breq end_insert_request
-	brlo insert_start
-	cp r20, r19
-	brlo insert_start
-	adiw X, 1
-	inc r18
+	cp r18, r16			; compare counter to len (check if end of list reached)
+	breq end_search		
+	ld r19, X			; load floor from output array
+	cp r19, r17			; check if input floor already exists
+	breq end_insert_request	; quit if it does
+	brlo insert_start	; if current floor < input floor insert here
+	cp r20, r19			; compare current floor to ith floor
+	brlo insert_start	
+	adiw X, 1			; increment output array
+	inc r18				; increment counter
 	rjmp down_descending_loop
 
 down_ascending_loop:
-	cp r18, r16
-	breq end_search
-	ld r19, X
-	cp r19, r17
-	breq end_insert_request
-	cp r20, r19
-	brlo up_search
-	adiw X, 1
-	inc r18
+	cp r18, r16			; compare counter to len (check if end of list reached)
+	breq end_search		
+	ld r19, X			; load floor from output array
+	cp r19, r17			; check if input floor already exists
+	breq end_insert_request	; quit if it does
+	cp r20, r19			; compare ith floor to current floor
+	brlo up_search		; if ith floor > current and input floor > current floor, jmp to upsearch
+	adiw X, 1			; increment output array
+	inc r18				; increment counter
 	rjmp down_ascending_loop
 
 end_search:
@@ -282,10 +280,12 @@ up search
 				shift insert at i
 			if (ith < current_floor)
 				shift insert at i
+			i++
 	if(inserting_floor < current_floor)
 		while(i < len)
 			if(ith_floor < current_floor)
-				down search			
+				down search		
+			i++	
 	shift insert at i  
 
 down search
@@ -295,10 +295,12 @@ down search
 				shift insert at i
 			if (ith > current_floor)
 				shift insert at i
+			i++
 	if(inserting_floor > current_floor)
 		while(i < len)
 			if(ith_floor > current_floor)
-				up search		
+				up search
+			i++		
 	shift insert at i
 
 
