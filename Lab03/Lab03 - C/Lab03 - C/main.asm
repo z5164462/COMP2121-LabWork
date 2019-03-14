@@ -145,6 +145,17 @@ insert_request:
 	cp r17, r20			; if input floor is current floor, quit request
 	breq end_insert_request
 
+	cp r16, 0
+	breq decide_direction 
+	rjmp skip
+
+
+decide_direction:
+	cp r17, r20
+	brlt down_search
+	rjmp up_search
+
+skip:
 	cpi r21, 1			; direction check: if direction register holds 1, do  up_search, else down_search
 	breq up_search
 	rjmp down_search
