@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  D:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Thu Mar 14 14:07:27 2019
+AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Mon Mar 18 19:14:26 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1363,7 +1363,7 @@ EQU  i_a_len      00000000
 EQU  e_a_len      00000004
 EQU  o_a_len      0000000f
 EQU  floor        00000003
-EQU  direction    00000001
+EQU  direction    00000000
 DSEG output_array 00000300
 CSEG main         00000005
 CSEG initial_array 00000001

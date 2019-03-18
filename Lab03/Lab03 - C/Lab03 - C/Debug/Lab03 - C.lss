@@ -1,8 +1,8 @@
 
-AVRASM ver. 2.2.7  D:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Thu Mar 14 14:07:27 2019
+AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Mon Mar 18 19:14:26 2019
 
-[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
-[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+[builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+[builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
                                  
                                  
                                  
@@ -1857,7 +1857,7 @@ AVRASM ver. 2.2.7  D:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
                                  .equ o_a_len = 15
                                  .equ floor = 3
                                  ; 0 - DOWN, 1 - UP
-                                 .equ direction = 1
+                                 .equ direction = 0
                                  
                                  .dseg 
                                  .org 0x300
