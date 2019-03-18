@@ -65,7 +65,7 @@ main:
 	ldi XH, high(output_array)
 	
 	ldi r20, floor				; register for input floor
-	ldi r21, direction			; register for direction of travel (UP/DOWN)
+	;ldi r21, direction			; register for direction of travel (UP/DOWN)
 
 load_loop:
 	cpi r16, i_a_len			; check if all inital array elements have been loaded by comparing with initial len
@@ -196,7 +196,7 @@ up_descending_loop:
 
 
 down_search:
-	cp r20, r17
+	cp r20, r17			; compare current floor < input floor
 	brlt down_ascending_loop
 down_descending_loop:
 	cp r18, r16			; compare counter to len (check if end of list reached)
