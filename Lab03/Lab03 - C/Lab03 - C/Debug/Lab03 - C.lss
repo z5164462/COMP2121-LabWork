@@ -1,8 +1,8 @@
 
-AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Thu Mar 14 10:51:39 2019
+AVRASM ver. 2.2.7  D:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Thu Mar 14 14:07:27 2019
 
-[builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
-[builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+[builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
                                  
                                  
                                  
@@ -1852,10 +1852,11 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
                                  ; Author : andrudh
                                  ;
                                  
-                                 .equ i_a_len = 6
-                                 .equ e_a_len = 2
+                                 .equ i_a_len = 0
+                                 .equ e_a_len = 4
                                  .equ o_a_len = 15
-                                 .equ floor = 1
+                                 .equ floor = 3
+                                 ; 0 - DOWN, 1 - UP
                                  .equ direction = 1
                                  
                                  .dseg 
@@ -1866,23 +1867,23 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
                                  ; set up initial input array, and the enter array
                                  .cseg
                                  	
-000000 c008                      	rjmp main
+000000 c004                      	rjmp main
                                  
                                  	initial_array:
-000001 0002                      				.dw 2
-000002 0003                      				.dw 3
-000003 0004                      				.dw 4
-000004 000a                      				.dw 10
-000005 000b                      				.dw 11
-000006 000f                      				.dw 15
+                                 				;.dw 5
+                                 				;.dw 7
+                                 				;.dw 8
+                                 				;.dw 1
+                                 				;.dw 11
+                                 				;.dw 15
                                  
                                  
                                  
                                  	enter_array:
-000007 000d                      				.dw 13
-000008 0004                      				.dw 4
-                                 
-                                 
+000001 0002                      				.dw 2
+000002 0005                      				.dw 5
+000003 0004                      				.dw 4
+000004 0001                      				.dw 1
                                  
                                  
                                  
@@ -1890,55 +1891,55 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
                                  
                                  ; Replace with your application code
                                  main:
-000009 efce                      	ldi YL, low(RAMEND - 1)		;carve out space on the stack for 1 short int (1 byte), len
-00000a e2d1                      	ldi YH, high(RAMEND - 1)	; Y = SP,  int len
-00000b bfcd                          out SPL, YL					
-00000c bfde                      	out SPH, YH
+000005 efce                      	ldi YL, low(RAMEND - 1)		;carve out space on the stack for 1 short int (1 byte), len
+000006 e2d1                      	ldi YH, high(RAMEND - 1)	; Y = SP,  int len
+000007 bfcd                          out SPL, YL					
+000008 bfde                      	out SPH, YH
                                  		
-00000d 2700                      	clr r16					;len = 0
-00000e 2711                      	clr r17					;
-00000f 8309                      	std Y+1, r16			;store inside stack frame		
+000009 2700                      	clr r16					;len = 0
+00000a 2711                      	clr r17					;
+00000b 8309                      	std Y+1, r16			;store inside stack frame		
                                  
-000010 e0e2                      	ldi ZL, low(initial_array<<1)	;load Z with the address from the program memory
-000011 e0f0                      	ldi ZH, high(initial_array<<1)
+00000c e0e2                      	ldi ZL, low(initial_array<<1)	;load Z with the address from the program memory
+00000d e0f0                      	ldi ZH, high(initial_array<<1)
                                  
                                  
-000012 e0a0                      	ldi XL, low(output_array)	; load X with address for output
-000013 e0b3                      	ldi XH, high(output_array)
+00000e e0a0                      	ldi XL, low(output_array)	; load X with address for output
+00000f e0b3                      	ldi XH, high(output_array)
                                  	
-000014 e041                      	ldi r20, floor				; register for input floor
-000015 e051                      	ldi r21, direction			; register for direction of travel (UP/DOWN)
+000010 e043                      	ldi r20, floor				; register for input floor
+                                 	;ldi r21, direction			; register for direction of travel (UP/DOWN)
                                  
                                  load_loop:
-000016 3006                      	cpi r16, i_a_len			; check if all inital array elements have been loaded by comparing with initial len
-000017 f021                      	breq end_load_loop
-000018 9114                      	lpm r17, Z					; load next inital array element
-000019 9632                      	adiw Z, 2					; increment to next array element (Add 2 because word)
+000011 3000                      	cpi r16, i_a_len			; check if all inital array elements have been loaded by comparing with initial len
+000012 f021                      	breq end_load_loop
+000013 9114                      	lpm r17, Z					; load next inital array element
+000014 9632                      	adiw Z, 2					; increment to next array element (Add 2 because word)
                                  
-00001a d00e                      	rcall insert_request
+000015 d00e                      	rcall insert_request
                                  
-00001b cffa                      	rjmp load_loop
+000016 cffa                      	rjmp load_loop
                                  
                                  end_load_loop:
                                  	
-00001c e0ee                      	ldi ZL, low(enter_array<<1)	  ; load Z with the address from the program memory (reset pointer location to beginning)
-00001d e0f0                      	ldi ZH, high(enter_array<<1)
+000017 e0e2                      	ldi ZL, low(enter_array<<1)	  ; load Z with the address from the program memory (reset pointer location to beginning)
+000018 e0f0                      	ldi ZH, high(enter_array<<1)
                                  
-00001e 2766                      	clr r22	; clear enter_array_counter
+000019 2766                      	clr r22	; clear enter_array_counter
                                  enter_loop:
                                  
-00001f 3062                      	cpi r22, e_a_len			; check if all elements of enter array have been insterted
-000020 f039                      	breq end_enter_loop
-000021 9115                      	lpm r17, Z+					; insert next element from enter array
-000022 9631                      	adiw Z, 1
-000023 e0a0                      	ldi XL, low(output_array)	; load X with address of output array from program memory (reset pointer to beginning)
-000024 e0b3                      	ldi XH, high(output_array)
-000025 d003                      	rcall insert_request
-000026 9563                      	inc r22						; increment enter_array_counter
-000027 cff7                      	rjmp enter_loop
+00001a 3064                      	cpi r22, e_a_len			; check if all elements of enter array have been insterted
+00001b f039                      	breq end_enter_loop
+00001c 9115                      	lpm r17, Z+					; insert next element from enter array
+00001d 9631                      	adiw Z, 1
+00001e e0a0                      	ldi XL, low(output_array)	; load X with address of output array from program memory (reset pointer to beginning)
+00001f e0b3                      	ldi XH, high(output_array)
+000020 d003                      	rcall insert_request
+000021 9563                      	inc r22						; increment enter_array_counter
+000022 cff7                      	rjmp enter_loop
                                  
                                  	end_enter_loop:
-000028 cfff                      		rjmp end_enter_loop
+000023 cfff                      		rjmp end_enter_loop
                                  
                                  ;ASSUMPTION. List length fits in 1 byte, all inserted numbers fit inside 1 byte
                                  ;ASSUMPTION. If current floor is requested, request is ignored
@@ -1953,105 +1954,120 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
                                  
                                  insert_request:
                                  	;prologue
-000029 93cf                      	push YL
-00002a 93df                      	push YH
-00002b 931f                      	push r17
-00002c 932f                      	push r18
-00002d 933f                      	push r19
-00002e 934f                      	push r20
-00002f 935f                      	push r21
-000030 93af                      	push XL
-000031 93bf                      	push XH
-000032 b7cd                      	in YL, SPL
-000033 b7de                      	in YH, SPH
+000024 93cf                      	push YL
+000025 93df                      	push YH
+000026 931f                      	push r17
+000027 932f                      	push r18
+000028 933f                      	push r19
+000029 934f                      	push r20
+00002a 93af                      	push XL
+00002b 93bf                      	push XH
+00002c b7cd                      	in YL, SPL
+00002d b7de                      	in YH, SPH
                                  	
-000034 9721                      	sbiw Y, 1	;local counter
-000035 9726                      	sbiw Y, 6	;args Address(2), len, input_floor, current_floor, direction
-000036 bfcd                      	out SPL, YL
-000037 bfde                      	out SPH, YH
+00002e 9721                      	sbiw Y, 1	;local counter
+00002f 9726                      	sbiw Y, 6	;args Address(2), len, input_floor, current_floor, direction
+000030 bfcd                      	out SPL, YL
+000031 bfde                      	out SPH, YH
                                  
                                  
-000038 83b9                      	std Y+1, XH		;address
-000039 83aa                      	std Y+2, XL
-00003a 830b                      	std Y+3, r16	;len
-00003b 831c                      	std Y+4, r17	;input_floor
-00003c 834d                      	std Y+5, r20	;current_floor
-00003d 835e                      	std Y+6, r21	;direction
+000032 83b9                      	std Y+1, XH		;address
+000033 83aa                      	std Y+2, XL
+000034 830b                      	std Y+3, r16	;len
+000035 831c                      	std Y+4, r17	;input_floor
+000036 834d                      	std Y+5, r20	;current_floor
+000037 835e                      	std Y+6, r21	;direction
                                  
                                  	;end prologue
                                  		
                                  
                                  	;body
-00003e 2722                      	clr r18		;counter = 0
+000038 2722                      	clr r18		;counter = 0
                                  
-00003f 1714                      	cp r17, r20			; if input floor is current floor, quit request
-000040 f1d9                      	breq end_insert_request
                                  
-000041 3051                      	cpi r21, 1			; direction check: if direction register holds 1, do  up_search, else down_search
-000042 f009                      	breq up_search
-000043 c017                      	rjmp down_search
+                                 
+000039 1714                      	cp r17, r20			; if input floor is current floor, quit request
+00003a f041                      	breq skip_to_end
+00003b 1702                      	cp r16, r18			; check if initial len is 0
+00003c f009                      	breq decide_direction 
+00003d c006                      	rjmp skip
+                                 
+                                 decide_direction:
+00003e 2755                      	clr r21
+00003f 1714                      	cp r17, r20
+000040 f0ec                      	brlt down_search
+000041 e051                      	ldi r21, 1
+000042 c004                      	rjmp up_search
+                                 
+                                 skip_to_end:
+000043 c03b                      	rjmp end_insert_request
+                                 
+                                 skip:
+000044 3051                      	cpi r21, 1			; direction check: if direction register holds 1, do  up_search, else down_search
+000045 f009                      	breq up_search
+000046 c017                      	rjmp down_search
                                  
                                  
                                  up_search:
-000044 1714                      	cp r17, r20			; if input floor < current floor, jump to up_descending_loop, else up_ascending_loop
-000045 f05c                      	brlt up_descending_loop
+000047 1714                      	cp r17, r20			; if input floor < current floor, jump to up_descending_loop, else up_ascending_loop
+000048 f05c                      	brlt up_descending_loop
                                  up_ascending_loop:
-000046 1720                      	cp r18, r16			; compare counter to len (check if end of list reached)
-000047 f151                      	breq end_search
-000048 913c                      	ld r19, X			; load floor from output array
-000049 1713                      	cp r17, r19			; check if input floor already exists
-00004a f189                      	breq end_insert_request	; quit if it does
-00004b f138                      	brlo insert_start	; if input floor lower than ith floor, insert 
-00004c 1734                      	cp r19, r20			; compare ith floor to current floor
-00004d f128                      	brlo insert_start	; if ith < current, insert
-00004e 9611                      	adiw X, 1			; increment output array
-00004f 9523                      	inc r18				; increment counter
-000050 cff5                      	rjmp up_ascending_loop
+000049 1720                      	cp r18, r16			; compare counter to len (check if end of list reached)
+00004a f151                      	breq end_search
+00004b 913c                      	ld r19, X			; load floor from output array
+00004c 1713                      	cp r17, r19			; check if input floor already exists
+00004d f189                      	breq end_insert_request	; quit if it does
+00004e f138                      	brlo insert_start	; if input floor lower than ith floor, insert 
+00004f 1734                      	cp r19, r20			; compare ith floor to current floor
+000050 f128                      	brlo insert_start	; if ith < current, insert
+000051 9611                      	adiw X, 1			; increment output array
+000052 9523                      	inc r18				; increment counter
+000053 cff5                      	rjmp up_ascending_loop
                                  
                                  up_descending_loop:
-000051 1720                      	cp r18, r16			; compare counter to len (check if end of list reached)
-000052 f0f9                      	breq end_search		
-000053 913c                      	ld r19, X			; load floor from output array
-000054 1713                      	cp r17, r19			; check if input floor already exists
-000055 f131                      	breq end_insert_request	; quit if it does
-000056 1734                      	cp r19, r20			; compare ith floor to current floor
-000057 f018                      	brlo down_search	; if input floor < current floor and ith floor < current floor jmp to down search
-000058 9611                      	adiw X, 1			; increment output array
-000059 9523                      	inc r18				; increment counter
-00005a cff6                      	rjmp up_descending_loop
+000054 1720                      	cp r18, r16			; compare counter to len (check if end of list reached)
+000055 f0f9                      	breq end_search		
+000056 913c                      	ld r19, X			; load floor from output array
+000057 1713                      	cp r17, r19			; check if input floor already exists
+000058 f131                      	breq end_insert_request	; quit if it does
+000059 1734                      	cp r19, r20			; compare ith floor to current floor
+00005a f018                      	brlo down_search	; if input floor < current floor and ith floor < current floor jmp to down search
+00005b 9611                      	adiw X, 1			; increment output array
+00005c 9523                      	inc r18				; increment counter
+00005d cff6                      	rjmp up_descending_loop
                                  
                                  
                                  
                                  down_search:
-00005b 1741                      	cp r20, r17
-00005c f05c                      	brlt down_ascending_loop
+00005e 1741                      	cp r20, r17			; compare current floor < input floor
+00005f f05c                      	brlt down_ascending_loop
                                  down_descending_loop:
-00005d 1720                      	cp r18, r16			; compare counter to len (check if end of list reached)
-00005e f099                      	breq end_search		
-00005f 913c                      	ld r19, X			; load floor from output array
-000060 1731                      	cp r19, r17			; check if input floor already exists
-000061 f0d1                      	breq end_insert_request	; quit if it does
-000062 f080                      	brlo insert_start	; if current floor < input floor insert here
-000063 1743                      	cp r20, r19			; compare current floor to ith floor
-000064 f070                      	brlo insert_start	
-000065 9611                      	adiw X, 1			; increment output array
-000066 9523                      	inc r18				; increment counter
-000067 cff5                      	rjmp down_descending_loop
+000060 1720                      	cp r18, r16			; compare counter to len (check if end of list reached)
+000061 f099                      	breq end_search		
+000062 913c                      	ld r19, X			; load floor from output array
+000063 1731                      	cp r19, r17			; check if input floor already exists
+000064 f0d1                      	breq end_insert_request	; quit if it does
+000065 f080                      	brlo insert_start	; if current floor < input floor insert here
+000066 1743                      	cp r20, r19			; compare current floor to ith floor
+000067 f070                      	brlo insert_start	
+000068 9611                      	adiw X, 1			; increment output array
+000069 9523                      	inc r18				; increment counter
+00006a cff5                      	rjmp down_descending_loop
                                  
                                  down_ascending_loop:
-000068 1720                      	cp r18, r16			; compare counter to len (check if end of list reached)
-000069 f041                      	breq end_search		
-00006a 913c                      	ld r19, X			; load floor from output array
-00006b 1731                      	cp r19, r17			; check if input floor already exists
-00006c f079                      	breq end_insert_request	; quit if it does
-00006d 1743                      	cp r20, r19			; compare ith floor to current floor
-00006e f2a8                      	brlo up_search		; if ith floor > current and input floor > current floor, jmp to upsearch
-00006f 9611                      	adiw X, 1			; increment output array
-000070 9523                      	inc r18				; increment counter
-000071 cff6                      	rjmp down_ascending_loop
+00006b 1720                      	cp r18, r16			; compare counter to len (check if end of list reached)
+00006c f041                      	breq end_search		
+00006d 913c                      	ld r19, X			; load floor from output array
+00006e 1731                      	cp r19, r17			; check if input floor already exists
+00006f f079                      	breq end_insert_request	; quit if it does
+000070 1743                      	cp r20, r19			; compare ith floor to current floor
+000071 f2a8                      	brlo up_search		; if ith floor > current and input floor > current floor, jmp to upsearch
+000072 9611                      	adiw X, 1			; increment output array
+000073 9523                      	inc r18				; increment counter
+000074 cff6                      	rjmp down_ascending_loop
                                  
                                  end_search:
-000072 c000                      	rjmp insert_start
+000075 c000                      	rjmp insert_start
                                  
                                  
                                  
@@ -2072,38 +2088,37 @@ AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\m
                                  end_search_loop:*/
                                  	
                                  insert_start:	
-000073 9503                      	inc r16	;len++
+000076 9503                      	inc r16	;len++
                                  	
                                  
                                  insert_loop:
-000074 1720                      	cp r18, r16				; comparison of index and list length to check if the end of the list has been reached
-000075 f029                      	breq end_insert_loop	
-000076 931d                      	st X+, r17
-000077 2f13                      	mov r17, r19
-000078 913c                      	ld r19, X
-000079 9523                      	inc r18
-00007a cff9                      	rjmp insert_loop
+000077 1720                      	cp r18, r16				; comparison of index and list length to check if the end of the list has been reached
+000078 f029                      	breq end_insert_loop	
+000079 931d                      	st X+, r17
+00007a 2f13                      	mov r17, r19
+00007b 913c                      	ld r19, X
+00007c 9523                      	inc r18
+00007d cff9                      	rjmp insert_loop
                                  
                                  end_insert_loop:
-00007b 0000                      	nop
+00007e 0000                      	nop
                                  end_insert_request:
                                  
                                  
                                  
                                  	;epilogue
-00007c 9627                      	adiw Y, 7
-00007d bfde                      	out SPH, YH
-00007e bfcd                      	out SPL, YL
-00007f 91bf                      	pop XH
-000080 91af                      	pop XL
-000081 915f                      	pop r21
-000082 914f                      	pop r20
-000083 913f                      	pop r19
-000084 912f                      	pop r18
-000085 911f                      	pop r17
-000086 91df                      	pop YH
-000087 91cf                      	pop YL
-000088 9508                      	ret
+00007f 9627                      	adiw Y, 7
+000080 bfde                      	out SPH, YH
+000081 bfcd                      	out SPL, YL
+000082 91bf                      	pop XH
+000083 91af                      	pop XL
+000084 914f                      	pop r20
+000085 913f                      	pop r19
+000086 912f                      	pop r18
+000087 911f                      	pop r17
+000088 91df                      	pop YH
+000089 91cf                      	pop YL
+00008a 9508                      	ret
                                  	
                                  
                                  /*
@@ -2172,27 +2187,27 @@ counted separately from r26..r31 here.
 "ATmega2560" register use summary:
 x  :  10 y  :  10 z  :   4 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  10 r17:  15 r18:  13 r19:  16 r20:  11 
-r21:   5 r22:   3 r23:   0 r24:   0 r25:   0 r26:   5 r27:   5 r28:   7 
+r13:   0 r14:   0 r15:   0 r16:  11 r17:  16 r18:  14 r19:  16 r20:  12 
+r21:   4 r22:   3 r23:   0 r24:   0 r25:   0 r26:   5 r27:   5 r28:   7 
 r29:   7 r30:   2 r31:   2 
 Registers used: 16 out of 35 (45.7%)
 
 "ATmega2560" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   7 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   0 break :   0 breq  :  13 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   6 brlt  :   2 brmi  :   0 
+brcc  :   0 brcs  :   0 break :   0 breq  :  14 brge  :   0 brhc  :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   6 brlt  :   3 brmi  :   0 
 brne  :   0 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   4 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :  16 cpc   :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   5 cls   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :  18 cpc   :   0 
 cpi   :   3 cpse  :   0 dec   :   0 eicall:   0 eijmp :   0 elpm  :   0 
 eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
 in    :   2 inc   :   7 jmp   :   0 ld    :   5 ldd   :   0 ldi   :  12 
 lds   :   0 lpm   :   3 lsl   :   0 lsr   :   0 mov   :   1 movw  :   0 
 mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   :   1 or    :   0 
-ori   :   0 out   :   6 pop   :   9 push  :   9 rcall :   2 ret   :   1 
-reti  :   0 rjmp  :  11 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 
+ori   :   0 out   :   6 pop   :   8 push  :   8 rcall :   2 ret   :   1 
+reti  :   0 rjmp  :  14 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 
 sbi   :   0 sbic  :   0 sbis  :   0 sbiw  :   2 sbr   :   0 sbrc  :   0 
 sbrs  :   0 sec   :   0 seh   :   0 sei   :   0 sen   :   0 ser   :   0 
 ses   :   0 set   :   0 sev   :   0 sez   :   0 sleep :   0 spm   :   0 
@@ -2203,7 +2218,7 @@ Instructions used: 23 out of 116 (19.8%)
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000112    258     16    274  262144   0.1%
+[.cseg] 0x000000 0x000116    270      8    278  262144   0.1%
 [.dseg] 0x000200 0x00030f      0     15     15    8192   0.2%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 

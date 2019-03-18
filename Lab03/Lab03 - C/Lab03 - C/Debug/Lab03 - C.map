@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Thu Mar 14 10:51:39 2019
+AVRASM ver. 2.2.7  D:\19t1\COMP2121\COMP2121-LabWork\Lab03\Lab03 - C\Lab03 - C\main.asm Thu Mar 14 14:07:27 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1359,28 +1359,31 @@ EQU  URXC3addr    0000006c
 EQU  UDRE3addr    0000006e
 EQU  UTXC3addr    00000070
 EQU  INT_VECTORS_SIZE 00000072
-EQU  i_a_len      00000006
-EQU  e_a_len      00000002
+EQU  i_a_len      00000000
+EQU  e_a_len      00000004
 EQU  o_a_len      0000000f
-EQU  floor        00000001
+EQU  floor        00000003
 EQU  direction    00000001
 DSEG output_array 00000300
-CSEG main         00000009
+CSEG main         00000005
 CSEG initial_array 00000001
-CSEG enter_array  00000007
-CSEG load_loop    00000016
-CSEG end_load_loop 0000001c
-CSEG insert_request 00000029
-CSEG enter_loop   0000001f
-CSEG end_enter_loop 00000028
-CSEG end_insert_request 0000007c
-CSEG up_search    00000044
-CSEG down_search  0000005b
-CSEG up_descending_loop 00000051
-CSEG up_ascending_loop 00000046
-CSEG end_search   00000072
-CSEG insert_start 00000073
-CSEG down_ascending_loop 00000068
-CSEG down_descending_loop 0000005d
-CSEG insert_loop  00000074
-CSEG end_insert_loop 0000007b
+CSEG enter_array  00000001
+CSEG load_loop    00000011
+CSEG end_load_loop 00000017
+CSEG insert_request 00000024
+CSEG enter_loop   0000001a
+CSEG end_enter_loop 00000023
+CSEG skip_to_end  00000043
+CSEG decide_direction 0000003e
+CSEG skip         00000044
+CSEG down_search  0000005e
+CSEG up_search    00000047
+CSEG end_insert_request 0000007f
+CSEG up_descending_loop 00000054
+CSEG up_ascending_loop 00000049
+CSEG end_search   00000075
+CSEG insert_start 00000076
+CSEG down_ascending_loop 0000006b
+CSEG down_descending_loop 00000060
+CSEG insert_loop  00000077
+CSEG end_insert_loop 0000007e

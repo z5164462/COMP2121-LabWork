@@ -9,8 +9,8 @@
 ; Author : andrudh
 ;
 
-.equ i_a_len = 6
-.equ e_a_len = 2
+.equ i_a_len = 0
+.equ e_a_len = 4
 .equ o_a_len = 15
 .equ floor = 3
 ; 0 - DOWN, 1 - UP
@@ -27,20 +27,20 @@
 	rjmp main
 
 	initial_array:
-				.dw 5
-				.dw 7
-				.dw 8
-				.dw 1
+				;.dw 5
+				;.dw 7
+				;.dw 8
+				;.dw 1
 				;.dw 11
 				;.dw 15
 
 
 
 	enter_array:
-				.dw 10
-				.dw 6
-				.dw 7
-
+				.dw 2
+				.dw 5
+				.dw 4
+				.dw 1
 
 
 
@@ -65,7 +65,7 @@ main:
 	ldi XH, high(output_array)
 	
 	ldi r20, floor				; register for input floor
-	ldi r21, direction			; register for direction of travel (UP/DOWN)
+	;ldi r21, direction			; register for direction of travel (UP/DOWN)
 
 load_loop:
 	cpi r16, i_a_len			; check if all inital array elements have been loaded by comparing with initial len
@@ -117,7 +117,6 @@ insert_request:
 	push r18
 	push r19
 	push r20
-	push r21
 	push XL
 	push XH
 	in YL, SPL
@@ -142,9 +141,25 @@ insert_request:
 	;body
 	clr r18		;counter = 0
 
-	cp r17, r20			; if input floor is current floor, quit request
-	breq end_insert_request
 
+
+	cp r17, r20			; if input floor is current floor, quit request
+	breq skip_to_end
+	cp r16, r18			; check if initial len is 0
+	breq decide_direction 
+	rjmp skip
+
+decide_direction:
+	clr r21
+	cp r17, r20
+	brlt down_search
+	ldi r21, 1
+	rjmp up_search
+
+skip_to_end:
+	rjmp end_insert_request
+
+skip:
 	cpi r21, 1			; direction check: if direction register holds 1, do  up_search, else down_search
 	breq up_search
 	rjmp down_search
@@ -181,7 +196,7 @@ up_descending_loop:
 
 
 down_search:
-	cp r20, r17
+	cp r20, r17			; compare current floor < input floor
 	brlt down_ascending_loop
 down_descending_loop:
 	cp r18, r16			; compare counter to len (check if end of list reached)
@@ -254,7 +269,6 @@ end_insert_request:
 	out SPL, YL
 	pop XH
 	pop XL
-	pop r21
 	pop r20
 	pop r19
 	pop r18
