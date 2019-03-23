@@ -1,0 +1,43 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.7</VERSION>
+ <DEVICE>"ATmega2560"</DEVICE>
+ <WORKING_DIR>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
+  <DIR>D:\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\Debug\Lab05 - B.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>Lab05 - B.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>Lab05 - B.map</FILE>
+  <FILE>Lab05 - B.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <Count><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>15</LINE></Count>
+  <Seconds><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>17</LINE></Seconds>
+  <RESET><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>28</LINE></RESET>
+  <Timer0OVF><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>62</LINE></Timer0OVF>
+  <main><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>102</LINE></main>
+  <Not_second><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>89</LINE></Not_second>
+  <End_I><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>93</LINE></End_I>
+  <show_floor><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>136</LINE></show_floor>
+  <wait_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>106</LINE></wait_loop>
+  <next><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>116</LINE></next>
+  <move><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>120</LINE></move>
+  <end_main><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>129</LINE></end_main>
+  <loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>149</LINE></loop>
+  <end_show_floor><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>165</LINE></end_show_floor>
+  <grtr8><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>156</LINE></grtr8>
+  <end_x><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>159</LINE></end_x>
+  <exit><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - B\Lab05 - B\main.asm</FILE><LINE>184</LINE></exit>
+ </LABELS>
+</ASSEMBLER_INFO>
