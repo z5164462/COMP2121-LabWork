@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm Sat Mar 23 16:41:17 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm Sat Mar 23 17:32:51 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1361,27 +1361,29 @@ EQU  UTXC3addr    00000070
 EQU  INT_VECTORS_SIZE 00000072
 DEF  temp         r16
 DEF  zero         r3
+DEF  one          r4
 DEF  floor        r20
 DEF  direction    r21
 DEF  req_floor    r22
-EQU  clock_speed  00001e84
+EQU  clock_speed  0000030e
 DSEG Count        00000200
 DSEG Seconds      00000202
 CSEG RESET        00000033
-CSEG Timer0OVF    0000004f
+CSEG Timer0OVF    00000051
 CSEG Requests     00000030
-CSEG main         00000077
-CSEG Not_second   0000006c
-CSEG End_I        00000070
-CSEG show_floor   00000096
-CSEG wait_loop    0000007c
-CSEG stop_here    00000084
-CSEG moving       00000087
-CSEG next         0000008f
-CSEG move         00000092
-CSEG end_main     00000095
-CSEG loop         0000009f
-CSEG end_show_floor 000000a9
-CSEG grtr8        000000a5
-CSEG end_x        000000a7
-CSEG exit         000000b2
+CSEG main         00000079
+CSEG Not_second   0000006e
+CSEG End_I        00000072
+CSEG show_floor   000000a6
+CSEG wait_loop    00000080
+CSEG stop_here    00000088
+CSEG moving       00000096
+CSEG no_flash     00000092
+CSEG next         0000009f
+CSEG move         000000a2
+CSEG end_main     000000a5
+CSEG loop         000000af
+CSEG end_show_floor 000000b9
+CSEG grtr8        000000b5
+CSEG end_x        000000b7
+CSEG exit         000000c2

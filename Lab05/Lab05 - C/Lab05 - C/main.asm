@@ -8,11 +8,12 @@
 .include "m2560def.inc"
 .def temp = r16
 .def zero = r3
+.def one = r4
 .def floor = r20
 .def direction = r21
 .def req_floor = r22
 
-.equ clock_speed = 7812
+.equ clock_speed = 782
 
 .macro clear
 	sts @0, zero
@@ -47,6 +48,8 @@ RESET:
 	out SPH, r16
 
 	clr zero
+	clr one
+	inc one
 	ser r16
 	out DDRC, r16
 	out DDRG, r16
@@ -114,36 +117,50 @@ End_I:
 	reti
 
 main:
-	ldi floor, 1 ;this is the FlOoR <-------------------------------
-	ldi direction, 1
-	rcall show_floor
+	ldi floor, 1 ;this is the FlooR <-------------------------------
 	ldi ZL, low(Requests<<1)
 	ldi ZH, high(Requests<<1)
+	/*lpm req_floor, Z
+	cp floor, req_floor
+	brge */
 
+	ldi direction, 1
+	rcall show_floor
+	ldi r18, 1
+	ldi r19, 0b01010101
 wait_loop:
-
-
-
-
-
 
 	lpm req_floor, Z
 
 	lds r24, Seconds
 	cp floor, req_floor
+
 	breq stop_here
-	cpi r24, 2
+	cpi r24, 20
 
 	brne wait_loop
 	rjmp moving
 stop_here:
+	cp r24, r18
+	brne no_flash
+	push floor
+	ldi temp, 1
+	cpse one, temp
+	subi floor, 1
+	neg one
+	rcall show_floor
+	pop floor
+	subi r18, -1
 
-	cpi r24, 5
+no_flash:	
+	cpi r24, 50
 	brne wait_loop
+	mov floor, req_floor
 	adiw Z, 1
+
 moving:	
 	clear Seconds
-
+	ldi r18, 1
 	cpi floor, 10
 	brne next
 	ldi direction, -1
