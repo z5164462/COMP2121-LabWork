@@ -13,7 +13,7 @@
 .def direction = r21
 .def req_floor = r22
 
-.equ clock_speed = 782
+.equ clock_speed = 200//782
 
 .macro clear
 	sts @0, zero
@@ -42,16 +42,16 @@ Requests:
 	.db 4,7,9,2,1
 ; Replace with your application code
 RESET:
-	ldi r16, low(RAMEND)
+	ldi r16, low(RAMEND)	; Init stack frame
 	out SPL, r16
 	ldi r16, high(RAMEND)
 	out SPH, r16
 
-	clr zero
-	clr one
-	inc one
+	clr zero				; zero
+	clr one					
+	inc one					; one
 	ser r16
-	out DDRC, r16
+	out DDRC, r16			; Enabling Timer interrupt
 	out DDRG, r16
 	ldi r17, 0b01010101
 	ldi r18, 0b110001
@@ -78,22 +78,22 @@ RESET:
 
 
 Timer0OVF:
-	in temp, SREG
+	in temp, SREG		; stack frame for timer interrupt handler
 	push temp
 	push YH
 	push YL
 	push r25
 	push r24
 
-	lds r24, Count
+	lds r24, Count		; increment count
 	lds r25, Count + 1
 	adiw r25:r24, 1
 	
-	cpi r24, low(clock_speed)
+	cpi r24, low(clock_speed)	; compare with clock speed to check if 1/10 of second has passed
 	ldi temp, high(clock_speed)
 	cpc r25, temp
 	brne Not_second
-	lds r24, Seconds
+	lds r24, Seconds			; increment seconds every 1/10 of second
 	lds r25, Seconds+1
 
 
@@ -108,6 +108,7 @@ Not_second:
 	sts Count+1, r25 
 
 End_I:
+; Epilogue
 	pop r25
 	pop r24
 	pop YL
@@ -120,32 +121,34 @@ main:
 	ldi floor, 1 ;this is the FlooR <-------------------------------
 	ldi ZL, low(Requests<<1)
 	ldi ZH, high(Requests<<1)
-	/*lpm req_floor, Z
-	cp floor, req_floor
-	brge */
+	lpm req_floor, Z		; Load requested floor
 
 	ldi direction, 1
 	rcall show_floor
 	ldi r18, 1
-	ldi r19, 0b01010101
+
+
 wait_loop:
 
-	lpm req_floor, Z
 
+	cpi direction, 0
+	breq choose_direction
+
+
+check_count:
 	lds r24, Seconds
-	cp floor, req_floor
-
-	breq stop_here
-	cpi r24, 20
-
+	cp floor, req_floor		; compare current floor with requested floor
+	breq stop_here			; stop here if current = requested
+	cpi r24, 20				; check for 2 seconds
 	brne wait_loop
-	rjmp moving
+	rjmp choose_direction			; moving after 2 seconds
+
 stop_here:
-	cp r24, r18
+	cp r24, r18				; compare flash counter with timer
 	brne no_flash
-	push floor
+	push floor				; push floor to use in comparison later
 	ldi temp, 1
-	cpse one, temp
+	cpse one, temp			; check if one is 1
 	subi floor, 1
 	neg one
 	rcall show_floor
@@ -153,15 +156,14 @@ stop_here:
 	subi r18, -1
 
 no_flash:	
-	cpi r24, 50
+	cpi r24, 50				; check for 5 seconds
 	brne wait_loop
-	mov floor, req_floor
+	mov floor, req_floor	; put required floor back into floor for comparison
 	adiw Z, 1
+	lpm req_floor, Z		; load requested floor
 
-moving:	
-	clear Seconds
-	ldi r18, 1
-	cpi floor, 10
+
+/*	cpi floor, 10			
 	brne next
 	ldi direction, -1
 	rjmp move
@@ -169,6 +171,25 @@ next:
 	cpi floor, 1
 	brne move
 	ldi direction, 1
+move:*/
+choose_direction:
+	clear Seconds			; clear seconds after comparison passed
+	ldi r18, 1				; reset flash counter
+	cpi floor, 1
+	breq go_up
+	cpi floor, 10
+	breq go_down
+	cp req_floor, floor
+	brlt go_down
+	cp floor, req_floor
+	brlt go_up 
+
+	rjmp move
+go_up:
+	ldi direction, 1
+	rjmp move
+go_down:
+	ldi direction, -1
 move:
 	add floor, direction
 	rcall show_floor

@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm Sat Mar 23 17:32:51 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm Sat Mar 23 18:03:55 2019
 
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm(8): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
@@ -1901,7 +1901,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  .def direction = r21
                                  .def req_floor = r22
                                  
-                                 .equ clock_speed = 782
+                                 .equ clock_speed = 200//782
                                  
                                  .macro clear
                                  	sts @0, zero
@@ -1933,16 +1933,16 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
 000032 0001                      	.db 4,7,9,2,1
                                  ; Replace with your application code
                                  RESET:
-000033 ef0f                      	ldi r16, low(RAMEND)
+000033 ef0f                      	ldi r16, low(RAMEND)	; Init stack frame
 000034 bf0d                      	out SPL, r16
 000035 e201                      	ldi r16, high(RAMEND)
 000036 bf0e                      	out SPH, r16
                                  
-000037 2433                      	clr zero
-000038 2444                      	clr one
-000039 9443                      	inc one
+000037 2433                      	clr zero				; zero
+000038 2444                      	clr one					
+000039 9443                      	inc one					; one
 00003a ef0f                      	ser r16
-00003b b907                      	out DDRC, r16
+00003b b907                      	out DDRC, r16			; Enabling Timer interrupt
 00003c bb03                      	out DDRG, r16
 00003d e515                      	ldi r17, 0b01010101
 00003e e321                      	ldi r18, 0b110001
@@ -1969,22 +1969,22 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  
                                  
                                  Timer0OVF:
-000051 b70f                      	in temp, SREG
+000051 b70f                      	in temp, SREG		; stack frame for timer interrupt handler
 000052 930f                      	push temp
 000053 93df                      	push YH
 000054 93cf                      	push YL
 000055 939f                      	push r25
 000056 938f                      	push r24
                                  
-000057 9180 0200                 	lds r24, Count
+000057 9180 0200                 	lds r24, Count		; increment count
 000059 9190 0201                 	lds r25, Count + 1
 00005b 9601                      	adiw r25:r24, 1
                                  	
-00005c 308e                      	cpi r24, low(clock_speed)
-00005d e003                      	ldi temp, high(clock_speed)
+00005c 3c88                      	cpi r24, low(clock_speed)	; compare with clock speed to check if 1/10 of second has passed
+00005d e000                      	ldi temp, high(clock_speed)
 00005e 0790                      	cpc r25, temp
 00005f f471                      	brne Not_second
-000060 9180 0202                 	lds r24, Seconds
+000060 9180 0202                 	lds r24, Seconds			; increment seconds every 1/10 of second
 000062 9190 0203                 	lds r25, Seconds+1
                                  
                                  
@@ -2000,6 +2000,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
 000070 9390 0201                 	sts Count+1, r25 
                                  
                                  End_I:
+                                 ; Epilogue
 000072 919f                      	pop r25
 000073 918f                      	pop r24
 000074 91cf                      	pop YL
@@ -2012,67 +2013,87 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
 000079 e041                      	ldi floor, 1 ;this is the FlooR <-------------------------------
 00007a e6e0                      	ldi ZL, low(Requests<<1)
 00007b e0f0                      	ldi ZH, high(Requests<<1)
-                                 	/*lpm req_floor, Z
-                                 	cp floor, req_floor
-                                 	brge */
+00007c 9164                      	lpm req_floor, Z		; Load requested floor
                                  
-00007c e051                      	ldi direction, 1
-00007d d028                      	rcall show_floor
-00007e e021                      	ldi r18, 1
-00007f e535                      	ldi r19, 0b01010101
+00007d e051                      	ldi direction, 1
+00007e d02e                      	rcall show_floor
+00007f e021                      	ldi r18, 1
+                                 
+                                 
                                  wait_loop:
                                  
-000080 9164                      	lpm req_floor, Z
                                  
-000081 9180 0202                 	lds r24, Seconds
-000083 1746                      	cp floor, req_floor
+000080 3050                      	cpi direction, 0
+000081 f0b1                      	breq choose_direction
                                  
-000084 f019                      	breq stop_here
-000085 3184                      	cpi r24, 20
                                  
-000086 f7c9                      	brne wait_loop
-000087 c00e                      	rjmp moving
+                                 check_count:
+000082 9180 0202                 	lds r24, Seconds
+000084 1746                      	cp floor, req_floor		; compare current floor with requested floor
+000085 f019                      	breq stop_here			; stop here if current = requested
+000086 3184                      	cpi r24, 20				; check for 2 seconds
+000087 f7c1                      	brne wait_loop
+000088 c00f                      	rjmp choose_direction			; moving after 2 seconds
+                                 
                                  stop_here:
-000088 1782                      	cp r24, r18
-000089 f441                      	brne no_flash
-00008a 934f                      	push floor
-00008b e001                      	ldi temp, 1
-00008c 1240                      	cpse one, temp
-00008d 5041                      	subi floor, 1
-00008e 9441                      	neg one
-00008f d016                      	rcall show_floor
-000090 914f                      	pop floor
-000091 5f2f                      	subi r18, -1
+000089 1782                      	cp r24, r18				; compare flash counter with timer
+00008a f441                      	brne no_flash
+00008b 934f                      	push floor				; push floor to use in comparison later
+00008c e001                      	ldi temp, 1
+00008d 1240                      	cpse one, temp			; check if one is 1
+00008e 5041                      	subi floor, 1
+00008f 9441                      	neg one
+000090 d01c                      	rcall show_floor
+000091 914f                      	pop floor
+000092 5f2f                      	subi r18, -1
                                  
                                  no_flash:	
-000092 3382                      	cpi r24, 50
-000093 f761                      	brne wait_loop
-000094 2f46                      	mov floor, req_floor
-000095 9631                      	adiw Z, 1
+000093 3382                      	cpi r24, 50				; check for 5 seconds
+000094 f759                      	brne wait_loop
+000095 2f46                      	mov floor, req_floor	; put required floor back into floor for comparison
+000096 9631                      	adiw Z, 1
+000097 9164                      	lpm req_floor, Z		; load requested floor
                                  
-                                 moving:	
-000096 9230 0202
-000098 9230 0203                 	clear Seconds
-00009a e021                      	ldi r18, 1
-00009b 304a                      	cpi floor, 10
-00009c f411                      	brne next
-00009d ef5f                      	ldi direction, -1
-00009e c003                      	rjmp move
+                                 
+                                 /*	cpi floor, 10			
+                                 	brne next
+                                 	ldi direction, -1
+                                 	rjmp move
                                  next:
-00009f 3041                      	cpi floor, 1
-0000a0 f409                      	brne move
-0000a1 e051                      	ldi direction, 1
+                                 	cpi floor, 1
+                                 	brne move
+                                 	ldi direction, 1
+                                 move:*/
+                                 choose_direction:
+000098 9230 0202
+00009a 9230 0203                 	clear Seconds			; clear seconds after comparison passed
+00009c e021                      	ldi r18, 1				; reset flash counter
+00009d 3041                      	cpi floor, 1
+00009e f039                      	breq go_up
+00009f 304a                      	cpi floor, 10
+0000a0 f039                      	breq go_down
+0000a1 1764                      	cp req_floor, floor
+0000a2 f02c                      	brlt go_down
+0000a3 1746                      	cp floor, req_floor
+0000a4 f00c                      	brlt go_up 
+                                 
+0000a5 c003                      	rjmp move
+                                 go_up:
+0000a6 e051                      	ldi direction, 1
+0000a7 c001                      	rjmp move
+                                 go_down:
+0000a8 ef5f                      	ldi direction, -1
                                  move:
-0000a2 0f45                      	add floor, direction
-0000a3 d002                      	rcall show_floor
-0000a4 cfdb                      	rjmp wait_loop
+0000a9 0f45                      	add floor, direction
+0000aa d002                      	rcall show_floor
+0000ab cfd4                      	rjmp wait_loop
                                  
                                  
                                  
                                  	
                                  	
                                  end_main:	
-0000a5 cfff                      	rjmp end_main
+0000ac cfff                      	rjmp end_main
                                  
                                  
                                  
@@ -2080,44 +2101,44 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  ;input r20 = floor, output X = binary representation
                                  show_floor:
                                  ;prologue
-0000a6 93cf                      	push YL
-0000a7 93df                      	push YH
-0000a8 934f                      	push floor
-0000a9 92ff                      	push r15
-0000aa 93af                      	push XL
-0000ab 93bf                      	push XH
+0000ad 93cf                      	push YL
+0000ae 93df                      	push YH
+0000af 934f                      	push floor
+0000b0 92ff                      	push r15
+0000b1 93af                      	push XL
+0000b2 93bf                      	push XH
                                  
                                  
-0000ac 24ff                      	clr r15	; counter
-0000ad 27aa                      	clr XL	; output
-0000ae 27bb                      	clr XH
+0000b3 24ff                      	clr r15	; counter
+0000b4 27aa                      	clr XL	; output
+0000b5 27bb                      	clr XH
                                  loop:
-0000af 16f4                      	cp r15, floor
-0000b0 f041                      	breq end_show_floor
-0000b1 0faa                      	lsl XL
-0000b2 95a3                      	inc XL
-0000b3 f008                      	brcs grtr8
-0000b4 c002                      	rjmp end_x
+0000b6 16f4                      	cp r15, floor
+0000b7 f041                      	breq end_show_floor
+0000b8 0faa                      	lsl XL
+0000b9 95a3                      	inc XL
+0000ba f008                      	brcs grtr8
+0000bb c002                      	rjmp end_x
                                  grtr8:
-0000b5 0fbb                      	lsl XH
-0000b6 95b3                      	inc XH
+0000bc 0fbb                      	lsl XH
+0000bd 95b3                      	inc XH
                                  end_x:	
-0000b7 94f3                      	inc r15
-0000b8 cff6                      	rjmp loop
+0000be 94f3                      	inc r15
+0000bf cff6                      	rjmp loop
                                  
                                  
                                  ;epilogue
                                  end_show_floor:
-0000b9 bbb4                      	out PORTG, XH
-0000ba b9a8                      	out PORTC, XL
+0000c0 bbb4                      	out PORTG, XH
+0000c1 b9a8                      	out PORTC, XL
                                  
-0000bb 91bf                      pop XH
-0000bc 91af                      pop XL
-0000bd 90ff                      pop r15
-0000be 914f                      pop floor
-0000bf 91df                      pop YH
-0000c0 91cf                      pop YL
-0000c1 9508                      ret
+0000c2 91bf                      pop XH
+0000c3 91af                      pop XL
+0000c4 90ff                      pop r15
+0000c5 914f                      pop floor
+0000c6 91df                      pop YH
+0000c7 91cf                      pop YL
+0000c8 9508                      ret
                                  
                                  
                                  
@@ -2127,7 +2148,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  
                                  
                                  exit:
-0000c2 cfff                      	rjmp exit
+0000c9 cfff                      	rjmp exit
 
 
 RESOURCE USE INFORMATION
@@ -2145,40 +2166,40 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega2560" register use summary:
-x  :   0 y  :   0 z  :   2 r0 :   0 r1 :   0 r2 :   0 r3 :   5 r4 :   4 
+x  :   0 y  :   0 z  :   3 r0 :   0 r1 :   0 r2 :   0 r3 :   5 r4 :   4 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   5 r16:  26 r17:   2 r18:   6 r19:   1 r20:  12 
-r21:   4 r22:   3 r23:   0 r24:  13 r25:   9 r26:   6 r27:   6 r28:   4 
+r13:   0 r14:   0 r15:   5 r16:  26 r17:   2 r18:   6 r19:   0 r20:  14 
+r21:   5 r22:   6 r23:   0 r24:  13 r25:   9 r26:   6 r27:   6 r28:   4 
 r29:   4 r30:   1 r31:   1 
-Registers used: 19 out of 35 (54.3%)
+Registers used: 18 out of 35 (51.4%)
 
 "ATmega2560" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   1 adiw  :   3 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   0 brcs  :   1 break :   0 breq  :   2 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   0 brmi  :   0 
-brne  :   6 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brcc  :   0 brcs  :   1 break :   0 breq  :   5 brge  :   0 brhc  :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   2 brmi  :   0 
+brne  :   4 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   5 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   3 cpc   :   1 
-cpi   :   5 cpse  :   1 dec   :   0 eicall:   0 eijmp :   0 elpm  :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   5 cpc   :   1 
+cpi   :   6 cpse  :   1 dec   :   0 eicall:   0 eijmp :   0 elpm  :   0 
 eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
-in    :   2 inc   :   4 jmp   :   2 ld    :   0 ldd   :   0 ldi   :  19 
-lds   :   5 lpm   :   2 lsl   :   2 lsr   :   0 mov   :   1 movw  :   0 
+in    :   2 inc   :   4 jmp   :   2 ld    :   0 ldd   :   0 ldi   :  18 
+lds   :   5 lpm   :   4 lsl   :   2 lsr   :   0 mov   :   1 movw  :   0 
 mul   :   0 muls  :   0 mulsu :   0 neg   :   1 nop   :   0 or    :   0 
 ori   :   1 out   :  12 pop   :  12 push  :  12 rcall :   3 ret   :   1 
-reti  :   1 rjmp  :   9 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 
+reti  :   1 rjmp  :  10 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 
 sbi   :   0 sbic  :   0 sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   0 
 sbrs  :   0 sec   :   0 seh   :   0 sei   :   1 sen   :   0 ser   :   1 
 ses   :   0 set   :   0 sev   :   0 sez   :   0 sleep :   0 spm   :   0 
 st    :   0 std   :   0 sts   :  10 sub   :   0 subi  :   2 swap  :   0 
 tst   :   0 wdr   :   0 
-Instructions used: 31 out of 116 (26.7%)
+Instructions used: 32 out of 116 (27.6%)
 
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000186    294      6    300  262144   0.1%
+[.cseg] 0x000000 0x000194    308      6    314  262144   0.1%
 [.dseg] 0x000200 0x000204      0      4      4    8192   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 
