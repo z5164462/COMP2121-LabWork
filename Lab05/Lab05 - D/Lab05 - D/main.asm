@@ -13,7 +13,8 @@
 .def direction = r21
 .def req_floor = r22
 
-.equ clock_speed = 200//782
+.equ clock_speed = 782
+.equ wait_speed = 1
 
 .macro clear
 	sts @0, zero
@@ -25,17 +26,27 @@ Count:
 	.byte 2
 Seconds:
 	.byte 2
+Moving_flag:
+	.byte 1
+Debounce:
+	.byte 1
+Wait_duration:
+	.byte 1
 
 .cseg
 
 
 .org 0x0000 ; reset adress
-rjmp RESET
+	jmp RESET
 
-
+.org INT0addr
+	jmp EXT_INT0
+.org INT1addr
+	jmp EXT_INT1
 
 .org OVF0addr
 	jmp Timer0OVF
+
 
 
 Requests:
@@ -62,6 +73,7 @@ RESET:
 
 	in r16, EIMSK
 	ori r16, (1<<INT0)
+	ori r16, (1<<INT1)
 	out EIMSK, r16
 	
 	ldi temp, 0b00000000
@@ -74,6 +86,67 @@ RESET:
 
 	sei
 	jmp main 
+
+EXT_INT0:
+	push temp
+	in temp, SREG
+	push temp
+	push r24
+	push r25
+	
+	lds temp, Moving_flag
+	cpi temp, 1
+	breq INT0_END
+
+	lds r24, Seconds
+	lds r25, Debounce
+	subi r25, -1
+	cp r25, r24
+	brge INT0_END
+
+	ldi temp, 1
+	out PORTG, temp
+/*	ldi temp, 0
+	sts Wait_duration, temp*/
+
+INT0_END:
+	sts Debounce, r24
+	pop r25
+	pop r24
+	pop temp
+	out SREG, temp
+	pop temp
+	reti
+
+
+EXT_INT1:
+	push temp
+	in temp, SREG
+	push temp
+	
+	lds temp, Moving_flag
+	cpi temp, 1
+	breq INT1_END
+	
+	lds r24, Seconds
+	lds r25, Debounce
+	subi r25, -1
+	cp r25, r24
+	brge INT1_END
+	
+/*
+	lds temp, Wait_duration
+	subi temp, -100
+	sts Wait_duration, temp*/
+	ldi temp, 2
+	out PORTG, temp
+
+INT1_END:
+	pop temp
+	out SREG, temp
+	pop temp
+	reti
+
 
 
 
@@ -117,6 +190,10 @@ End_I:
 	out SREG, temp
 	reti
 
+
+
+
+
 main:
 	ldi floor, 1 ;this is the FlooR <-------------------------------
 	ldi ZL, low(Requests<<1)
@@ -125,7 +202,11 @@ main:
 
 	ldi direction, 1
 	rcall show_floor
-	ldi r18, 1
+	ldi r18, wait_speed
+	ldi temp, 1
+	sts Moving_flag, temp
+	ldi temp, 30
+	sts Wait_duration, temp
 
 
 wait_loop:
@@ -140,10 +221,12 @@ check_count:
 	cp floor, req_floor		; compare current floor with requested floor
 	breq stop_here			; stop here if current = requested
 	cpi r24, 20				; check for 2 seconds
-	brne wait_loop
+	brlt wait_loop
 	rjmp choose_direction			; moving after 2 seconds
 
 stop_here:
+	clr temp
+	sts Moving_flag, temp
 	cp r24, r18				; compare flash counter with timer
 	brne no_flash
 	push floor				; push floor to use in comparison later
@@ -153,31 +236,27 @@ stop_here:
 	neg one
 	rcall show_floor
 	pop floor
-	subi r18, -1
+	subi r18, -wait_speed
 
-no_flash:	
-	cpi r24, 50				; check for 5 seconds
-	brne wait_loop
+no_flash:
+	lds temp, Wait_duration	
+	cp r24, temp			; check for wait_duration (default is 5 sec unless extended)
+	brlt wait_loop
 	mov floor, req_floor	; put required floor back into floor for comparison
 	adiw Z, 1
 	lpm req_floor, Z		; load requested floor
+	ldi temp, 1
+	sts Moving_flag, temp
 
 
-/*	cpi floor, 10			
-	brne next
-	ldi direction, -1
-	rjmp move
-next:
-	cpi floor, 1
-	brne move
-	ldi direction, 1
-move:*/
 choose_direction:
 	clear Seconds			; clear seconds after comparison passed
-	ldi r18, 1				; reset flash counter
+	ldi temp, 30
+	sts Wait_duration, temp
+	ldi r18, wait_speed				; reset flash counter
 	cpi floor, 1
 	breq go_up
-	cpi floor, 10
+	cpi floor, 30
 	breq go_down
 	cp req_floor, floor
 	brlt go_down
