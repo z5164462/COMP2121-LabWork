@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - D\Lab05 - D\main.asm Sun Mar 24 23:11:55 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - D\Lab05 - D\main.asm Mon Mar 25 21:56:46 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1365,6 +1365,7 @@ DEF  one          r4
 DEF  floor        r20
 DEF  direction    r21
 DEF  req_floor    r22
+DEF  data         r23
 EQU  clock_speed  0000030e
 EQU  wait_speed   00000001
 DSEG Count        00000200
@@ -1375,25 +1376,25 @@ DSEG Wait_duration 00000206
 CSEG RESET        00000033
 CSEG EXT_INT0     00000052
 CSEG EXT_INT1     0000006c
-CSEG Timer0OVF    00000080
+CSEG Timer0OVF    00000085
 CSEG Requests     00000030
-CSEG main         000000a8
+CSEG main         000000ad
 CSEG INT0_END     00000064
-CSEG INT1_END     0000007c
-CSEG Not_second   0000009d
-CSEG End_I        000000a1
-CSEG show_floor   000000ed
-CSEG wait_loop    000000b5
-CSEG choose_direction 000000d5
-CSEG check_count  000000b7
-CSEG stop_here    000000be
-CSEG no_flash     000000cb
-CSEG go_up        000000e6
-CSEG go_down      000000e8
-CSEG move         000000e9
-CSEG end_main     000000ec
-CSEG loop         000000f6
-CSEG end_show_floor 00000100
-CSEG grtr8        000000fc
-CSEG end_x        000000fe
-CSEG exit         00000109
+CSEG INT1_END     0000007d
+CSEG Not_second   000000a2
+CSEG End_I        000000a6
+CSEG show_floor   000000f7
+CSEG wait_loop    000000ba
+CSEG choose_direction 000000dd
+CSEG check_count  000000bc
+CSEG stop_here    000000c5
+CSEG no_flash     000000d4
+CSEG go_up        000000ee
+CSEG go_down      000000f0
+CSEG move         000000f1
+CSEG end_main     000000f6
+CSEG loop         00000100
+CSEG end_show_floor 0000010a
+CSEG grtr8        00000106
+CSEG end_x        00000108
+CSEG exit         00000113

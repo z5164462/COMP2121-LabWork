@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - D\Lab05 - D\main.asm Sun Mar 24 23:11:55 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - D\Lab05 - D\main.asm Mon Mar 25 21:56:46 2019
 
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - D\Lab05 - D\main.asm(8): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
@@ -1900,9 +1900,83 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  .def floor = r20
                                  .def direction = r21
                                  .def req_floor = r22
+                                 .def data = r23
+                                 
+                                 
                                  
                                  .equ clock_speed = 782
                                  .equ wait_speed = 1
+                                 
+                                 /*;taken from lectures
+                                 
+                                 ; Register data stores value to be written to the LCD; Port D is output and connects to LCD; Port A controls the LCD.; Assume all other labels are pre-defined.
+                                 .macro lcd_write_com 
+                                 	out PORTD, data; set the data port's value up
+                                 	clr temp
+                                 	out PORTA, temp; RS = 0, RW = 0 for a command write
+                                 	nop; delay to meet timing (Set up time)
+                                 	sbi PORTA, LCD_E; turn on the enable pin
+                                 	nop; delay to meet timing (Enable pulse width)
+                                 	nop
+                                 	nop
+                                 	cbi PORTA, LCD_E; turn off the enable	pin
+                                 	nop; delay to meet timing (Enable cycle time)
+                                 	nop
+                                 	nop
+                                 .endmacro
+                                 
+                                 .macro lcd_write_data
+                                 	out PORTD, data; set the data port's value up
+                                 	ldi temp, 1<<LCD_RS
+                                 	out PORTA, temp; RS = 0, RW = 0 for a command write
+                                 	nop; delay to meet timing (Set up time)
+                                 	sbi PORTA, LCD_E; turn on the enable pin
+                                 	nop; delay to meet timing (Enable pulse width)
+                                 	nop
+                                 	nop
+                                 	cbi PORTA, LCD_E; turn off the enable	pin
+                                 	nop; delay to meet timing (Enable cycle time)
+                                 	nop
+                                 	nop
+                                 .endmacro
+                                 
+                                 .macro lcd_wait_busy
+                                 	clr temp
+                                 	out DDRD, temp; Make PORTD be an input port for now
+                                 	out PORTD, temp
+                                 	ldi temp, 1 << LCD_RW
+                                 	out PORTA, temp; RS = 0, RW = 1 for a command port read
+                                 busy_loop:
+                                 	nop; delay to meet set-up time)
+                                 	sbi PORTA, LCD_E; turn on the enable pin
+                                 	nop; delay to meet timing (Data delay time)
+                                 	nop
+                                 	nop
+                                 	in temp, PIND; read value from LCD
+                                 	cbi PORTA, LCD_E; turn off the enable pin
+                                 	sbrc temp, LCD_BF; if the busy flag is set
+                                 	rjmp busy_loop; repeat command read
+                                 	clr temp; else
+                                 	out PORTA, temp; turn off read mode,
+                                 	ser temp; 
+                                 	out DDRD, temp; make PORTD an output port again
+                                 .endmacro
+                                 
+                                 .macro delay
+                                 loop:
+                                 	subi ZL, 1
+                                 	sbci ZH, 0
+                                 	nop
+                                 	nop
+                                 	nop
+                                 	nop
+                                 	brne loop; taken branch takes two cycles.  ; one loop time is 8 cycles = ~1.08us
+                                 .endmacro
+                                 
+                                 
+                                 
+                                 */
+                                 
                                  
                                  .macro clear
                                  	sts @0, zero
@@ -1919,7 +1993,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  Debounce:
 000205                           	.byte 1
                                  Wait_duration:
-000206                           	.byte 1
+000206                           	.byte 2
                                  
                                  .cseg
                                  
@@ -1933,14 +2007,14 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
 000004 940c 006c                 	jmp EXT_INT1
                                  
                                  .org OVF0addr
-00002e 940c 0080                 	jmp Timer0OVF
+00002e 940c 0085                 	jmp Timer0OVF
                                  
                                  
                                  
                                  Requests:
 000030 0704
 000031 0209
-C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - D\Lab05 - D\main.asm(53): warning: .cseg .db misalignment - padding zero byte
+C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - D\Lab05 - D\main.asm(127): warning: .cseg .db misalignment - padding zero byte
 000032 0001                      	.db 4,7,9,2,1
                                  ; Replace with your application code
                                  RESET:
@@ -1974,9 +2048,45 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
 00004c e001                      	ldi temp, 1<<TOIE0
 00004d 9300 006e                 	sts TIMSK0, temp
                                  
+                                 /*//from lectures -- Set up LCD
+                                 
+                                 ldi ZL, low(15000); delay (>15ms)
+                                 ldi ZH, high(15000)
+                                 delay; Function set command with N = 1 and F = 0; for 2 line display and 5*7 font. The 1st command
+                                 ldi data, LCD_FUNC_SET | (1 << LCD_N) 
+                                 lcd_write_com 
+                                 ldi ZL, low(4100); delay (>4.1 ms)
+                                 ldi ZH, high(4100)
+                                 delay
+                                 lcd_write_com ; 2nd Function set command
+                                 
+                                 ldi ZL, low(100); delay (>100 ns)
+                                 ldi ZH, high(100)
+                                 delay
+                                 lcd_write_com ; 3rd Function set command
+                                 lcd_write_com ; Final Function set command
+                                 lcd_wait_busy; Wait until the LCD is ready
+                                 ldi data, LCD_DISP_OFF
+                                 lcd_write_com; Turn Display off
+                                 lcd_wait_busy; Wait until the LCD is ready
+                                 ldi data, LCD_DISP_CLR
+                                 lcd_write_com; Clear Display
+                                 
+                                 
+                                 lcd_wait_busy; Wait until the LCD is ready; Entry set command with I/D = 1 and S = 0
+                                 ; Set Entry mode: Increment = yes and Shift = no
+                                 ldi data, LCD_ENTRY_SET | (1 << LCD_ID) 
+                                 lcd_write_com
+                                 lcd_wait_busy; Wait until the LCD is ready
+                                 ; Display On command with C = 1 and B = 0
+                                 ldi data, LCD_DISP_ON | (1 << LCD_C)
+                                 lcd_write_com*/
+                                 
                                  
 00004f 9478                      	sei
-000050 940c 00a8                 	jmp main 
+000050 940c 00ad                 	jmp main 
+                                 
+                                 //-------------------------------------------------------------
                                  
                                  EXT_INT0:
 000052 930f                      	push temp
@@ -1995,10 +2105,10 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
 000060 1798                      	cp r25, r24
 000061 f414                      	brge INT0_END
                                  
-000062 e001                      	ldi temp, 1
-000063 bb04                      	out PORTG, temp
-                                 /*	ldi temp, 0
-                                 	sts Wait_duration, temp*/
+000062 27cc                      	clr YL
+000063 27dd                      	clr YH
+                                 
+                                 
                                  
                                  INT0_END:
 000064 9380 0205                 	sts Debounce, r24
@@ -2008,216 +2118,235 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
 000069 bf0f                      	out SREG, temp
 00006a 910f                      	pop temp
 00006b 9518                      	reti
-                                 
+                                 //-------------------------------------------------------------
                                  
                                  EXT_INT1:
 00006c 930f                      	push temp
 00006d b70f                      	in temp, SREG
 00006e 930f                      	push temp
+00006f 938f                      	push r24
+000070 939f                      	push r25
                                  	
-00006f 9100 0204                 	lds temp, Moving_flag
-000071 3001                      	cpi temp, 1
-000072 f049                      	breq INT1_END
-                                 	
-000073 9180 0202                 	lds r24, Seconds
-000075 9190 0205                 	lds r25, Debounce
-000077 5f9f                      	subi r25, -1
-000078 1798                      	cp r25, r24
-000079 f414                      	brge INT1_END
-                                 	
-                                 /*
-                                 	lds temp, Wait_duration
-                                 	subi temp, -100
-                                 	sts Wait_duration, temp*/
-00007a e002                      	ldi temp, 2
-00007b bb04                      	out PORTG, temp
+000071 9100 0204                 	lds temp, Moving_flag
+000073 3001                      	cpi temp, 1
+000074 f041                      	breq INT1_END
+                                 
+000075 9180 0202                 	lds r24, Seconds
+000077 9190 0206                 	lds r25, Debounce+1
+000079 5f9f                      	subi r25, -1
+00007a 1798                      	cp r25, r24
+00007b f40c                      	brge INT1_END
+                                 
+                                 
+00007c 966e                      	adiw Y, 30
+                                 
+                                 
                                  
                                  INT1_END:
-00007c 910f                      	pop temp
-00007d bf0f                      	out SREG, temp
-00007e 910f                      	pop temp
-00007f 9518                      	reti
+00007d 9380 0206                 	sts Debounce+1, r24
+00007f 919f                      	pop r25
+000080 918f                      	pop r24
+000081 910f                      	pop temp
+000082 bf0f                      	out SREG, temp
+000083 910f                      	pop temp
+000084 9518                      	reti
                                  
                                  
-                                 
+                                 //-------------------------------------------------------------
                                  
                                  Timer0OVF:
-000080 b70f                      	in temp, SREG		; stack frame for timer interrupt handler
-000081 930f                      	push temp
-000082 93df                      	push YH
-000083 93cf                      	push YL
-000084 939f                      	push r25
-000085 938f                      	push r24
+000085 b70f                      	in temp, SREG		; stack frame for timer interrupt handler
+000086 930f                      	push temp
+000087 93df                      	push YH
+000088 93cf                      	push YL
+000089 939f                      	push r25
+00008a 938f                      	push r24
                                  
-000086 9180 0200                 	lds r24, Count		; increment count
-000088 9190 0201                 	lds r25, Count + 1
-00008a 9601                      	adiw r25:r24, 1
+00008b 9180 0200                 	lds r24, Count		; increment count
+00008d 9190 0201                 	lds r25, Count + 1
+00008f 9601                      	adiw r25:r24, 1
                                  	
-00008b 308e                      	cpi r24, low(clock_speed)	; compare with clock speed to check if 1/10 of second has passed
-00008c e003                      	ldi temp, high(clock_speed)
-00008d 0790                      	cpc r25, temp
-00008e f471                      	brne Not_second
-00008f 9180 0202                 	lds r24, Seconds			; increment seconds every 1/10 of second
-000091 9190 0203                 	lds r25, Seconds+1
+000090 308e                      	cpi r24, low(clock_speed)	; compare with clock speed to check if 1/10 of second has passed
+000091 e003                      	ldi temp, high(clock_speed)
+000092 0790                      	cpc r25, temp
+000093 f471                      	brne Not_second
+000094 9180 0202                 	lds r24, Seconds			; increment seconds every 1/10 of second
+000096 9190 0203                 	lds r25, Seconds+1
                                  
                                  
-000093 9601                      	adiw r25:r24, 1
-000094 9380 0202                 	sts Seconds, r24
-000096 9390 0203                 	sts Seconds+1, r25
-000098 9230 0200
-00009a 9230 0201                 	clear Count
-00009c c004                      	rjmp End_I
+000098 9601                      	adiw r25:r24, 1
+000099 9380 0202                 	sts Seconds, r24
+00009b 9390 0203                 	sts Seconds+1, r25
+00009d 9230 0200
+00009f 9230 0201                 	clear Count
+0000a1 c004                      	rjmp End_I
                                  
                                  Not_second:
-00009d 9380 0200                 	sts Count, r24 
-00009f 9390 0201                 	sts Count+1, r25 
+0000a2 9380 0200                 	sts Count, r24 
+0000a4 9390 0201                 	sts Count+1, r25 
                                  
                                  End_I:
                                  ; Epilogue
-0000a1 919f                      	pop r25
-0000a2 918f                      	pop r24
-0000a3 91cf                      	pop YL
-0000a4 91df                      	pop YH
-0000a5 910f                      	pop temp
-0000a6 bf0f                      	out SREG, temp
-0000a7 9518                      	reti
+0000a6 919f                      	pop r25
+0000a7 918f                      	pop r24
+0000a8 91cf                      	pop YL
+0000a9 91df                      	pop YH
+0000aa 910f                      	pop temp
+0000ab bf0f                      	out SREG, temp
+0000ac 9518                      	reti
                                  
-                                 
+                                 //-------------------------------------------------------------
                                  
                                  
                                  
                                  main:
-0000a8 e041                      	ldi floor, 1 ;this is the FlooR <-------------------------------
-0000a9 e6e0                      	ldi ZL, low(Requests<<1)
-0000aa e0f0                      	ldi ZH, high(Requests<<1)
-0000ab 9164                      	lpm req_floor, Z		; Load requested floor
+0000ad e043                      	ldi floor, 3 ;this is the FlooR <-------------------------------
+0000ae e6e0                      	ldi ZL, low(Requests<<1)
+0000af e0f0                      	ldi ZH, high(Requests<<1)
+0000b0 9164                      	lpm req_floor, Z		; Load requested floor
                                  
-0000ac e051                      	ldi direction, 1
-0000ad d03f                      	rcall show_floor
-0000ae e021                      	ldi r18, wait_speed
-0000af e001                      	ldi temp, 1
-0000b0 9300 0204                 	sts Moving_flag, temp
-0000b2 e10e                      	ldi temp, 30
-0000b3 9300 0206                 	sts Wait_duration, temp
-                                 
+0000b1 e051                      	ldi direction, 1
+0000b2 d044                      	rcall show_floor
+0000b3 e021                      	ldi r18, wait_speed
+0000b4 e030                      	ldi r19, 0
+0000b5 e001                      	ldi temp, 1
+0000b6 9300 0204                 	sts Moving_flag, temp
+0000b8 e3c2                      	ldi YL, 50
+0000b9 e0d0                      	ldi YH, 0
+                                 	
                                  
                                  wait_loop:
                                  
+                                 /*	lds r24, Seconds
+                                 	lds r25, Seconds+1
+                                 	adiw r25:r24, 1
+                                 	sts Seconds, r24
+                                 	sts Seconds+1, r25*/
                                  
-0000b5 3050                      	cpi direction, 0
-0000b6 f0f1                      	breq choose_direction
+0000ba 3050                      	cpi direction, 0
+0000bb f109                      	breq choose_direction
                                  
                                  
                                  check_count:
-0000b7 9180 0202                 	lds r24, Seconds
-0000b9 1746                      	cp floor, req_floor		; compare current floor with requested floor
-0000ba f019                      	breq stop_here			; stop here if current = requested
-0000bb 3184                      	cpi r24, 20				; check for 2 seconds
-0000bc f3c4                      	brlt wait_loop
-0000bd c017                      	rjmp choose_direction			; moving after 2 seconds
+0000bc 91a0 0202                 	lds XL, Seconds
+0000be 91b0 0203                 	lds XH, Seconds+1
+0000c0 1746                      	cp floor, req_floor		; compare current floor with requested floor
+0000c1 f019                      	breq stop_here			; stop here if current = requested
+0000c2 31a4                      	cpi XL, 20				; check for 2 seconds
+0000c3 f3b4                      	brlt wait_loop
+0000c4 c018                      	rjmp choose_direction			; moving after 2 seconds
                                  
                                  stop_here:
-0000be 2700                      	clr temp
-0000bf 9300 0204                 	sts Moving_flag, temp
-0000c1 1782                      	cp r24, r18				; compare flash counter with timer
-0000c2 f441                      	brne no_flash
-0000c3 934f                      	push floor				; push floor to use in comparison later
-0000c4 e001                      	ldi temp, 1
-0000c5 1240                      	cpse one, temp			; check if one is 1
-0000c6 5041                      	subi floor, 1
-0000c7 9441                      	neg one
-0000c8 d024                      	rcall show_floor
-0000c9 914f                      	pop floor
-0000ca 5f2f                      	subi r18, -wait_speed
+0000c5 2700                      	clr temp
+0000c6 9300 0204                 	sts Moving_flag, temp
+0000c8 17a2                      	cp XL, r18				; compare flash counter with timer
+0000c9 07b3                      	cpc XH, r19
+0000ca f449                      	brne no_flash
+0000cb 934f                      	push floor				; push floor to use in comparison later
+0000cc e001                      	ldi temp, 1
+0000cd 1240                      	cpse one, temp			; check if one is 1
+0000ce 5041                      	subi floor, 1
+0000cf 9441                      	neg one
+0000d0 d026                      	rcall show_floor
+0000d1 914f                      	pop floor
+0000d2 5f2f                      	subi r18, -wait_speed
+0000d3 4f3f                      	sbci r19, -wait_speed
                                  
                                  no_flash:
-0000cb 9100 0206                 	lds temp, Wait_duration	
-0000cd 1780                      	cp r24, temp			; check for wait_duration (default is 5 sec unless extended)
-0000ce f334                      	brlt wait_loop
-0000cf 2f46                      	mov floor, req_floor	; put required floor back into floor for comparison
-0000d0 9631                      	adiw Z, 1
-0000d1 9164                      	lpm req_floor, Z		; load requested floor
-0000d2 e001                      	ldi temp, 1
-0000d3 9300 0204                 	sts Moving_flag, temp
+                                 
+0000d4 17ac                      	cp XL, YL
+0000d5 07bd                      	cpc XH, YH			; check for wait_duration (default is 5 sec unless extended)
+0000d6 f31c                      	brlt wait_loop
+0000d7 2f46                      	mov floor, req_floor	; put required floor back into floor for comparison
+0000d8 9631                      	adiw Z, 1
+0000d9 9164                      	lpm req_floor, Z		; load requested floor
+0000da e001                      	ldi temp, 1
+0000db 9300 0204                 	sts Moving_flag, temp
                                  
                                  
                                  choose_direction:
-0000d5 9230 0202
-0000d7 9230 0203                 	clear Seconds			; clear seconds after comparison passed
-0000d9 e10e                      	ldi temp, 30
-0000da 9300 0206                 	sts Wait_duration, temp
-0000dc e021                      	ldi r18, wait_speed				; reset flash counter
-0000dd 3041                      	cpi floor, 1
-0000de f039                      	breq go_up
-0000df 314e                      	cpi floor, 30
-0000e0 f039                      	breq go_down
-0000e1 1764                      	cp req_floor, floor
-0000e2 f02c                      	brlt go_down
-0000e3 1746                      	cp floor, req_floor
-0000e4 f00c                      	brlt go_up 
+0000dd 9230 0202
+0000df 9230 0203                 	clear Seconds			; clear seconds after comparison passed
+                                 	
+0000e1 e3c2                      	ldi YL, 50
+0000e2 e0d0                      	ldi YH, 0
                                  
-0000e5 c003                      	rjmp move
+                                 	
+0000e3 e021                      	ldi r18, wait_speed				; reset flash counter
+0000e4 e030                      	ldi r19, 0
+0000e5 3041                      	cpi floor, 1
+0000e6 f039                      	breq go_up
+0000e7 304a                      	cpi floor, 10
+0000e8 f039                      	breq go_down
+0000e9 1764                      	cp req_floor, floor
+0000ea f02c                      	brlt go_down
+0000eb 1746                      	cp floor, req_floor
+0000ec f00c                      	brlt go_up 
+                                 
+0000ed c003                      	rjmp move
                                  go_up:
-0000e6 e051                      	ldi direction, 1
-0000e7 c001                      	rjmp move
+0000ee e051                      	ldi direction, 1
+0000ef c001                      	rjmp move
                                  go_down:
-0000e8 ef5f                      	ldi direction, -1
+0000f0 ef5f                      	ldi direction, -1
                                  move:
-0000e9 0f45                      	add floor, direction
-0000ea d002                      	rcall show_floor
-0000eb cfc9                      	rjmp wait_loop
+0000f1 27aa                      	clr XL
+0000f2 27bb                      	clr XH
+0000f3 0f45                      	add floor, direction
+0000f4 d002                      	rcall show_floor
+0000f5 cfc4                      	rjmp wait_loop
                                  
                                  
                                  
                                  	
                                  	
                                  end_main:	
-0000ec cfff                      	rjmp end_main
+0000f6 cfff                      	rjmp end_main
                                  
-                                 
+                                 //-------------------------------------------------------------
                                  
                                  
                                  ;input r20 = floor, output X = binary representation
                                  show_floor:
                                  ;prologue
-0000ed 93cf                      	push YL
-0000ee 93df                      	push YH
-0000ef 934f                      	push floor
-0000f0 92ff                      	push r15
-0000f1 93af                      	push XL
-0000f2 93bf                      	push XH
+0000f7 93cf                      	push YL
+0000f8 93df                      	push YH
+0000f9 934f                      	push floor
+0000fa 92ff                      	push r15
+0000fb 93af                      	push XL
+0000fc 93bf                      	push XH
                                  
                                  
-0000f3 24ff                      	clr r15	; counter
-0000f4 27aa                      	clr XL	; output
-0000f5 27bb                      	clr XH
+0000fd 24ff                      	clr r15	; counter
+0000fe 27aa                      	clr XL	; output
+0000ff 27bb                      	clr XH
                                  loop:
-0000f6 16f4                      	cp r15, floor
-0000f7 f041                      	breq end_show_floor
-0000f8 0faa                      	lsl XL
-0000f9 95a3                      	inc XL
-0000fa f008                      	brcs grtr8
-0000fb c002                      	rjmp end_x
+000100 16f4                      	cp r15, floor
+000101 f041                      	breq end_show_floor
+000102 0faa                      	lsl XL
+000103 95a3                      	inc XL
+000104 f008                      	brcs grtr8
+000105 c002                      	rjmp end_x
                                  grtr8:
-0000fc 0fbb                      	lsl XH
-0000fd 95b3                      	inc XH
+000106 0fbb                      	lsl XH
+000107 95b3                      	inc XH
                                  end_x:	
-0000fe 94f3                      	inc r15
-0000ff cff6                      	rjmp loop
+000108 94f3                      	inc r15
+000109 cff6                      	rjmp loop
                                  
                                  
                                  ;epilogue
                                  end_show_floor:
-000100 bbb4                      	out PORTG, XH
-000101 b9a8                      	out PORTC, XL
+00010a bbb4                      	out PORTG, XH
+00010b b9a8                      	out PORTC, XL
                                  
-000102 91bf                      pop XH
-000103 91af                      pop XL
-000104 90ff                      pop r15
-000105 914f                      pop floor
-000106 91df                      pop YH
-000107 91cf                      pop YL
-000108 9508                      ret
+00010c 91bf                      pop XH
+00010d 91af                      pop XL
+00010e 90ff                      pop r15
+00010f 914f                      pop floor
+000110 91df                      pop YH
+000111 91cf                      pop YL
+000112 9508                      ret
                                  
                                  
                                  
@@ -2227,7 +2356,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  
                                  
                                  exit:
-000109 cfff                      	rjmp exit
+000113 cfff                      	rjmp exit
 
 
 RESOURCE USE INFORMATION
@@ -2245,41 +2374,41 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega2560" register use summary:
-x  :   0 y  :   0 z  :   3 r0 :   0 r1 :   0 r2 :   0 r3 :   5 r4 :   4 
+x  :   0 y  :   1 z  :   3 r0 :   0 r1 :   0 r2 :   0 r3 :   5 r4 :   4 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   5 r16:  59 r17:   2 r18:   6 r19:   0 r20:  14 
-r21:   5 r22:   6 r23:   0 r24:  20 r25:  17 r26:   6 r27:   6 r28:   4 
-r29:   4 r30:   1 r31:   1 
-Registers used: 18 out of 35 (51.4%)
+r13:   0 r14:   0 r15:   5 r16:  49 r17:   2 r18:   6 r19:   4 r20:  14 
+r21:   5 r22:   6 r23:   0 r24:  19 r25:  19 r26:  11 r27:  10 r28:   8 
+r29:   8 r30:   1 r31:   1 
+Registers used: 20 out of 35 (57.1%)
 
 "ATmega2560" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   0 add   :   1 adiw  :   3 and   :   0 
+.lds  :   0 .sts  :   0 adc   :   0 add   :   1 adiw  :   4 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   1 break :   0 breq  :   7 brge  :   2 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   4 brmi  :   0 
 brne  :   2 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   0 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   6 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   8 cpc   :   1 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  10 cls   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   8 cpc   :   3 
 cpi   :   7 cpse  :   1 dec   :   0 eicall:   0 eijmp :   0 elpm  :   0 
 eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
-in    :   4 inc   :   4 jmp   :   5 ld    :   0 ldd   :   0 ldi   :  24 
+in    :   4 inc   :   4 jmp   :   5 ld    :   0 ldd   :   0 ldi   :  26 
 lds   :  12 lpm   :   4 lsl   :   2 lsr   :   0 mov   :   1 movw  :   0 
 mul   :   0 muls  :   0 mulsu :   0 neg   :   1 nop   :   0 or    :   0 
-ori   :   2 out   :  16 pop   :  18 push  :  18 rcall :   3 ret   :   1 
-reti  :   3 rjmp  :   9 rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 
+ori   :   2 out   :  14 pop   :  20 push  :  20 rcall :   3 ret   :   1 
+reti  :   3 rjmp  :   9 rol   :   0 ror   :   0 sbc   :   0 sbci  :   1 
 sbi   :   0 sbic  :   0 sbis  :   0 sbiw  :   0 sbr   :   0 sbrc  :   0 
 sbrs  :   0 sec   :   0 seh   :   0 sei   :   1 sen   :   0 ser   :   1 
 ses   :   0 set   :   0 sev   :   0 sez   :   0 sleep :   0 spm   :   0 
-st    :   0 std   :   0 sts   :  16 sub   :   0 subi  :   4 swap  :   0 
+st    :   0 std   :   0 sts   :  15 sub   :   0 subi  :   4 swap  :   0 
 tst   :   0 wdr   :   0 
-Instructions used: 33 out of 116 (28.4%)
+Instructions used: 34 out of 116 (29.3%)
 
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000214    446      6    452  262144   0.2%
-[.dseg] 0x000200 0x000207      0      7      7    8192   0.1%
+[.cseg] 0x000000 0x000228    466      6    472  262144   0.2%
+[.dseg] 0x000200 0x000208      0      8      8    8192   0.1%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 
 Assembly complete, 0 errors, 1 warnings
