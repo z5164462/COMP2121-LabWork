@@ -19,75 +19,18 @@
 .equ clock_speed = 782
 .equ wait_speed = 1
 
-/*;taken from lectures
+//from LCD example
 
-; Register data stores value to be written to the LCD; Port D is output and connects to LCD; Port A controls the LCD.; Assume all other labels are pre-defined.
-.macro lcd_write_com 
-	out PORTD, data; set the data port's value up
-	clr temp
-	out PORTA, temp; RS = 0, RW = 0 for a command write
-	nop; delay to meet timing (Set up time)
-	sbi PORTA, LCD_E; turn on the enable pin
-	nop; delay to meet timing (Enable pulse width)
-	nop
-	nop
-	cbi PORTA, LCD_E; turn off the enable	pin
-	nop; delay to meet timing (Enable cycle time)
-	nop
-	nop
+.macro do_lcd_command
+	ldi r16, @0
+	rcall lcd_command
+	rcall lcd_wait
 .endmacro
-
-.macro lcd_write_data
-	out PORTD, data; set the data port's value up
-	ldi temp, 1<<LCD_RS
-	out PORTA, temp; RS = 0, RW = 0 for a command write
-	nop; delay to meet timing (Set up time)
-	sbi PORTA, LCD_E; turn on the enable pin
-	nop; delay to meet timing (Enable pulse width)
-	nop
-	nop
-	cbi PORTA, LCD_E; turn off the enable	pin
-	nop; delay to meet timing (Enable cycle time)
-	nop
-	nop
+.macro do_lcd_data
+	mov r16, @0
+	rcall lcd_data
+	rcall lcd_wait
 .endmacro
-
-.macro lcd_wait_busy
-	clr temp
-	out DDRD, temp; Make PORTD be an input port for now
-	out PORTD, temp
-	ldi temp, 1 << LCD_RW
-	out PORTA, temp; RS = 0, RW = 1 for a command port read
-busy_loop:
-	nop; delay to meet set-up time)
-	sbi PORTA, LCD_E; turn on the enable pin
-	nop; delay to meet timing (Data delay time)
-	nop
-	nop
-	in temp, PIND; read value from LCD
-	cbi PORTA, LCD_E; turn off the enable pin
-	sbrc temp, LCD_BF; if the busy flag is set
-	rjmp busy_loop; repeat command read
-	clr temp; else
-	out PORTA, temp; turn off read mode,
-	ser temp; 
-	out DDRD, temp; make PORTD an output port again
-.endmacro
-
-.macro delay
-loop:
-	subi ZL, 1
-	sbci ZH, 0
-	nop
-	nop
-	nop
-	nop
-	brne loop; taken branch takes two cycles.  ; one loop time is 8 cycles = ~1.08us
-.endmacro
-
-
-
-*/
 
 
 .macro clear
@@ -157,39 +100,50 @@ RESET:
 	ldi temp, 1<<TOIE0
 	sts TIMSK0, temp
 
-/*//from lectures -- Set up LCD
+//from LCD-example LCD setup
+ser r16
+	out DDRF, r16
+	out DDRA, r16
+	clr r16
+	out PORTF, r16
+	out PORTA, r16
 
-ldi ZL, low(15000); delay (>15ms)
-ldi ZH, high(15000)
-delay; Function set command with N = 1 and F = 0; for 2 line display and 5*7 font. The 1st command
-ldi data, LCD_FUNC_SET | (1 << LCD_N) 
-lcd_write_com 
-ldi ZL, low(4100); delay (>4.1 ms)
-ldi ZH, high(4100)
-delay
-lcd_write_com ; 2nd Function set command
+	do_lcd_command 0b00111000 ; 2x5x7
+	rcall sleep_5ms
+	do_lcd_command 0b00111000 ; 2x5x7
+	rcall sleep_1ms
+	do_lcd_command 0b00111000 ; 2x5x7
+	do_lcd_command 0b00111000 ; 2x5x7
+	do_lcd_command 0b00001000 ; display off?
+	do_lcd_command 0b00000001 ; clear display
+	do_lcd_command 0b00000110 ; increment, no display shift
+	do_lcd_command 0b00001110 ; Cursor on, bar, no blink
 
-ldi ZL, low(100); delay (>100 ns)
-ldi ZH, high(100)
-delay
-lcd_write_com ; 3rd Function set command
-lcd_write_com ; Final Function set command
-lcd_wait_busy; Wait until the LCD is ready
-ldi data, LCD_DISP_OFF
-lcd_write_com; Turn Display off
-lcd_wait_busy; Wait until the LCD is ready
-ldi data, LCD_DISP_CLR
-lcd_write_com; Clear Display
+	ldi r17, 48
+	do_lcd_data r17
+	ldi r17,'e'
+	do_lcd_data r17
+	ldi r17, 'l'
+	do_lcd_data r17
+	do_lcd_data r17
+	ldi r17, 'o'
+	do_lcd_data r17
+
+	ldi r17, 10
+	do_lcd_data r17
+
+	ldi r17, 48
+	do_lcd_data r17
+	ldi r17,'e'
+	do_lcd_data r17
+	ldi r17, 'l'
+	do_lcd_data r17
+	do_lcd_data r17
+	ldi r17, 'o'
+	do_lcd_data r17
 
 
-lcd_wait_busy; Wait until the LCD is ready; Entry set command with I/D = 1 and S = 0
-; Set Entry mode: Increment = yes and Shift = no
-ldi data, LCD_ENTRY_SET | (1 << LCD_ID) 
-lcd_write_com
-lcd_wait_busy; Wait until the LCD is ready
-; Display On command with C = 1 and B = 0
-ldi data, LCD_DISP_ON | (1 << LCD_C)
-lcd_write_com*/
+
 
 
 	sei
@@ -248,6 +202,8 @@ EXT_INT1:
 
 
 	adiw Y, 30
+	ldi temp, 'E'
+	do_lcd_data temp
 
 
 
@@ -321,7 +277,9 @@ main:
 	sts Moving_flag, temp
 	ldi YL, 50
 	ldi YH, 0
-	
+	do_lcd_command 0b00000001
+	mov temp, floor
+	subi temp, -48
 
 wait_loop:
 
@@ -331,8 +289,7 @@ wait_loop:
 	sts Seconds, r24
 	sts Seconds+1, r25*/
 
-	cpi direction, 0
-	breq choose_direction
+
 
 
 check_count:
@@ -345,6 +302,10 @@ check_count:
 	rjmp choose_direction			; moving after 2 seconds
 
 stop_here:
+
+
+
+
 	clr temp
 	sts Moving_flag, temp
 	cp XL, r18				; compare flash counter with timer
@@ -399,7 +360,15 @@ go_down:
 move:
 	clr XL
 	clr XH
+
+
+
 	add floor, direction
+	do_lcd_command 0b00000001
+	mov temp, floor
+	subi temp, -48
+	do_lcd_data temp
+
 	rcall show_floor
 	rjmp wait_loop
 
@@ -456,11 +425,89 @@ pop YL
 ret
 
 
+//LCD-example functions
+
+.equ LCD_RS = 7
+.equ LCD_E = 6
+.equ LCD_RW = 5
+.equ LCD_BE = 4
+
+.macro lcd_set
+	sbi PORTA, @0
+.endmacro
+.macro lcd_clr
+	cbi PORTA, @0
+.endmacro
+
+;
+; Send a command to the LCD (r16)
+;
+
+lcd_command:
+	out PORTF, r16
+	rcall sleep_1ms
+	lcd_set LCD_E
+	rcall sleep_1ms
+	lcd_clr LCD_E
+	rcall sleep_1ms
+	ret
+
+lcd_data:
+	out PORTF, r16
+	lcd_set LCD_RS
+	rcall sleep_1ms
+	lcd_set LCD_E
+	rcall sleep_1ms
+	lcd_clr LCD_E
+	rcall sleep_1ms
+	lcd_clr LCD_RS
+	ret
+
+lcd_wait:
+	push r16
+	clr r16
+	out DDRF, r16
+	out PORTF, r16
+	lcd_set LCD_RW
+lcd_wait_loop:
+	rcall sleep_1ms
+	lcd_set LCD_E
+	rcall sleep_1ms
+	in r16, PINF
+	lcd_clr LCD_E
+	sbrc r16, 7
+	rjmp lcd_wait_loop
+	lcd_clr LCD_RW
+	ser r16
+	out DDRF, r16
+	pop r16
+	ret
+
+.equ F_CPU = 16000000
+.equ DELAY_1MS = F_CPU / 4 / 1000 - 4
+; 4 cycles per iteration - setup/call-return overhead
+
+sleep_1ms:
+	push r24
+	push r25
+	ldi r25, high(DELAY_1MS)
+	ldi r24, low(DELAY_1MS)
+delayloop_1ms:
+	sbiw r25:r24, 1
+	brne delayloop_1ms
+	pop r25
+	pop r24
+	ret
+
+sleep_5ms:
+	rcall sleep_1ms
+	rcall sleep_1ms
+	rcall sleep_1ms
+	rcall sleep_1ms
+	rcall sleep_1ms
+	ret
 
 
 
 
 
-
-exit:
-	rjmp exit

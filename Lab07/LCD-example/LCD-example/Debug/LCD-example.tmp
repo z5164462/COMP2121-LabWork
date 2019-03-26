@@ -1,0 +1,35 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.7</VERSION>
+ <DEVICE>"ATmega2560"</DEVICE>
+ <WORKING_DIR>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
+  <DIR>D:\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\Debug\LCD-example.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>LCD-example.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>LCD-example.map</FILE>
+  <FILE>LCD-example.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <RESET><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm</FILE><LINE>28</LINE></RESET>
+  <lcd_command><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm</FILE><LINE>94</LINE></lcd_command>
+  <lcd_wait><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm</FILE><LINE>114</LINE></lcd_wait>
+  <sleep_5ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm</FILE><LINE>150</LINE></sleep_5ms>
+  <sleep_1ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm</FILE><LINE>138</LINE></sleep_1ms>
+  <lcd_data><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm</FILE><LINE>103</LINE></lcd_data>
+  <halt><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm</FILE><LINE>75</LINE></halt>
+  <lcd_wait_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm</FILE><LINE>120</LINE></lcd_wait_loop>
+  <delayloop_1ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm</FILE><LINE>143</LINE></delayloop_1ms>
+ </LABELS>
+</ASSEMBLER_INFO>

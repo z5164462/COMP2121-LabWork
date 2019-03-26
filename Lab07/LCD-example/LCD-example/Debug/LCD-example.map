@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - D\Lab05 - D\main.asm Wed Mar 27 10:08:02 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\LCD-example\LCD-example\main.asm Wed Mar 27 09:50:52 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1359,54 +1359,18 @@ EQU  URXC3addr    0000006c
 EQU  UDRE3addr    0000006e
 EQU  UTXC3addr    00000070
 EQU  INT_VECTORS_SIZE 00000072
-DEF  temp         r16
-DEF  zero         r3
-DEF  one          r4
-DEF  floor        r20
-DEF  direction    r21
-DEF  req_floor    r22
-DEF  data         r23
-EQU  clock_speed  0000030e
-EQU  wait_speed   00000001
-DSEG Count        00000200
-DSEG Seconds      00000202
-DSEG Moving_flag  00000204
-DSEG Debounce     00000205
-DSEG Wait_duration 00000206
-CSEG RESET        00000033
-CSEG EXT_INT0     0000009c
-CSEG EXT_INT1     000000b6
-CSEG Timer0OVF    000000d3
-CSEG Requests     00000030
-CSEG lcd_command  0000016c
-CSEG lcd_wait     0000017c
-CSEG sleep_5ms    00000196
-CSEG sleep_1ms    0000018d
-CSEG lcd_data     00000173
-CSEG main         000000fb
-CSEG INT0_END     000000ae
-CSEG INT1_END     000000cb
-CSEG Not_second   000000f0
-CSEG End_I        000000f4
-CSEG show_floor   00000150
-CSEG wait_loop    0000010d
-CSEG check_count  0000010d
-CSEG stop_here    00000116
-CSEG choose_direction 0000012e
-CSEG no_flash     00000125
-CSEG go_up        0000013f
-CSEG go_down      00000141
-CSEG move         00000142
-CSEG end_main     0000014f
-CSEG loop         00000159
-CSEG end_show_floor 00000163
-CSEG grtr8        0000015f
-CSEG end_x        00000161
+CSEG RESET        00000002
+CSEG lcd_command  00000051
+CSEG lcd_wait     00000061
+CSEG sleep_5ms    0000007b
+CSEG sleep_1ms    00000072
+CSEG lcd_data     00000058
+CSEG halt         00000050
 EQU  LCD_RS       00000007
 EQU  LCD_E        00000006
 EQU  LCD_RW       00000005
 EQU  LCD_BE       00000004
-CSEG lcd_wait_loop 00000181
+CSEG lcd_wait_loop 00000066
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 00000191
+CSEG delayloop_1ms 00000076
