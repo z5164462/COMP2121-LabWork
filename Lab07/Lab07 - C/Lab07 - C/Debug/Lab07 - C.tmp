@@ -1,0 +1,56 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.7</VERSION>
+ <DEVICE>"ATmega2560"</DEVICE>
+ <WORKING_DIR>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
+  <DIR>F:\Atmel\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\Debug\Lab07 - C.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>Lab07 - C.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>Lab07 - C.map</FILE>
+  <FILE>Lab07 - C.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <floor_array><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>29</LINE></floor_array>
+  <RESET><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>85</LINE></RESET>
+  <lcd_command><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>215</LINE></lcd_command>
+  <lcd_wait><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>235</LINE></lcd_wait>
+  <sleep_5ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>273</LINE></sleep_5ms>
+  <sleep_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>260</LINE></sleep_1ms>
+  <main><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>129</LINE></main>
+  <colloop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>138</LINE></colloop>
+  <delay><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>144</LINE></delay>
+  <nextcol><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>169</LINE></nextcol>
+  <rowloop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>156</LINE></rowloop>
+  <show><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>174</LINE></show>
+  <n_a><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>195</LINE></n_a>
+  <check_zero><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>189</LINE></check_zero>
+  <end_show><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>198</LINE></end_show>
+  <show_floor><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>287</LINE></show_floor>
+  <lcd_data><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>224</LINE></lcd_data>
+  <lcd_wait_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>242</LINE></lcd_wait_loop>
+  <delayloop_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>266</LINE></delayloop_1ms>
+  <loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>299</LINE></loop>
+  <end_show_floor><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>315</LINE></end_show_floor>
+  <grtr8><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>306</LINE></grtr8>
+  <end_x><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>309</LINE></end_x>
+  <convert_to_ascii><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>331</LINE></convert_to_ascii>
+  <convert_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>363</LINE></convert_loop>
+  <divide><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>367</LINE></divide>
+  <loop_start><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>372</LINE></loop_start>
+  <end_divide><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>384</LINE></end_divide>
+  <end_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>382</LINE></end_loop>
+  <end_convert><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>401</LINE></end_convert>
+ </LABELS>
+</ASSEMBLER_INFO>
