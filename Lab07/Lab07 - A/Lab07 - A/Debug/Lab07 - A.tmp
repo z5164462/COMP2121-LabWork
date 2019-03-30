@@ -1,0 +1,36 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.7</VERSION>
+ <DEVICE>"ATmega2560"</DEVICE>
+ <WORKING_DIR>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
+  <DIR>F:\Atmel\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\Debug\Lab07 - A.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>Lab07 - A.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>Lab07 - A.map</FILE>
+  <FILE>Lab07 - A.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <RESET><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</FILE><LINE>27</LINE></RESET>
+  <main><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</FILE><LINE>39</LINE></main>
+  <colloop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</FILE><LINE>44</LINE></colloop>
+  <delay><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</FILE><LINE>50</LINE></delay>
+  <nextcol><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</FILE><LINE>72</LINE></nextcol>
+  <rowloop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</FILE><LINE>62</LINE></rowloop>
+  <show><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</FILE><LINE>77</LINE></show>
+  <n_a><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</FILE><LINE>97</LINE></n_a>
+  <row_three><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</FILE><LINE>91</LINE></row_three>
+  <end_show><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - A\Lab07 - A\main.asm</FILE><LINE>100</LINE></end_show>
+ </LABELS>
+</ASSEMBLER_INFO>
