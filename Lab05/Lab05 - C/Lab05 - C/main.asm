@@ -13,7 +13,7 @@
 .def direction = r21
 .def req_floor = r22
 
-.equ clock_speed = 200//782
+.equ clock_speed = 782
 
 .macro clear
 	sts @0, zero
@@ -39,7 +39,7 @@ rjmp RESET
 
 
 Requests:
-	.db 4,7,9,2,1
+	.db 1,3,5,7,9
 ; Replace with your application code
 RESET:
 	ldi r16, low(RAMEND)	; Init stack frame

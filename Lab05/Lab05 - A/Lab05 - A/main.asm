@@ -7,7 +7,7 @@
 
 .include "m2560def.inc"
 
-.equ floor = 10
+.equ floor = 6
 .dseg
 
 .cseg
