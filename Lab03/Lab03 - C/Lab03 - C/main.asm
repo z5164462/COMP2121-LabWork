@@ -132,7 +132,7 @@ insert_request:
 	std Y+2, XL
 	std Y+3, r16	;len
 	std Y+4, r17	;input_floor
-	std Y+5, r20	;current_floor
+	std Y+5, r20	;current_floor end
 	std Y+6, r21	;direction
 
 	;end prologue

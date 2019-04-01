@@ -26,9 +26,6 @@ Input Floors
 
 
 Input_floors()
-col = 0
-cmask = 0b 0111 1111
-rmask = 0b 0000 0001
 set PortA[7:4] output, PortA[3:0] input (out DDRA 0XF0)
 PortA ==>0x11101111
 rowIn <== PinA
@@ -91,6 +88,11 @@ Sort Floor
 •	Floor sorted in direction of travel
 •	No duplicates requests
 •	Floors not on travel path are correctly sorted at end
+
+
+
+
+
 Stop at Floor
 •	Detect requested floor
 •	Call open door
