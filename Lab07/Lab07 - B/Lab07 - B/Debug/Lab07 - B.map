@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm Sat Mar 30 22:55:18 2019
+AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm Mon Apr 01 16:10:29 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1359,23 +1359,21 @@ EQU  URXC3addr    0000006c
 EQU  UDRE3addr    0000006e
 EQU  UTXC3addr    00000070
 EQU  INT_VECTORS_SIZE 00000072
+DSEG string       00000200
 CSEG RESET        00000002
-CSEG lcd_command  00000064
-CSEG lcd_wait     0000007d
-CSEG sleep_5ms    00000097
-CSEG sleep_1ms    0000008e
-CSEG lcd_data     00000074
-CSEG line_two@change_line@3807 0000003d
-CSEG end_cl@change_line@3807 00000040
-CSEG line_two@change_line@3878 00000060
-CSEG end_cl@change_line@3878 00000063
-CSEG halt         00000063
+CSEG lcd_command  0000005d
+CSEG lcd_wait     00000067
+CSEG lcd_data     00000061
+CSEG line_two@change_line@3817 0000003b
+CSEG end_cl@change_line@3817 0000003e
+CSEG halt         00000056
 EQU  LCD_RS       00000007
 EQU  LCD_E        00000006
 EQU  LCD_RW       00000005
 EQU  LCD_BE       00000004
-CSEG lcd_data_lower 0000006b
-CSEG lcd_wait_loop 00000082
+CSEG lcd_wait_loop 0000006c
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 00000092
+CSEG sleep_1ms    00000076
+CSEG delayloop_1ms 0000007a
+CSEG sleep_5ms    0000007f

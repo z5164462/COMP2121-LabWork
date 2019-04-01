@@ -22,15 +22,15 @@
   <FILE>Lab07 - B.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <RESET><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>39</LINE></RESET>
-  <lcd_command><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>101</LINE></lcd_command>
-  <lcd_wait><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>133</LINE></lcd_wait>
-  <sleep_5ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>171</LINE></sleep_5ms>
-  <sleep_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>158</LINE></sleep_1ms>
-  <lcd_data><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>122</LINE></lcd_data>
-  <halt><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>82</LINE></halt>
-  <lcd_data_lower><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>110</LINE></lcd_data_lower>
-  <lcd_wait_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>140</LINE></lcd_wait_loop>
-  <delayloop_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>164</LINE></delayloop_1ms>
+  <string><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>35</LINE></string>
+  <RESET><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>44</LINE></RESET>
+  <lcd_command><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>116</LINE></lcd_command>
+  <lcd_wait><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>136</LINE></lcd_wait>
+  <lcd_data><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>125</LINE></lcd_data>
+  <halt><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>93</LINE></halt>
+  <lcd_wait_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>143</LINE></lcd_wait_loop>
+  <sleep_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>161</LINE></sleep_1ms>
+  <delayloop_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>167</LINE></delayloop_1ms>
+  <sleep_5ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>174</LINE></sleep_5ms>
  </LABELS>
 </ASSEMBLER_INFO>
