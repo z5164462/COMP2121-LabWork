@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm Sun Mar 31 01:29:50 2019
+AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm Mon Apr 01 15:44:32 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1377,10 +1377,10 @@ EQU  LCD_RW       00000005
 EQU  LCD_BE       00000004
 DSEG floor_array  00000200
 CSEG RESET        00000002
-CSEG lcd_command  0000006f
-CSEG lcd_wait     0000007f
-CSEG sleep_5ms    00000099
-CSEG sleep_1ms    00000090
+CSEG lcd_command  00000073
+CSEG lcd_wait     00000083
+CSEG sleep_5ms    0000009d
+CSEG sleep_1ms    00000094
 CSEG main         0000002d
 CSEG colloop      0000002f
 CSEG delay        00000034
@@ -1390,19 +1390,19 @@ CSEG show         0000004a
 CSEG n_a          0000005a
 CSEG check_zero   00000055
 CSEG end_show     0000005b
-CSEG show_floor   0000009f
-CSEG line_two@change_line@3913 00000064
-CSEG end_cl@change_line@3913 00000067
-CSEG lcd_data     00000076
-CSEG lcd_wait_loop 00000084
+CSEG show_floor   000000a3
+CSEG line_two@change_line@3935 00000067
+CSEG end_cl@change_line@3935 0000006a
+CSEG convert_to_ascii 000000b7
+CSEG lcd_data     0000007a
+CSEG lcd_wait_loop 00000088
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 00000094
-CSEG loop         000000a6
-CSEG end_show_floor 000000b0
-CSEG grtr8        000000ac
-CSEG end_x        000000ae
-CSEG convert_to_ascii 000000b7
+CSEG delayloop_1ms 00000098
+CSEG loop         000000a8
+CSEG end_show_floor 000000b2
+CSEG grtr8        000000ae
+CSEG end_x        000000b0
 CSEG convert_loop 000000d1
 CSEG divide       000000d2
 CSEG loop_start   000000d6

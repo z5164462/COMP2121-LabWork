@@ -63,6 +63,10 @@ end_cl:
 	rcall lcd_wait
 .endmacro
 
+.macro clear_disp
+	do_lcd_command 0b00000001
+.endmacro
+
 
 .macro lcd_set
 	sbi PORTA, @0
@@ -109,9 +113,18 @@ RESET:
 	do_lcd_command 0b00111000 ; 2x5x7
 	do_lcd_command 0b00111000 ; 2x5x7
 	do_lcd_command 0b00001000 ; display off?
-	do_lcd_command 0b00000001 ; clear display
+	clear_disp				  ; clear display
 	do_lcd_command 0b00000110 ; increment, no display shift
 	do_lcd_command 0b00001110 ; Cursor on, bar, no blink
+	
+;	ldi floor, 7
+;	ldi XL, 7
+;	rcall show_floor
+;	rcall convert_to_ascii
+;	ldi ZL, low(floor_array)
+;	ldi ZH, high(floor_array)
+;	ld r21, Z
+;	write_reg r21
 
 ;	write 'K'
 ;	write '-'
@@ -129,10 +142,7 @@ RESET:
 main:
 	ldi cmask, INITCOLMASK
 	clr col
-//	ldi floor, 2
-//	ldi XL, 2
-//	rcall show_floor
-//	rcall convert_to_ascii
+
 
 
 colloop:
@@ -197,13 +207,14 @@ n_a:
 
 end_show:
 	rcall show_floor				; move temp to PORTC to show output
+	clear_disp
 	change_line 2
-//	ldi YL, low(floor_array)
-//	ldi YH, high(floor_array)
-//	ld r21, Y
-//	write_reg r21
+	rcall convert_to_ascii
+	ldi ZL, low(floor_array)
+	ldi ZH, high(floor_array)
+	ld r21, Z
+	write_reg r21
 
-	
 	jmp main
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
@@ -288,8 +299,6 @@ show_floor:
 ;	push YH
 	push floor
 	push counter
-	push XL
-	push XH
 
 	clr counter	
 	clr XL	; output
@@ -314,8 +323,6 @@ end_show_floor:
 	out PORTG, XH
 	out PORTC, XL
 
-pop XH
-pop XL
 pop counter
 pop floor
 ;pop YH
@@ -354,9 +361,9 @@ convert_to_ascii:
 	clr r24
 	clr r25
 
-	mov r18, XL
-	mov r19, XH
-	ldi r21, 72
+	mov r18, floor
+	clr floor
+	ldi r21, 0x30
 
 convert_loop:
 	rjmp divide
