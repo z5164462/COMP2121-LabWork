@@ -24,6 +24,8 @@
 .equ LCD_E = 6
 .equ LCD_RW = 5
 .equ LCD_BE = 4
+.equ l_one = 0b10000000
+.equ l_two = 0b11000000
 
 .dseg
 	floor_array: .BYTE 2
@@ -34,44 +36,54 @@
 // MACROS
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\
 
-.macro do_lcd_command
+
+.macro do_lcd_command						// LCD commands
 	ldi r16, @0
 	rcall lcd_command
 	rcall lcd_wait
 .endmacro
 
-.macro change_line
+.macro do_lcd_command_reg					// LCD commands, with registers
+	mov r16, @0
+	rcall lcd_command
+	rcall lcd_wait
+.endmacro
+
+.macro change_line							// change line and cursor position on line
 	ldi r16, @0
 	cpi r16, 2
 	breq line_two
-	do_lcd_command 0b10000000
+	ldi temp2, l_one
+	ori temp2, @1
+	do_lcd_command_reg temp2
 	jmp end_cl
 line_two:
-	do_lcd_command 0b11000000
+	ldi temp2, l_two
+	ori temp2, @1
+	do_lcd_command_reg temp2
 end_cl:
 .endmacro
 
-.macro write
+.macro write								// write immediate data to LCD screen
 	ldi r16, @0
 	rcall lcd_data
 	rcall lcd_wait
 .endmacro
 
-.macro write_reg
+.macro write_reg							// write register data to LCD screen
 	mov r16, @0
 	rcall lcd_data
 	rcall lcd_wait
 .endmacro
 
-.macro clear_disp
+.macro clear_disp							// clear the LCD Display
 	do_lcd_command 0b00000001
 .endmacro
 
-
-.macro lcd_set
+.macro lcd_set								// set bit in PORTA
 	sbi PORTA, @0
 .endmacro
-.macro lcd_clr
+.macro lcd_clr								// clear bit in PORTA
 	cbi PORTA, @0
 .endmacro
 
@@ -92,7 +104,7 @@ RESET:
 	ldi temp, high(RAMEND)
 	out SPH, temp
 
-	ldi temp, PORTLDIR
+	ldi temp, PORTLDIR			; set ports A, C, F, G, L
 	sts DDRL, temp
 	ser temp
 	out DDRC, temp
@@ -117,33 +129,29 @@ RESET:
 	do_lcd_command 0b00000110 ; increment, no display shift
 	do_lcd_command 0b00001110 ; Cursor on, bar, no blink
 	
-;	ldi floor, 7
-;	ldi XL, 7
-;	rcall show_floor
-;	rcall convert_to_ascii
-;	ldi ZL, low(floor_array)
-;	ldi ZH, high(floor_array)
-;	ld r21, Z
-;	write_reg r21
-
-;	write 'K'
-;	write '-'
-;	write '9'
-;	write ' '
-;	write 'U'
-;	write 'n'
-;	write 'i'
-;	write 't'
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 // MAIN
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\
 
 main:
-	ldi cmask, INITCOLMASK
+	change_line 2, 0			; set to start of line 2
+	write 'F'					; write "Floor Request"
+	write 'l'
+	write 'o'
+	write 'o'
+	write 'r'
+	write ' '
+	write 'R'
+	write 'e'
+	write 'q'
+	write 'u'
+	write 'e'
+	write 's'
+	write 't'
+
+	ldi cmask, INITCOLMASK		; load column mask to scan a column
 	clr col
-
-
 
 colloop:
 	cpi col, 4					; check if all columns scanned
@@ -206,15 +214,39 @@ n_a:
 	ser floor					; set all bits in temp to 1 for keys we dont care about
 
 end_show:
-	rcall show_floor				; move temp to PORTC to show output
+	cpi floor, 10				; check if floor is 10, since 10 requires 2 digits to be printed
+	brne lt10
+
+	rcall show_floor			; set LED bar up 
+
+	ldi floor, 1				; For floor 10, load 1 into floor
+	clear_disp					; clear display initially
+	change_line 2, 14			; set cursor to be after "Floor Request "
+	rcall convert_to_ascii		; convert digit to ascii value
+	ldi ZL, low(floor_array)	; convert_to_ascii stores the ascii value of the digit in floor_array
+	ldi ZH, high(floor_array)	; load the address of floor_array
+	ld r21, Z					; load the value from the address into r21
+	write_reg r21				; write the value in r21 onto the LCD
+	
+	ldi floor, 0				; repeat process for 0
+	rcall convert_to_ascii
+	ldi ZL, low(floor_array)
+	ldi ZH, high(floor_array)
+	ld r21, Z
+	write_reg r21
+	rjmp end_main
+
+lt10:
+	rcall show_floor
 	clear_disp
-	change_line 2
+	change_line 2, 14
 	rcall convert_to_ascii
 	ldi ZL, low(floor_array)
 	ldi ZH, high(floor_array)
 	ld r21, Z
 	write_reg r21
 
+end_main:
 	jmp main
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
