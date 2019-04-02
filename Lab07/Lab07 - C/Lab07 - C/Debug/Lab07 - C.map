@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm Tue Apr 02 12:30:11 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm Tue Apr 02 12:41:12 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1379,14 +1379,14 @@ EQU  l_one        00000080
 EQU  l_two        000000c0
 DSEG floor_array  00000200
 CSEG RESET        00000002
-CSEG lcd_command  000000d3
-CSEG lcd_wait     000000e3
-CSEG sleep_5ms    000000fd
-CSEG sleep_1ms    000000f4
+CSEG lcd_command  000000ca
+CSEG lcd_wait     000000da
+CSEG sleep_5ms    000000f4
+CSEG sleep_1ms    000000eb
 CSEG main         0000002d
 CSEG line_two@change_line@3854 00000037
 CSEG end_cl@change_line@3854 0000003c
-CSEG lcd_data     000000da
+CSEG lcd_data     000000d1
 CSEG colloop      00000065
 CSEG delay        0000006a
 CSEG nextcol      0000007c
@@ -1395,25 +1395,20 @@ CSEG show         00000080
 CSEG n_a          00000090
 CSEG check_zero   0000008b
 CSEG end_show     00000091
-CSEG lt10         000000b7
-CSEG show_floor   00000103
+CSEG lt10         000000b1
+CSEG show_floor   000000fa
 CSEG line_two@change_line@4037 000000a2
 CSEG end_cl@change_line@4037 000000a7
-CSEG convert_to_ascii 00000117
-CSEG end_main     000000d1
-CSEG line_two@change_line@4097 000000c5
-CSEG end_cl@change_line@4097 000000ca
-CSEG lcd_wait_loop 000000e8
+CSEG convert_to_ascii 0000010e
+CSEG end_main     000000c8
+CSEG line_two@change_line@4091 000000bf
+CSEG end_cl@change_line@4091 000000c4
+CSEG lcd_wait_loop 000000df
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 000000f8
-CSEG loop         00000108
-CSEG end_show_floor 00000112
-CSEG grtr8        0000010e
-CSEG end_x        00000110
-CSEG convert_loop 00000131
-CSEG divide       00000132
-CSEG loop_start   00000136
-CSEG end_divide   00000140
-CSEG end_loop     0000013f
-CSEG end_convert  00000148
+CSEG delayloop_1ms 000000ef
+CSEG loop         000000ff
+CSEG end_show_floor 00000109
+CSEG grtr8        00000105
+CSEG end_x        00000107
+CSEG end_convert  00000112
