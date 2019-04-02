@@ -1,0 +1,129 @@
+Function Pseudocode
+
+Travel Floor
+•	Must travel up one floor
+•	Must travel down one floor
+•	Start at any floor
+•	Max 10
+•	Min 1
+•	Wait 2 seconds between each floor
+
+Travel Floor()
+While (lift_status Stopped == 0){
+If(Timer >= 2 seconds)
+	if(lift_status Up == 1 && current_floor <= 10)
+		current_floor++
+	if(lift_status Up == 0 && current_floor >= 1)
+		current_floor--
+}
+
+
+
+Input Floors
+•	1-(1)0 can be added to queue
+•	Works on stopped floors
+•	Works on moving floors
+
+
+Input_floors()
+set PortA[7:4] output, PortA[3:0] input (out DDRA 0XF0)
+PortA ==>0x11101111
+rowIn <== PinA
+if(rowIn & 0b00000001)
+	input = 1
+	end
+if(rowIn & 0b00000010)
+	input = 2
+	end
+if(rowIn & 0b00000100)
+	input = 3
+	end
+if(rowIn & 0b00001000)
+	input = A
+	end
+PortA ==>0x110111111
+rowIn <== PinA
+if(rowIn & 0b00000001)
+	input = 4
+	end
+if(rowIn & 0b00000010)
+	input = 5
+	end
+if(rowIn & 0b00000100)
+	input = 6
+	end
+if(rowIn & 0b00001000)
+	input = B
+	end
+PortA ==>0x10111111
+rowIn <== PinA
+if(rowIn & 0b00000001)
+	input = 7
+	end
+if(rowIn & 0b00000010)
+	input = 8
+	end
+if(rowIn & 0b00000100)
+	input = 9
+	end
+if(rowIn & 0b00001000)
+	input = C
+	end
+PortA ==>0x01111111
+rowIn <== PinA
+if(rowIn & 0b00000001)
+	input = *
+	end
+if(rowIn & 0b00000010)
+	input = 0
+	end
+if(rowIn & 0b00000100)
+	input = #
+	end
+if(rowIn & 0b00001000)
+	input = D
+	end
+
+Sort Floor
+•	Floor sorted in direction of travel
+•	No duplicates requests
+•	Floors not on travel path are correctly sorted at end
+
+
+
+
+
+Stop at Floor
+•	Detect requested floor
+•	Call open door
+•	Wait 3 seconds
+•	Call close door
+Close Door
+•	Spin motor when door closing
+•	Interrupt waiting sequence
+•	Does not interrupt open door sequence
+Emergency
+•	If "*" pressed, initiate emergency
+•	If door open and not on floor 1, close door
+•	Once door closed, move to floor 1
+•	Open door on floor 1
+•	Stay open for 10 seconds
+•	Close door after 10 seconds
+Halt on floor 1
+•	Blink strobe light several times per second for entire emergency duration
+•	Display “Emergency” on top line of LCD
+•	Display “Call 000” on bottom line of LCD
+•	Resume normal function of lift when ‘*’ pressed
+Show Floor
+•	Display floor number through LEDs
+•	If stopped, flash LEDs several times per second
+•	Display “Current Floor (X)” on top line of LCD
+•	Display “Next Stop (Y)” on bottom line of LCD
+Open Door
+•	Spin motor when door opening
+•	Motor speed observably different to close door
+•	Interrupt close door sequence
+•	If button held down while waiting, extend waiting sequence until button release
+•	Does not open door while lift is moving
+•	GG
+

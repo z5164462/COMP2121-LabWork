@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm Sat Mar 23 18:03:55 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm Thu Mar 28 13:45:09 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1365,7 +1365,7 @@ DEF  one          r4
 DEF  floor        r20
 DEF  direction    r21
 DEF  req_floor    r22
-EQU  clock_speed  000000c8
+EQU  clock_speed  0000030e
 DSEG Count        00000200
 DSEG Seconds      00000202
 CSEG RESET        00000033

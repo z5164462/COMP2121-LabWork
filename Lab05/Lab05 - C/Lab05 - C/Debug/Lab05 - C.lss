@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm Sat Mar 23 18:03:55 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm Thu Mar 28 13:45:09 2019
 
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm(8): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
@@ -1901,7 +1901,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  .def direction = r21
                                  .def req_floor = r22
                                  
-                                 .equ clock_speed = 200//782
+                                 .equ clock_speed = 782
                                  
                                  .macro clear
                                  	sts @0, zero
@@ -1927,10 +1927,10 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  
                                  
                                  Requests:
-000030 0704
-000031 0209
+000030 0301
+000031 0705
 C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab05\Lab05 - C\Lab05 - C\main.asm(42): warning: .cseg .db misalignment - padding zero byte
-000032 0001                      	.db 4,7,9,2,1
+000032 0009                      	.db 1,3,5,7,9
                                  ; Replace with your application code
                                  RESET:
 000033 ef0f                      	ldi r16, low(RAMEND)	; Init stack frame
@@ -1980,8 +1980,8 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
 000059 9190 0201                 	lds r25, Count + 1
 00005b 9601                      	adiw r25:r24, 1
                                  	
-00005c 3c88                      	cpi r24, low(clock_speed)	; compare with clock speed to check if 1/10 of second has passed
-00005d e000                      	ldi temp, high(clock_speed)
+00005c 308e                      	cpi r24, low(clock_speed)	; compare with clock speed to check if 1/10 of second has passed
+00005d e003                      	ldi temp, high(clock_speed)
 00005e 0790                      	cpc r25, temp
 00005f f471                      	brne Not_second
 000060 9180 0202                 	lds r24, Seconds			; increment seconds every 1/10 of second
