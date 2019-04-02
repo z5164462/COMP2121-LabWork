@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm Mon Apr 01 16:49:32 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm Tue Apr 02 12:30:11 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1401,8 +1401,8 @@ CSEG line_two@change_line@4037 000000a2
 CSEG end_cl@change_line@4037 000000a7
 CSEG convert_to_ascii 00000117
 CSEG end_main     000000d1
-CSEG line_two@change_line@4098 000000c5
-CSEG end_cl@change_line@4098 000000ca
+CSEG line_two@change_line@4097 000000c5
+CSEG end_cl@change_line@4097 000000ca
 CSEG lcd_wait_loop 000000e8
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c

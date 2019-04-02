@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm Mon Apr 01 16:49:32 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm Tue Apr 02 12:30:11 2019
 
-[builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
-E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm(9): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
-[builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
-E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm(9): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+[builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm(9): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+[builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm(9): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
                                  
                                  ;
                                  
@@ -2189,7 +2189,6 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm(9): Includi
 0000ad d035                      	write_reg r21				; write the value in r21 onto the LCD
                                  	
 0000ae e060                      	ldi floor, 0				; repeat process for 0
-                                 	;change_line 2, 15			; move cursor to next place in line
 0000af d067                      	rcall convert_to_ascii
 0000b0 e0e0                      	ldi ZL, low(floor_array)
 0000b1 e0f2                      	ldi ZH, high(floor_array)
@@ -2200,7 +2199,7 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm(9): Includi
 0000b6 c01a                      	rjmp end_main
                                  
                                  lt10:
-0000b7 d04b                      	rcall show_floor				; move temp to PORTC to show output
+0000b7 d04b                      	rcall show_floor
 0000b8 e001
 0000b9 d019
 0000ba d028                      	clear_disp
