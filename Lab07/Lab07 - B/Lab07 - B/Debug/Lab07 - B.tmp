@@ -1,18 +1,18 @@
 <ASSEMBLER_INFO>
  <VERSION>2.2.7</VERSION>
  <DEVICE>"ATmega2560"</DEVICE>
- <WORKING_DIR>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\Debug</WORKING_DIR>
+ <WORKING_DIR>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\Debug</WORKING_DIR>
  <INCLUDE_PATH>
-  <DIR>F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
-  <DIR>F:\Atmel\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR>D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
+  <DIR>D:\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
   <DIR></DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</SOURCE_FILE>
+ <SOURCE_FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</SOURCE_FILE>
  <INCLUDED_FILES>
-  <FILE>F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc</FILE>
+  <FILE>D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
-  <FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\Debug\Lab07 - B.obj</FILE>
+  <FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\Debug\Lab07 - B.obj</FILE>
  </OBJECT_FILES>
  <HEX_FILES>
   <FILE>Lab07 - B.hex</FILE>
@@ -22,15 +22,15 @@
   <FILE>Lab07 - B.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <string><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>35</LINE></string>
-  <RESET><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>44</LINE></RESET>
-  <lcd_command><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>116</LINE></lcd_command>
-  <lcd_wait><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>136</LINE></lcd_wait>
-  <lcd_data><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>125</LINE></lcd_data>
-  <halt><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>93</LINE></halt>
-  <lcd_wait_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>143</LINE></lcd_wait_loop>
-  <sleep_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>161</LINE></sleep_1ms>
-  <delayloop_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>167</LINE></delayloop_1ms>
-  <sleep_5ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>174</LINE></sleep_5ms>
+  <string><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>35</LINE></string>
+  <RESET><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>44</LINE></RESET>
+  <lcd_command><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>114</LINE></lcd_command>
+  <lcd_wait><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>134</LINE></lcd_wait>
+  <lcd_data><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>123</LINE></lcd_data>
+  <halt><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>95</LINE></halt>
+  <sleep_1ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>159</LINE></sleep_1ms>
+  <lcd_wait_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>141</LINE></lcd_wait_loop>
+  <delayloop_1ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>165</LINE></delayloop_1ms>
+  <sleep_5ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm</FILE><LINE>172</LINE></sleep_5ms>
  </LABELS>
 </ASSEMBLER_INFO>

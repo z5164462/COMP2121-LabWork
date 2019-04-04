@@ -16,7 +16,7 @@
 
 
 
-.equ clock_speed = 782
+.equ clock_speed = 781
 .equ wait_speed = 1
 
 //from LCD example
@@ -67,7 +67,7 @@ Wait_duration:
 
 
 Requests:
-	.db 4,7,9,2,1
+	.db 1,3,5,7,9
 ; Replace with your application code
 RESET:
 	ldi r16, low(RAMEND)	; Init stack frame
@@ -81,11 +81,13 @@ RESET:
 	ser r16
 	out DDRC, r16			; Enabling Timer interrupt
 	out DDRG, r16
+	clr r16
+	out DDRD, r16
 	ldi r17, 0b01010101
 	ldi r18, 0b110001
 	out PORTC, r17
 	out PORTG, r18
-	ldi r16,  (2<<ISC00)
+	ldi r16,  0b00001010
 	sts EICRA, r16
 
 	in r16, EIMSK
@@ -196,7 +198,7 @@ EXT_INT1:
 
 	lds r24, Seconds
 	lds r25, Debounce+1
-	subi r25, -1
+	subi r25, -2
 	cp r25, r24
 	brge INT1_END
 
@@ -264,7 +266,7 @@ End_I:
 
 
 main:
-	ldi floor, 3 ;this is the FlooR <-------------------------------
+	ldi floor, 1 ;this is the FlooR <-------------------------------
 	ldi ZL, low(Requests<<1)
 	ldi ZH, high(Requests<<1)
 	lpm req_floor, Z		; Load requested floor
@@ -272,7 +274,8 @@ main:
 	ldi direction, 1
 	rcall show_floor
 	ldi r18, wait_speed
-	ldi r19, 0
+	clr r19
+	
 	ldi temp, 1
 	sts Moving_flag, temp
 	ldi YL, 50
@@ -280,6 +283,7 @@ main:
 	do_lcd_command 0b00000001
 	mov temp, floor
 	subi temp, -48
+	do_lcd_data temp
 
 wait_loop:
 
@@ -302,7 +306,6 @@ check_count:
 	rjmp choose_direction			; moving after 2 seconds
 
 stop_here:
-
 
 
 

@@ -1,18 +1,18 @@
 <ASSEMBLER_INFO>
  <VERSION>2.2.7</VERSION>
  <DEVICE>"ATmega2560"</DEVICE>
- <WORKING_DIR>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\Debug</WORKING_DIR>
+ <WORKING_DIR>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\Debug</WORKING_DIR>
  <INCLUDE_PATH>
-  <DIR>F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
-  <DIR>F:\Atmel\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR>D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
+  <DIR>D:\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
   <DIR></DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</SOURCE_FILE>
+ <SOURCE_FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</SOURCE_FILE>
  <INCLUDED_FILES>
-  <FILE>F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc</FILE>
+  <FILE>D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
-  <FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\Debug\Lab07 - C.obj</FILE>
+  <FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\Debug\Lab07 - C.obj</FILE>
  </OBJECT_FILES>
  <HEX_FILES>
   <FILE>Lab07 - C.hex</FILE>
@@ -22,37 +22,32 @@
   <FILE>Lab07 - C.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <floor_array><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>31</LINE></floor_array>
-  <RESET><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>101</LINE></RESET>
-  <lcd_command><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>257</LINE></lcd_command>
-  <lcd_wait><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>277</LINE></lcd_wait>
-  <sleep_5ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>315</LINE></sleep_5ms>
-  <sleep_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>302</LINE></sleep_1ms>
-  <main><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>137</LINE></main>
-  <lcd_data><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>266</LINE></lcd_data>
-  <colloop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>156</LINE></colloop>
-  <delay><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>162</LINE></delay>
-  <nextcol><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>187</LINE></nextcol>
-  <rowloop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>174</LINE></rowloop>
-  <show><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>192</LINE></show>
-  <n_a><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>213</LINE></n_a>
-  <check_zero><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>207</LINE></check_zero>
-  <end_show><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>216</LINE></end_show>
-  <lt10><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>240</LINE></lt10>
-  <show_floor><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>329</LINE></show_floor>
-  <convert_to_ascii><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>369</LINE></convert_to_ascii>
-  <end_main><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>250</LINE></end_main>
-  <lcd_wait_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>284</LINE></lcd_wait_loop>
-  <delayloop_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>308</LINE></delayloop_1ms>
-  <loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>339</LINE></loop>
-  <end_show_floor><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>355</LINE></end_show_floor>
-  <grtr8><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>346</LINE></grtr8>
-  <end_x><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>349</LINE></end_x>
-  <convert_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>401</LINE></convert_loop>
-  <divide><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>405</LINE></divide>
-  <loop_start><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>410</LINE></loop_start>
-  <end_divide><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>422</LINE></end_divide>
-  <end_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>420</LINE></end_loop>
-  <end_convert><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>439</LINE></end_convert>
+  <floor_array><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>31</LINE></floor_array>
+  <RESET><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>101</LINE></RESET>
+  <lcd_command><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>247</LINE></lcd_command>
+  <lcd_wait><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>267</LINE></lcd_wait>
+  <sleep_5ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>305</LINE></sleep_5ms>
+  <sleep_1ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>292</LINE></sleep_1ms>
+  <main><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>137</LINE></main>
+  <lcd_data><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>256</LINE></lcd_data>
+  <colloop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>156</LINE></colloop>
+  <delay><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>162</LINE></delay>
+  <nextcol><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>187</LINE></nextcol>
+  <rowloop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>174</LINE></rowloop>
+  <show><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>192</LINE></show>
+  <n_a><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>213</LINE></n_a>
+  <check_zero><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>207</LINE></check_zero>
+  <end_show><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>216</LINE></end_show>
+  <lt10><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>233</LINE></lt10>
+  <show_floor><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>319</LINE></show_floor>
+  <convert_to_ascii><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>359</LINE></convert_to_ascii>
+  <end_main><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>240</LINE></end_main>
+  <lcd_wait_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>274</LINE></lcd_wait_loop>
+  <delayloop_1ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>298</LINE></delayloop_1ms>
+  <loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>329</LINE></loop>
+  <end_show_floor><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>345</LINE></end_show_floor>
+  <grtr8><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>336</LINE></grtr8>
+  <end_x><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>339</LINE></end_x>
+  <end_convert><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - C\Lab07 - C\main.asm</FILE><LINE>367</LINE></end_convert>
  </LABELS>
 </ASSEMBLER_INFO>

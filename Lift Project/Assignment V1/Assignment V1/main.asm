@@ -35,7 +35,6 @@ floor_array?
 .cseg
 
 
-
 .def zero = r3
 .def one = r4
 .def counter = r7
@@ -94,8 +93,8 @@ b7 = Halted?
 .macro check_register_bit
 	mov temp1, lift_status
 	andi temp1, @0
-	cp temp1, @0
-.end macro
+	cpi temp1, @0
+.endmacro
 
 //Clear word macro
 .macro clear
@@ -275,7 +274,7 @@ EXT_INT0:
 	brne INT0_END
 
 	ldi temp2, 100			//set debounce counter to 100
-	sts Debounce, temp2
+	sts Debounce1, temp2
 	
 	
 	clr wait_durationL					//set the wait duration to 0
@@ -636,15 +635,16 @@ convert_to_ascii:
 	clr r25
 	mov r24, arg1
 	cpi temp1, 10
-	breq ZERO
+	breq ZEROE
 	brlt DIGIT
-ZERO:
+ZEROE:					//ie 10
 	ldi r25, '1'
 	ldi r24, '0'
 	rjmp end_convert
-DIGIT:
+DIGIT:					//ie 07
+	ldi r25, '0'
 	subi r24, -'0'
-	rjmp end_convert
+	rjmp end_convert  
 SYMBOL:
 //TODO with predefined codes
 LETTER:
@@ -666,18 +666,18 @@ lds temp1, Flash_wait		//value of second counter when flash is next toggled
 lds temp2, Flash_wait+1
 
 
-check_register_bit, flashUp
-breq flashUp
-rjmp flashDown	
+check_register_bit flashUp
+breq flashTrue
+rjmp flashFalse	
 
-flashUp:
-	show_floor
+flashTrue:
+	rcall show_floor
 	cbr lift_status, flashUp
 	rjmp end_flash_LED
-flashDown
+flashFalse:
 	push current_floor
 	dec current_floor
-	show_floor
+	rcall show_floor
 	pop current_floor
 	sbr lift_status, flashUp
 
