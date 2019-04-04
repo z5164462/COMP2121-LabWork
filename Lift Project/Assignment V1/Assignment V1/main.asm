@@ -35,7 +35,6 @@ floor_array?
 .cseg
 
 
-
 .def zero = r3
 .def one = r4
 .def counter = r7
@@ -94,8 +93,8 @@ b7 = Halted?
 .macro check_register_bit
 	mov temp1, lift_status
 	andi temp1, @0
-	cp temp1, @0
-.end macro
+	cpi temp1, @0
+.endmacro
 
 //Clear word macro
 .macro clear
@@ -245,14 +244,14 @@ RESET:
 	do_lcd_command 0b00001110 // Cursor on, bar, no blink
 
 	ldi temp2, 'H'
-	do_lcd_data temp2
+	write_reg temp2
 	ldi temp2,'e'
-	do_lcd_data temp2
+	write_reg temp2
 	ldi temp2, 'l'
-	do_lcd_data temp2
-	do_lcd_data temp2
+	write_reg temp2
+	write_reg temp2
 	ldi temp2, 'o'
-	do_lcd_data temp2
+	write_reg temp2
 	sei
 	jmp main 
 
@@ -275,7 +274,7 @@ EXT_INT0:
 	brne INT0_END
 
 	ldi temp2, 100			//set debounce counter to 100
-	sts Debounce, temp2
+	sts Debounce1, temp2
 	
 	
 	clr wait_durationL					//set the wait duration to 0
@@ -330,8 +329,8 @@ Timer0OVF:
 	adiw r25:r24, 1
 	
 	cpi r24, low(clock_speed)	// compare with clock speed to check if 1/10 of second has passed
-	ldi temp, high(clock_speed)
-	cpc r25, temp
+	ldi temp1, high(clock_speed)
+	cpc r25, temp1
 	brne Not_second
 	lds r24, Seconds			// increment seconds every 1/10 of second
 	lds r25, Seconds+1
@@ -636,9 +635,9 @@ convert_to_ascii:
 	clr r25
 	mov r24, arg1
 	cpi temp1, 10
-	breq ZERO
+	breq ZEROE
 	brlt DIGIT
-ZERO:					//ie 10
+ZEROE:					//ie 10
 	ldi r25, '1'
 	ldi r24, '0'
 	rjmp end_convert
@@ -667,18 +666,18 @@ lds temp1, Flash_wait		//value of second counter when flash is next toggled
 lds temp2, Flash_wait+1
 
 
-check_register_bit, flashUp
-breq flashUp
-rjmp flashDown	
+check_register_bit flashUp
+breq flashTrue
+rjmp flashFalse	
 
-flashUp:
-	show_floor
+flashTrue:
+	rcall show_floor
 	cbr lift_status, flashUp
 	rjmp end_flash_LED
-flashDown
+flashFalse:
 	push current_floor
 	dec current_floor
-	show_floor
+	rcall show_floor
 	pop current_floor
 	sbr lift_status, flashUp
 

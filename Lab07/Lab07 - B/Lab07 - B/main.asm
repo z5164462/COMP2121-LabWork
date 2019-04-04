@@ -55,9 +55,9 @@ RESET:
 	out PORTA, r16
 
 	do_lcd_command 0b00111000 ; 2x5x7
-;	rcall sleep_5ms
+	rcall sleep_5ms
 	do_lcd_command 0b00111000 ; 2x5x7
-;	rcall sleep_1ms
+	rcall sleep_1ms
 	do_lcd_command 0b00111000 ; 2x5x7
 	do_lcd_command 0b00111000 ; 2x5x7
 	do_lcd_command 0b00001000 ; display off?
@@ -87,6 +87,8 @@ RESET:
 	do_lcd_data '2'
 	do_lcd_data '1'
 
+	do_lcd_command 0b00001100
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -111,21 +113,21 @@ halt:
 
 lcd_command:
 	out PORTF, r16
-;	rcall sleep_1ms
+	rcall sleep_1ms
 	lcd_set LCD_E
-;	rcall sleep_1ms
+	rcall sleep_1ms
 	lcd_clr LCD_E
-;	rcall sleep_1ms
+	rcall sleep_1ms
 	ret
 
 lcd_data:
 	out PORTF, r16
 	lcd_set LCD_RS
-;	rcall sleep_1ms
+	rcall sleep_1ms
 	lcd_set LCD_E
-;	rcall sleep_1ms
+	rcall sleep_1ms
 	lcd_clr LCD_E
-;	rcall sleep_1ms
+	rcall sleep_1ms
 	lcd_clr LCD_RS
 	ret
 
@@ -137,9 +139,9 @@ lcd_wait:
 	lcd_set LCD_RW
 
 lcd_wait_loop:
-;	rcall sleep_1ms
+	rcall sleep_1ms
 	lcd_set LCD_E
-;	rcall sleep_1ms
+	rcall sleep_1ms
 	in r16, PINF
 	lcd_clr LCD_E
 	sbrc r16, 7

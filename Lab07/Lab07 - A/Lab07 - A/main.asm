@@ -33,6 +33,7 @@ RESET:
 	ldi temp, PORTLDIR
 	sts DDRL, temp
 	ser temp
+	;out PORTL, temp
 	out DDRC, temp
 	out PORTC, temp
 
@@ -73,7 +74,8 @@ rowloop:
 	jmp rowloop
 
 nextcol:						; jump to next column when row scan over
-	lsl cmask					; left shift mask to check next col
+	sec 
+	rol cmask					; left shift mask to check next col
 	inc col
 	jmp colloop
 

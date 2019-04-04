@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm Mon Apr 01 16:10:29 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - B\Lab07 - B\main.asm Thu Apr 04 14:51:12 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1361,19 +1361,19 @@ EQU  UTXC3addr    00000070
 EQU  INT_VECTORS_SIZE 00000072
 DSEG string       00000200
 CSEG RESET        00000002
-CSEG lcd_command  0000005d
-CSEG lcd_wait     00000067
+CSEG lcd_command  0000005a
+CSEG lcd_wait     0000006a
 CSEG lcd_data     00000061
 CSEG line_two@change_line@3817 0000003b
 CSEG end_cl@change_line@3817 0000003e
-CSEG halt         00000056
+CSEG halt         00000059
 EQU  LCD_RS       00000007
 EQU  LCD_E        00000006
 EQU  LCD_RW       00000005
 EQU  LCD_BE       00000004
-CSEG lcd_wait_loop 0000006c
+CSEG sleep_1ms    0000007b
+CSEG lcd_wait_loop 0000006f
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG sleep_1ms    00000076
-CSEG delayloop_1ms 0000007a
-CSEG sleep_5ms    0000007f
+CSEG delayloop_1ms 0000007f
+CSEG sleep_5ms    00000084
