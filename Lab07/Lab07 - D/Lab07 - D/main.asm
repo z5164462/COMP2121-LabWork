@@ -15,6 +15,7 @@
 .def direction = r23
 .def req_floor = r24
 .def data = r25
+.def key = r12
 .equ l_one = 0b10000000
 .equ l_two = 0b11000000
 .equ PORTLDIR = 0xF0			; 0xF0 = 0b11110000 -> Setting PORTA 7:4 as output and 3:0 as input
@@ -344,10 +345,12 @@ main:
 	sts Moving_flag, temp
 	ldi YL, 50
 	ldi YH, 0
-	do_lcd_command 0b00000001
+	clear_disp
 	mov temp, floor
 	subi temp, -48
 	do_lcd_data temp
+
+
 //////////////////////////////////////////////////////////////////////////////
 	ldi cmask, INITCOLMASK		; load column mask to scan a column
 	clr col
@@ -362,9 +365,9 @@ delay:
 	dec temp
 	brne delay
 
-	lds floor, PINL					; load current status of PORTL pins (lds must be used instead of in)
-	andi floor, ROWMASK			; and the PINL register with row mask
-	cpi floor, 0xF				; check if any row low
+	lds key, PINL				; load current status of PORTL pins (lds must be used instead of in)
+	andi key, ROWMASK			; and the PINL register with row mask
+	cpi key, 0xF				; check if any row low
 	breq nextcol				; if temp is all 1s (i.e 0xF), then there are now lows
 								; if there is a low, find which row it is
 	ldi rmask, INITROWMASK		; load Row mask
@@ -373,7 +376,7 @@ delay:
 rowloop:
 	cpi row, 4					; if all rows scanned, jump to next column
 	breq nextcol
-	mov temp2, floor				
+	mov temp2, key				
 	and temp2, rmask			; mask the input with row mask
 	breq show					; if the bit is clear, a key has been pressed
 								; eg if a key in row 1 is pressed, temp2 = XXXX1101
@@ -393,59 +396,29 @@ show:
 	breq n_a					; we dont need to deal with this for this lab, so go to n_a
 
 	cpi row, 3					; if row = 3, a key in row 3 has been pressed, which is any special character or 0
-	breq check_bot				; zero is the only key we are worried about, so go to check_zero
+	brne n_a					; zero is the only key we are worried about, so go to check_zero
 
-								; formula to convert the coordinates into a number is R*3 + C + 1
-	mov floor, row				; move row to floor
-	lsl floor					; multiply by 2
-	add floor, row				; add row again, to multiply row by 3
-	add floor, col				; add col
-	subi floor, -1				; add 1
-	jmp end_show				
-
-check_bot:						; check if they key pressed in the bottom row is a zero
-	cpi col, 1					; if the button pressed is in column 1, then it is zero
-	brne star					; if not, then we dont need to worry about it
-	ldi floor, 10				; clear temp to show 0
-	jmp end_show			
-
-star:
 	cpi col, 0
 	brne n_a
-	ldi floor, 1
-	jmp end_show
+	ldi key, '*'
+	jmp end_show			
 
 n_a:
-	ser floor					; set all bits in temp to 1 for keys we dont care about
+	ser key					; set all bits in temp to 1 for keys we dont care about
 
 end_show:
-	cpi floor, 10				; check if floor is 10, since 10 requires 2 digits to be printed
-	brne lt10
-
-	rcall show_floor			; set LED bar up 
-
-	ldi floor, 1				; For floor 10, load 1 into floor
-	clear_disp					; clear display initially
-	change_line 2, 14			; set cursor to be after "Floor Request "
-	rcall convert_to_ascii		; convert digit to ascii value
-	write_reg r25				; write the value in r25 onto the LCD
-	
-	ldi floor, 0				; repeat process for 0
-	rcall convert_to_ascii
-	write_reg r25
-	rjmp end_main
-
-lt10:
-	rcall show_floor
-	clear_disp
-	change_line 2, 14
-	rcall convert_to_ascii
-	write_reg r25
-
-
-	//////////////////////////////////////////////////////////
-
-
+	cpi key, '*'				; check if floor is 10, since 10 requires 2 digits to be printed
+	brne wait_loop 
+	change_line 2, 0
+	write 'E'
+	write 'm'
+	write 'e'
+	write 'r'
+	write 'g'
+	write 'e'
+	write 'n'
+	write 'c'
+	write 'y'
 
 
 
@@ -532,7 +505,7 @@ move:
 
 
 	add floor, direction
-	do_lcd_command 0b00000001
+	clear_disp
 	mov temp, floor
 	subi temp, -48
 	do_lcd_data temp
