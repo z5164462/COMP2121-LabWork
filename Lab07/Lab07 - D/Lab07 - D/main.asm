@@ -82,6 +82,13 @@ end_cl:
 	rcall lcd_wait
 .endmacro
 
+.macro lcd_set
+	sbi PORTA, @0
+.endmacro
+.macro lcd_clr
+	cbi PORTA, @0
+.endmacro
+
 .macro clear
 	sts @0, zero
 	sts @0+1, zero
@@ -142,10 +149,14 @@ RESET:
 	out DDRF, temp
 	out DDRA, temp
 
+
 	clr temp
 	out PORTF, temp
 	out PORTA, temp
+
+
 	
+
 	ldi r16,  0b00001010
 	sts EICRA, r16
 	in r16, EIMSK
@@ -318,6 +329,7 @@ End_I:
 //
 
 main:
+
 	ldi floor, 1 ;this is the FlooR <-------------------------------
 	ldi ZL, low(Requests<<1)
 	ldi ZH, high(Requests<<1)
@@ -341,6 +353,11 @@ main:
 
 wait_loop:
 	rcall scan
+	ldi temp, '*'
+	cp input, temp				; check if floor is 10, since 10 requires 2 digits to be printed
+	brne check_count
+
+	rcall emergency_func
 /*	rcall Keypad_input
 	ldi temp, star
 	cp input, temp
@@ -511,12 +528,7 @@ end_convert:
 .equ LCD_RW = 5
 .equ LCD_BE = 4
 
-.macro lcd_set
-	sbi PORTA, @0
-.endmacro
-.macro lcd_clr
-	cbi PORTA, @0
-.endmacro
+
 
 ;
 ; Send a command to the LCD (r16)
@@ -653,7 +665,8 @@ n_a:
 	ser r23					; set all bits in temp to 1 for keys we dont care about
 
 end_show:
-	cpi r23, '*'				; check if floor is 10, since 10 requires 2 digits to be printed
+mov input, r23
+/*	cpi r23, '*'				; check if floor is 10, since 10 requires 2 digits to be printed
 	brne scan_end
 	change_line 2, 0
 	write 'E'
@@ -665,8 +678,9 @@ end_show:
 	write 'n'
 	write 'c'
 	write 'y'
-	rcall emergency_func
+	rcall emergency_func*/
 scan_end:
+	
 pop r23
 pop r22
 pop r21
@@ -685,25 +699,74 @@ emergency_func:
 	push floor
 	push temp
 	push temp2
+
+	clear_disp
+	write 'E'
+	write 'm'
+	write 'e'
+	write 'r'
+	write 'g'
+	write 'e'
+	write 'n'
+	write 'c'
+	write 'y'
+	change_line 2, 0
+	write 'C'
+	write 'a'
+	write 'l'
+	write 'l'
+	write ' '
+	write '0'
+	write '0'
+	write '0'
+	lcd_set 2
+
 	mov r14, floor
 drop_floor_loop:
 	cpi floor, 1
 	breq drop_floor_end
 	lds XL, Seconds
 	lds XH, Seconds+1
+	rcall Strobe_flash
 	cpi XL, 20
-	brlt drop_floor_loop
+	brlt drop_floor_loop	
 	dec floor
 	rcall show_floor
 	clear Seconds
 	rjmp drop_floor_loop
 drop_floor_end:
 
+halt_loop:
+	rcall scan
+	ldi temp, '*'
+	cp input, temp
+	breq return_floor_loop
+	lds XL, Seconds
+	lds XH, Seconds+1
+	cpi XL, 50
+	breq Done_Flash
+	mov temp, XL
+	ror temp
+	brcs E_FLASH
+	ldi temp, 0
+	rjmp out_port
+E_FLASH:
+	ldi temp, 1
+
+out_port:
+	out PORTC, temp
+
+Done_Flash:
+	rcall Strobe_flash
+
+
+	rjmp halt_loop
 return_floor_loop:
 	cp floor, r14
 	breq return_floor_end
 	lds XL, Seconds
 	lds XH, Seconds+1
+	rcall Strobe_flash
 	cpi XL, 20
 	brlt return_floor_loop
 	inc floor
@@ -712,16 +775,38 @@ return_floor_loop:
 	rjmp return_floor_loop
 
 return_floor_end:		
-
-
+	
+	clear_disp
+	mov temp, floor
+	subi temp, -48
+	write_reg temp
 	pop temp2
 	pop temp
 	pop floor
 	pop XH
 	pop XL
+	lcd_clr 1
+	ret
+//////////
+Strobe_flash:
+	push temp
+	push XL
+	mov temp, XL
+	ror temp
+	brcs strobe_on
+	brcc strobe_off
+
+strobe_on:
+	lcd_set 1
+	pop XL
+	pop temp
 	ret
 
-
+strobe_off:
+	lcd_clr 1
+	pop XL
+	pop temp
+	ret
 
 
 /*
