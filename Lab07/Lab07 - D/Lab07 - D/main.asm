@@ -116,7 +116,7 @@ Wait_duration:
 
 
 Requests:
-	.db 1,3,5,7,9
+	.db 4,10
 ; Replace with your application code
 RESET:
 	ldi r16, low(RAMEND)	; Init stack frame
@@ -352,7 +352,7 @@ main:
 
 
 wait_loop:
-	rcall scan
+	//rcall scan
 /*	//rcall Keypad_input
 	ldi temp, star
 	cp input, temp
@@ -377,7 +377,7 @@ check_count:
 stop_here:
 
 
-
+	write 'R'
 	clr temp
 	sts Moving_flag, temp
 	cp XL, r18				; compare flash counter with timer
@@ -668,7 +668,9 @@ end_show:
 	write 'n'
 	write 'c'
 	write 'y'
+	//rcall emergency_func
 scan_end:
+
 pop r23
 pop r22
 pop r21
@@ -680,7 +682,56 @@ pop r16
 ret
 
 
+emergency_func:
+	
+	push XL
+	push XH
+	push floor
+	push temp
+	push temp2
+	push floor
+drop_floor_loop:
+	cpi floor, 1
+	breq drop_floor_end
+	lds XL, Seconds
+	lds XH, Seconds+1
+	cpi XL, 20
+	brlt drop_floor_loop
+	dec floor
+	rcall show_floor
+	clear Seconds
+	rjmp drop_floor_loop
+drop_floor_end:
 
+	
+
+
+
+
+
+
+	pop temp
+return_floor_loop:
+	cp floor, temp
+	breq return_floor_end
+	lds XL, Seconds
+	lds XH, Seconds+1
+	cpi XL, 20
+	brlt return_floor_loop
+	inc floor
+	rcall show_floor
+	clear Seconds
+	rjmp return_floor_loop
+
+return_floor_end:		
+
+
+	pop temp2
+	pop temp
+	pop floor
+	pop XH
+	pop XL
+	ret
 
 
 /*

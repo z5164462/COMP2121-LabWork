@@ -44,7 +44,6 @@
   <End_I><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>318</LINE></End_I>
   <show_floor><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>456</LINE></show_floor>
   <wait_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>354</LINE></wait_loop>
-  <scan><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>593</LINE></scan>
   <check_count><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>367</LINE></check_count>
   <stop_here><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>377</LINE></stop_here>
   <choose_direction><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>407</LINE></choose_direction>
@@ -61,6 +60,7 @@
   <end_convert><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>504</LINE></end_convert>
   <lcd_wait_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>554</LINE></lcd_wait_loop>
   <delayloop_1ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>577</LINE></delayloop_1ms>
+  <scan><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>593</LINE></scan>
   <colloop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>606</LINE></colloop>
   <end_show><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>658</LINE></end_show>
   <delay><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>612</LINE></delay>
@@ -68,6 +68,11 @@
   <rowloop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>624</LINE></rowloop>
   <show><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>642</LINE></show>
   <n_a><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>655</LINE></n_a>
-  <scan_end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>671</LINE></scan_end>
+  <scan_end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>672</LINE></scan_end>
+  <emergency_func><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>685</LINE></emergency_func>
+  <drop_floor_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>693</LINE></drop_floor_loop>
+  <drop_floor_end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>704</LINE></drop_floor_end>
+  <return_floor_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>714</LINE></return_floor_loop>
+  <return_floor_end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>726</LINE></return_floor_end>
  </LABELS>
 </ASSEMBLER_INFO>

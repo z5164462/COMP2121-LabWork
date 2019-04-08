@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm Mon Apr 08 14:10:10 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm Mon Apr 08 16:11:12 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1385,26 +1385,25 @@ DSEG Seconds      00000202
 DSEG Moving_flag  00000204
 DSEG Debounce     00000205
 DSEG Wait_duration 00000206
-CSEG RESET        00000033
-CSEG EXT_INT0     000000ab
-CSEG EXT_INT1     000000c5
-CSEG Timer0OVF    000000e2
+CSEG RESET        00000031
+CSEG EXT_INT0     000000a9
+CSEG EXT_INT1     000000c3
+CSEG Timer0OVF    000000e0
 CSEG Requests     00000030
 CSEG lcd_command  0000017d
 CSEG lcd_wait     0000018d
 CSEG sleep_5ms    000001a7
 CSEG sleep_1ms    0000019e
 CSEG lcd_data     00000184
-CSEG main         0000010a
-CSEG INT0_END     000000bd
-CSEG INT1_END     000000da
-CSEG Not_second   000000ff
-CSEG End_I        00000103
+CSEG main         00000108
+CSEG INT0_END     000000bb
+CSEG INT1_END     000000d8
+CSEG Not_second   000000fd
+CSEG End_I        00000101
 CSEG show_floor   00000163
-CSEG wait_loop    0000011f
-CSEG scan         000001ad
-CSEG check_count  00000120
-CSEG stop_here    00000129
+CSEG wait_loop    0000011d
+CSEG check_count  0000011d
+CSEG stop_here    00000126
 CSEG choose_direction 00000141
 CSEG no_flash     00000138
 CSEG go_up        00000152
@@ -1425,6 +1424,7 @@ CSEG lcd_wait_loop 00000192
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
 CSEG delayloop_1ms 000001a2
+CSEG scan         000001ad
 CSEG colloop      000001b7
 CSEG end_show     000001dc
 CSEG delay        000001bc
@@ -1433,5 +1433,10 @@ CSEG rowloop      000001c5
 CSEG show         000001d2
 CSEG n_a          000001db
 CSEG scan_end     00000208
-CSEG line_two@change_line@4498 000001e8
-CSEG end_cl@change_line@4498 000001ed
+CSEG line_two@change_line@4503 000001e8
+CSEG end_cl@change_line@4503 000001ed
+CSEG emergency_func 00000211
+CSEG drop_floor_loop 00000217
+CSEG drop_floor_end 00000226
+CSEG return_floor_loop 00000227
+CSEG return_floor_end 00000236
