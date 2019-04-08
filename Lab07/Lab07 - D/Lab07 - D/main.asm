@@ -14,7 +14,7 @@
 .def floor = r20
 .def direction = r23
 .def data = r25
-.def key = r24
+.def req_floor = r24
 .equ l_one = 0b10000000
 .equ l_two = 0b11000000
 .equ PORTLDIR = 0xF0			; 0xF0 = 0b11110000 -> Setting PORTA 7:4 as output and 3:0 as input
@@ -351,6 +351,7 @@ main:
 
 
 //////////////////////////////////////////////////////////////////////////////
+	push r24
 	ldi cmask, INITCOLMASK		; load column mask to scan a column
 	clr col
 
@@ -364,9 +365,9 @@ delay:
 	dec temp
 	brne delay
 
-	lds key, PINL				; load current status of PORTL pins (lds must be used instead of in)
-	andi key, ROWMASK			; and the PINL register with row mask
-	cpi key, 0xF				; check if any row low
+	lds r24, PINL				; load current status of PORTL pins (lds must be used instead of in)
+	andi r24, ROWMASK			; and the PINL register with row mask
+	cpi r24, 0xF				; check if any row low
 	breq nextcol				; if temp is all 1s (i.e 0xF), then there are now lows
 								; if there is a low, find which row it is
 	ldi rmask, INITROWMASK		; load Row mask
@@ -375,7 +376,7 @@ delay:
 rowloop:
 	cpi row, 4					; if all rows scanned, jump to next column
 	breq nextcol
-	mov temp2, key				
+	mov temp2, r24				
 	and temp2, rmask			; mask the input with row mask
 	breq show					; if the bit is clear, a key has been pressed
 								; eg if a key in row 1 is pressed, temp2 = XXXX1101
@@ -399,14 +400,14 @@ show:
 
 	cpi col, 0
 	brne n_a
-	ldi key, '*'
+	ldi r24, '*'
 	jmp end_show			
 
 n_a:
-	ser key					; set all bits in temp to 1 for keys we dont care about
+	ser r24					; set all bits in temp to 1 for keys we dont care about
 
 end_show:
-	cpi key, '*'				; check if floor is 10, since 10 requires 2 digits to be printed
+	cpi r24, '*'				; check if floor is 10, since 10 requires 2 digits to be printed
 	brne wait_loop 
 	change_line 2, 0
 	write 'E'
@@ -419,7 +420,7 @@ end_show:
 	write 'c'
 	write 'y'
 
-
+pop r24
 
 wait_loop:
 

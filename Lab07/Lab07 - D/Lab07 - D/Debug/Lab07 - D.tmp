@@ -22,26 +22,26 @@
   <FILE>Lab07 - D.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <Count><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>92</LINE></Count>
-  <Seconds><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>94</LINE></Seconds>
-  <Moving_flag><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>96</LINE></Moving_flag>
-  <Debounce><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>98</LINE></Debounce>
-  <Wait_duration><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>100</LINE></Wait_duration>
-  <RESET><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>122</LINE></RESET>
-  <EXT_INT0><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>221</LINE></EXT_INT0>
-  <EXT_INT1><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>253</LINE></EXT_INT1>
-  <Timer0OVF><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>289</LINE></Timer0OVF>
-  <Requests><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>119</LINE></Requests>
+  <Count><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>91</LINE></Count>
+  <Seconds><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>93</LINE></Seconds>
+  <Moving_flag><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>95</LINE></Moving_flag>
+  <Debounce><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>97</LINE></Debounce>
+  <Wait_duration><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>99</LINE></Wait_duration>
+  <RESET><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>121</LINE></RESET>
+  <EXT_INT0><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>220</LINE></EXT_INT0>
+  <EXT_INT1><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>252</LINE></EXT_INT1>
+  <Timer0OVF><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>288</LINE></Timer0OVF>
+  <Requests><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>118</LINE></Requests>
   <lcd_command><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>599</LINE></lcd_command>
   <lcd_wait><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>619</LINE></lcd_wait>
   <sleep_5ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>655</LINE></sleep_5ms>
   <sleep_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>643</LINE></sleep_1ms>
   <lcd_data><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>608</LINE></lcd_data>
-  <main><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>333</LINE></main>
-  <INT0_END><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>243</LINE></INT0_END>
-  <INT1_END><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>277</LINE></INT1_END>
-  <Not_second><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>315</LINE></Not_second>
-  <End_I><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>319</LINE></End_I>
+  <main><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>332</LINE></main>
+  <INT0_END><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>242</LINE></INT0_END>
+  <INT1_END><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>276</LINE></INT1_END>
+  <Not_second><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>314</LINE></Not_second>
+  <End_I><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>318</LINE></End_I>
   <show_floor><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>527</LINE></show_floor>
   <colloop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>358</LINE></colloop>
   <delay><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lab07\Lab07 - D\Lab07 - D\main.asm</FILE><LINE>364</LINE></delay>
