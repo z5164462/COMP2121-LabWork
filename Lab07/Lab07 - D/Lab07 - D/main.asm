@@ -357,7 +357,7 @@ main:
 
 colloop:
 	cpi col, 4					; check if all columns scanned
-	breq main					; restart scan if all cols scanned
+	breq wait_loop				; restart scan if all cols scanned
 	sts PORTL, cmask			; scan a column (sts used instead of out since PORTL is in extended I/O space)
 	ldi temp, 0xFF				; slow down scan operation (???? WHY ????)
 
