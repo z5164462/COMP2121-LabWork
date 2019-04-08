@@ -13,9 +13,8 @@
 .def input = r6
 .def floor = r20
 .def direction = r23
-.def req_floor = r24
 .def data = r25
-.def key = r12
+.def key = r24
 .equ l_one = 0b10000000
 .equ l_two = 0b11000000
 .equ PORTLDIR = 0xF0			; 0xF0 = 0b11110000 -> Setting PORTA 7:4 as output and 3:0 as input
