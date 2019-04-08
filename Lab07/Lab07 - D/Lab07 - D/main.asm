@@ -350,80 +350,9 @@ main:
 	do_lcd_data temp
 
 
-//////////////////////////////////////////////////////////////////////////////
-	push r24
-	ldi cmask, INITCOLMASK		; load column mask to scan a column
-	clr col
-
-colloop:
-	cpi col, 4					; check if all columns scanned
-	breq wait_loop				; restart scan if all cols scanned
-	sts PORTL, cmask			; scan a column (sts used instead of out since PORTL is in extended I/O space)
-	ldi temp, 0xFF				; slow down scan operation (???? WHY ????)
-
-delay: 
-	dec temp
-	brne delay
-
-	lds r24, PINL				; load current status of PORTL pins (lds must be used instead of in)
-	andi r24, ROWMASK			; and the PINL register with row mask
-	cpi r24, 0xF				; check if any row low
-	breq nextcol				; if temp is all 1s (i.e 0xF), then there are now lows
-								; if there is a low, find which row it is
-	ldi rmask, INITROWMASK		; load Row mask
-	clr row
-
-rowloop:
-	cpi row, 4					; if all rows scanned, jump to next column
-	breq nextcol
-	mov temp2, r24				
-	and temp2, rmask			; mask the input with row mask
-	breq show					; if the bit is clear, a key has been pressed
-								; eg if a key in row 1 is pressed, temp2 = XXXX1101
-								; rmask should equal 00000010
-								; when AND is used, result is 00000000 -> button pressed
-	inc row						; move to next row
-	lsl rmask					; left shift mask to check next row
-	jmp rowloop
-
-nextcol:						; jump to next column when row scan over
-	lsl cmask					; left shift mask to check next col
-	inc col
-	jmp colloop
-
-show:
-	cpi col, 3					; if column = 3, a key in column 3 is pressed, which is a letter key
-	breq n_a					; we dont need to deal with this for this lab, so go to n_a
-
-	cpi row, 3					; if row = 3, a key in row 3 has been pressed, which is any special character or 0
-	brne n_a					; zero is the only key we are worried about, so go to check_zero
-
-	cpi col, 0
-	brne n_a
-	ldi r24, '*'
-	jmp end_show			
-
-n_a:
-	ser r24					; set all bits in temp to 1 for keys we dont care about
-
-end_show:
-	cpi r24, '*'				; check if floor is 10, since 10 requires 2 digits to be printed
-	brne wait_loop 
-	change_line 2, 0
-	write 'E'
-	write 'm'
-	write 'e'
-	write 'r'
-	write 'g'
-	write 'e'
-	write 'n'
-	write 'c'
-	write 'y'
-
-pop r24
 
 wait_loop:
-
+	rcall scan
 /*	//rcall Keypad_input
 	ldi temp, star
 	cp input, temp
@@ -661,7 +590,94 @@ sleep_5ms:
 	ret
 
 
+scan:
+//////////////////////////////////////////////////////////////////////////////
+	push r16
+	push r17
+	push r18
+	push r19
+	push r20
+	push r21
+	push r22
+	push r23
+	ldi cmask, INITCOLMASK		; load column mask to scan a column
+	clr col
 
+colloop:
+	cpi col, 4					; check if all columns scanned
+	breq end_show			; restart scan if all cols scanned
+	sts PORTL, cmask			; scan a column (sts used instead of out since PORTL is in extended I/O space)
+	ldi temp, 0xFF				; slow down scan operation (???? WHY ????)
+
+delay: 
+	dec temp
+	brne delay
+
+	lds r23, PINL				; load current status of PORTL pins (lds must be used instead of in)
+	andi r23, ROWMASK			; and the PINL register with row mask
+	cpi r23, 0xF				; check if any row low
+	breq nextcol				; if temp is all 1s (i.e 0xF), then there are now lows
+								; if there is a low, find which row it is
+	ldi rmask, INITROWMASK		; load Row mask
+	clr row
+
+rowloop:
+	cpi row, 4					; if all rows scanned, jump to next column
+	breq nextcol
+	mov temp2, r23				
+	and temp2, rmask			; mask the input with row mask
+	breq show					; if the bit is clear, a key has been pressed
+								; eg if a key in row 1 is pressed, temp2 = XXXX1101
+								; rmask should equal 00000010
+								; when AND is used, result is 00000000 -> button pressed
+	inc row						; move to next row
+	lsl rmask					; left shift mask to check next row
+	jmp rowloop
+
+nextcol:						; jump to next column when row scan over
+	lsl cmask					; left shift mask to check next col
+	inc col
+	jmp colloop
+
+show:
+	cpi col, 3					; if column = 3, a key in column 3 is pressed, which is a letter key
+	breq n_a					; we dont need to deal with this for this lab, so go to n_a
+
+	cpi row, 3					; if row = 3, a key in row 3 has been pressed, which is any special character or 0
+	brne n_a					; zero is the only key we are worried about, so go to check_zero
+
+	cpi col, 0
+	brne n_a
+
+	ldi r23, '*'
+	jmp end_show			
+
+n_a:
+	ser r23					; set all bits in temp to 1 for keys we dont care about
+
+end_show:
+	cpi r23, '*'				; check if floor is 10, since 10 requires 2 digits to be printed
+	brne scan_end
+	change_line 2, 0
+	write 'E'
+	write 'm'
+	write 'e'
+	write 'r'
+	write 'g'
+	write 'e'
+	write 'n'
+	write 'c'
+	write 'y'
+scan_end:
+pop r23
+pop r22
+pop r21
+pop r20
+pop r19
+pop r18
+pop r17
+pop r16
+ret
 
 
 
