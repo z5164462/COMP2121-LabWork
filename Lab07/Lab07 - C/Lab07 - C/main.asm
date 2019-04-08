@@ -163,7 +163,7 @@ delay:
 	dec temp
 	brne delay
 
-	lds floor, PINL				; load current status of PORTL pins (lds must be used instead of in)
+	lds floor, PINL					; load current status of PORTL pins (lds must be used instead of in)
 	andi floor, ROWMASK			; and the PINL register with row mask
 	cpi floor, 0xF				; check if any row low
 	breq nextcol				; if temp is all 1s (i.e 0xF), then there are now lows
