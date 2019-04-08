@@ -115,8 +115,10 @@ Wait_duration:
 
 
 
+
+
 Requests:
-	.db 4,10
+	.db 3,5,7,9
 ; Replace with your application code
 RESET:
 	ldi r16, low(RAMEND)	; Init stack frame
@@ -129,22 +131,14 @@ RESET:
 	inc one					; one
 
 	ser r16
-	out DDRC, r16			; Enabling Timer interrupt
+	out DDRC, r16			
 	out DDRG, r16
 	clr r16
-	out DDRD, r16
-	ldi r17, 0b01010101
-	ldi r18, 0b110001
-	out PORTC, r17
-	out PORTG, r18
+	out DDRD, r16			; Enabling Timer interrupt
 
 	ldi temp, PORTLDIR			; set ports A, C, F, G, L
 	sts DDRL, temp
 	ser temp
-	out DDRC, temp
-	out PORTC, temp
-	out DDRG, temp
-	out PORTG, temp
 	out DDRF, temp
 	out DDRA, temp
 
@@ -167,12 +161,7 @@ RESET:
 	sts TIMSK0, temp
 
 //from LCD-example LCD setup
-	ser r16
-	out DDRF, r16
-	out DDRA, r16
-	clr r16
-	out PORTF, r16
-	out PORTA, r16
+
 
 	do_lcd_command 0b00111000 ; 2x5x7
 	rcall sleep_5ms
@@ -262,7 +251,7 @@ EXT_INT1:
 
 	lds r24, Seconds
 	lds r25, Debounce+1
-	subi r25, -2
+	subi r25, -1
 	cp r25, r24
 	brge INT1_END
 
@@ -301,10 +290,9 @@ Timer0OVF:
 	ldi temp, high(clock_speed)
 	cpc r25, temp
 	brne Not_second
+	
 	lds r24, Seconds			; increment seconds every 1/10 of second
 	lds r25, Seconds+1
-
-
 	adiw r25:r24, 1
 	sts Seconds, r24
 	sts Seconds+1, r25
@@ -352,17 +340,21 @@ main:
 
 
 wait_loop:
-	//rcall scan
-/*	//rcall Keypad_input
+	rcall scan
+/*	rcall Keypad_input
 	ldi temp, star
 	cp input, temp
 	brne check_count
-	write 'A'
+	write 'A'*/
+/*	push r24
+	push r25
 	lds r24, Seconds
 	lds r25, Seconds+1
 	adiw r25:r24, 1
 	sts Seconds, r24
-	sts Seconds+1, r25*/
+	sts Seconds+1, r25
+	pop r25
+	pop r24*/
 
 check_count:
 
@@ -377,7 +369,7 @@ check_count:
 stop_here:
 
 
-	write 'R'
+
 	clr temp
 	sts Moving_flag, temp
 	cp XL, r18				; compare flash counter with timer
@@ -457,6 +449,8 @@ show_floor:
 ;prologue
 ;	push YL
 ;	push YH
+	push XL
+	push XH
 	push floor
 	push r16
 
@@ -483,8 +477,11 @@ end_show_floor:
 	out PORTG, XH
 	out PORTC, XL
 
+
 pop r16
 pop floor
+pop XH
+pop XL
 ;pop YH
 ;pop YL
 ret
@@ -668,9 +665,8 @@ end_show:
 	write 'n'
 	write 'c'
 	write 'y'
-	//rcall emergency_func
+	rcall emergency_func
 scan_end:
-
 pop r23
 pop r22
 pop r21
@@ -689,7 +685,7 @@ emergency_func:
 	push floor
 	push temp
 	push temp2
-	push floor
+	mov r14, floor
 drop_floor_loop:
 	cpi floor, 1
 	breq drop_floor_end
@@ -703,16 +699,8 @@ drop_floor_loop:
 	rjmp drop_floor_loop
 drop_floor_end:
 
-	
-
-
-
-
-
-
-	pop temp
 return_floor_loop:
-	cp floor, temp
+	cp floor, r14
 	breq return_floor_end
 	lds XL, Seconds
 	lds XH, Seconds+1
@@ -732,6 +720,8 @@ return_floor_end:
 	pop XH
 	pop XL
 	ret
+
+
 
 
 /*
