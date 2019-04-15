@@ -397,28 +397,44 @@ main:
 
 
 */
-	
+read_queue:
 	rcall scan
 	lds temp1, Queue_len
 
-	cpi temp1, 0
-	breq end_main
-	ldi XL, low(Queue)
-	ldi XH, high(Queue)
-	ld requested_floor, X+
-	mov arg1, requested_floor
-	
+	cpi temp1, 3
+	breq disp_queue
 
+	
+	rjmp read_queue
+disp_queue:
+	ldi ZL, low(Queue)
+	ldi ZH, high(Queue)
+	clr counter 
+	clear Seconds
+disp_q_loop:
+	ldi temp1, 3
+	cp counter, temp1
+	breq end_main
+	ld current_floor, Z+
+	mov arg1, current_floor
 	rcall convert_to_ascii
-	mov current_floor, arg1
 	rcall show_floor
 	lds temp1, Queue_len
 	dec temp1
 	sts Queue_len, temp1
+	clear Seconds
+pause:
+	lds r24, Seconds
+	lds r25, Seconds+1
+	cpi r24, 20
+	brlt pause
+	
+	inc counter
+	
+	rjmp disp_q_loop
 
-	//clear_disp
 end_main:
-	rjmp main
+	rjmp end_main
 
 
 
@@ -704,8 +720,12 @@ start:
 	ldi ZL, low(divisors<<1)
 	ldi ZH, high(divisors<<1)
 	ldi r20, 0x30		// ascii value for zero
-
+	clr r8
+	clr r9
 convert_loop:
+	ldi temp2, 5
+	cp r9, temp2
+	breq end_convert
 	rjmp divide
 
 	// r19:r18 hold the dividend (numerator)
@@ -731,7 +751,7 @@ end_divide:
 	//r23:r22 holds the remainder, r25:r24 holds the quotient
 
 	movw arg2:arg1, r19:r18 //the remainder moves to the dividend to be divided again
-	
+	inc r9
 	cpi r24, 0
 	breq check_zero
 	mov r7, r20	//r7 holds ASCII val for '0'
@@ -740,11 +760,12 @@ end_divide:
 	//st X+, r7 //store ASCII val in next part of data memory
 
 	write_reg r7
-
+	inc r8
+	rjmp convert_loop
 check_zero:
-	cpi r23, 0
-	cpi r22, 0
-	breq end_convert
+	cp r8, zero
+	breq convert_loop
+	write '0'
 
 	rjmp convert_loop
 
