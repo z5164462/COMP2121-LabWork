@@ -197,10 +197,13 @@ RESET:
 
 	ldi lift_status, 0b00000011
 	ldi current_floor, 1
+	
 
     clr zero   			 ; zero
     clr one   				 
     inc one   				 ; one
+
+	sts Queue_len, zero
 
     ldi temp1, PORTLDIR   	 ;p7-4 outputs, p3-0 inputs
     sts DDRL, temp1
@@ -250,7 +253,7 @@ RESET:
     do_lcd_command 0b00000110 ; increment, no display shift
     do_lcd_command 0b00001110 ; Cursor on, bar, no blink
 
-	ldi temp2, 'H'
+	/*ldi temp2, 'H'
 	write_reg temp2
 	ldi temp2,'e'
 	write_reg temp2
@@ -259,7 +262,7 @@ RESET:
 	write_reg temp2
 	ldi temp2, 'o'
 	write_reg temp2
-    sei
+    sei*/
     jmp main
 
 
@@ -390,9 +393,13 @@ main:
 
 */
 	rcall scan
+	lds temp1, Queue_len
+	cpi temp1, 0
+	breq end_main
 	lds requested_floor, Queue
 	mov requested_floor, arg1
 	rcall convert_to_ascii
+end_main:
 	rjmp main
 
 
@@ -453,8 +460,8 @@ sleep_1ms:
     ldi r24, low(DELAY_1MS)
 
 delayloop_1ms:
-    sbiw r25:r24, 1
-    brne delayloop_1ms
+;   sbiw r25:r24, 1
+;   brne delayloop_1ms
     pop r25
     pop r24
     ret
@@ -498,7 +505,7 @@ ldi XH, high(Queue)
 clr counter // counter = 0
 
 cp current_floor, input_value //if the current floor is the input floor, break to end
-breq end_insert_request
+breq end_insert_loop
 lds r22, Queue_len
 
 check_register_bit goingUp    // check the goingUp bit
@@ -516,7 +523,7 @@ up_ascending_loop:
     breq end_search
     ld temp1, X   		 ; load floor from output array
     cp input_value, temp1   		 ; check if input floor already exists
-    breq end_insert_request    ; quit if it does
+    breq end_insert_loop    ; quit if it does
     brlo insert_start    ; if input floor lower than ith floor, insert
     cp temp1, current_floor   		 ; compare ith floor to current floor
     brlo insert_start    ; if ith < current, insert
@@ -529,7 +536,7 @@ up_descending_loop:
     breq end_search   	 
     ld temp1, X   		 ; load floor from output array
     cp input_value, temp1   		 ; check if input floor already exists
-    breq end_insert_request    ; quit if it does
+    breq end_insert_loop    ; quit if it does
     cp temp1, current_floor   		 ; compare ith floor to current floor
     brlo down_search    ; if input floor < current floor and ith floor < current floor jmp to down search
     adiw X, 1   		 ; increment output array
@@ -546,7 +553,7 @@ down_descending_loop:
     breq end_search   	 
     ld temp1, X   		 ; load floor from output array
     cp temp1, input_value   		 ; check if input floor already exists
-    breq end_insert_request    ; quit if it does
+    breq end_insert_loop    ; quit if it does
     brlo insert_start    ; if current floor < input floor insert here
     cp current_floor, temp1   		 ; compare current floor to ith floor
     brlo insert_start    
@@ -559,7 +566,7 @@ down_ascending_loop:
     breq end_search   	 
     ld temp1, X   		 ; load floor from output array
     cp temp1, input_value   		 ; check if input floor already exists
-    breq end_insert_request    ; quit if it does
+    breq end_insert_loop    ; quit if it does
     cp current_floor, temp1   		 ; compare ith floor to current floor
     brlo up_search   	 ; if ith floor > current and input floor > current floor, jmp to upsearch
     adiw X, 1   		 ; increment output array
@@ -658,7 +665,7 @@ convert_to_ascii:
 	push ZH
 
 
-	change_line 2, 14
+	;change_line 2, 14
 start:
 	ldi ZL, low(divisors<<1)
 	ldi ZH, high(divisors<<1)
@@ -852,7 +859,7 @@ check_bottom_row:
 	jmp scan_end
 
 asterisk:
-	rcall emergency_func
+	;rcall emergency_func
 	rjmp scan_end
 
 	
