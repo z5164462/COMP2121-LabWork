@@ -13,6 +13,8 @@
 .dseg
 Queue_len:
     .byte 1
+Queue:
+	.byte 10
 Count:
     .byte 2
 Seconds:
@@ -39,7 +41,7 @@ floor_array?
 .def one = r4
 .def counter = r7
 .def current_floor = r16
-.def next_floor = r17
+.def requested_floor = r17
 .def input_value = r18
 .def lift_status = r19
 .def temp1 = r20
@@ -182,8 +184,8 @@ end_cl:
 
 //CSEG MEMORY STORAGE
 
-requests:
-   	 .db 5, 0
+/*requests:
+   	 .db 5, 0*/
 divisors:
 	 .dw 10000, 1000, 100, 10, 1
 
@@ -192,6 +194,9 @@ RESET:
     out SPL, temp1
     ldi temp1, high(RAMEND)
     out SPH, temp1
+
+	ldi lift_status, 0b00000011
+	ldi current_floor, 1
 
     clr zero   			 ; zero
     clr one   				 
@@ -366,7 +371,7 @@ End_I:
 
 // Function to insert input floor into list
 // parameters Address of queue (X), input_floor (arg1), current_floor (global), direction (b1 of r20, global)
-// will set next_floor (global), direction (b1 of r20, global)
+// will set requested_floor (global), direction (b1 of r20, global)
 
 
 
@@ -385,9 +390,9 @@ main:
 
 */
 	rcall scan
-	ldi XL, (requests<<1)
-	ldi XH, requests
-	lpm
+	lds requested_floor, Queue
+	mov requested_floor, arg1
+	rcall convert_to_ascii
 	rjmp main
 
 
@@ -477,7 +482,7 @@ push temp2
 
 push counter
 //r16 current_floor global
-//r17 next_floor return value
+//r17 requested_floor return value
 push r18    //parameter input_value
 //r19 lift_status global
 push r20    //temp1
@@ -486,7 +491,8 @@ push r22
 push XL
 push XH
 
-
+ldi XL, low(Queue)
+ldi XH, high(Queue)
 
 
 clr counter // counter = 0
@@ -509,7 +515,7 @@ up_ascending_loop:
     cp counter, r22   		 ; compare counter to len (check if end of list reached)
     breq end_search
     ld temp1, X   		 ; load floor from output array
-    cp r17, temp1   		 ; check if input floor already exists
+    cp input_value, temp1   		 ; check if input floor already exists
     breq end_insert_request    ; quit if it does
     brlo insert_start    ; if input floor lower than ith floor, insert
     cp temp1, current_floor   		 ; compare ith floor to current floor
@@ -539,7 +545,7 @@ down_descending_loop:
     cp counter, r22   		 ; compare counter to len (check if end of list reached)
     breq end_search   	 
     ld temp1, X   		 ; load floor from output array
-    cp temp1, r17   		 ; check if input floor already exists
+    cp temp1, input_value   		 ; check if input floor already exists
     breq end_insert_request    ; quit if it does
     brlo insert_start    ; if current floor < input floor insert here
     cp current_floor, temp1   		 ; compare current floor to ith floor
@@ -577,7 +583,7 @@ insert_loop:
     rjmp insert_loop
 
 end_insert_loop:
-end_insert_request:
+
 
     sts Queue_len, r22   	 ;store new length back in memory
 
