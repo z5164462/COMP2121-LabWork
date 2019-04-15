@@ -206,17 +206,22 @@ RESET:
 	sts Queue_len, zero
 
     ldi temp1, PORTLDIR   	 ;p7-4 outputs, p3-0 inputs
+	ldi temp2, 0b00001111;send 1 to p3-0 to activate pull up resistors
     sts DDRL, temp1
-    ser temp1   			 ;send 1 to p3-0 to activate pull up resistors
-    sts PORTL, temp1
+	sts PORTL, temp1
 
+	nop
+ 			 
+
+	ser temp1
     out DDRC, temp1   		 ;LED Lower
     out DDRG, temp1   		 ;LED Higher
     out DDRD, temp1   		 ;Buttons?
     ldi temp1, 0b01010101    ;LED testing
-    ldi temp2, 0b110001
+    ldi temp2, 0
     out PORTC, temp1   	 ;LED lower
     out PORTG, temp2   	 ;LED higher
+
     ldi temp1,  0b00001010    ;falling edges for interrupts 1 and 0
     sts EICRA, temp1   	 
 
@@ -392,13 +397,26 @@ main:
 
 
 */
+	
 	rcall scan
 	lds temp1, Queue_len
+
 	cpi temp1, 0
 	breq end_main
-	lds requested_floor, Queue
-	mov requested_floor, arg1
+	ldi XL, low(Queue)
+	ldi XH, high(Queue)
+	ld requested_floor, X+
+	mov arg1, requested_floor
+	
+
 	rcall convert_to_ascii
+	mov current_floor, arg1
+	rcall show_floor
+	lds temp1, Queue_len
+	dec temp1
+	sts Queue_len, temp1
+
+	//clear_disp
 end_main:
 	rjmp main
 
@@ -460,8 +478,8 @@ sleep_1ms:
     ldi r24, low(DELAY_1MS)
 
 delayloop_1ms:
-;   sbiw r25:r24, 1
-;   brne delayloop_1ms
+   sbiw r25:r24, 1
+   brne delayloop_1ms
     pop r25
     pop r24
     ret
@@ -505,13 +523,22 @@ ldi XH, high(Queue)
 clr counter // counter = 0
 
 cp current_floor, input_value //if the current floor is the input floor, break to end
-breq end_insert_loop
+brne input_continue
+jmp end_insert_loop
+input_continue:
 lds r22, Queue_len
 
+cpi r18, 10
+breq test
+back:
 check_register_bit goingUp    // check the goingUp bit
 breq down_search    // if zero, sort down
 rjmp up_search   	 //else sort up
 
+test:
+ser temp1
+out PORTC, temp1
+rjmp back
 
 //r7 counter r22 len
 
@@ -609,12 +636,14 @@ end_insert_loop:
 
 //SHOW_FLOOR:
 
-//input r22 = floor, output X = binary representation
+
 
 show_floor:
 ;prologue
 ;    push YL
 ;    push YH
+push XL
+push XH
     push current_floor
     push counter
 
@@ -641,6 +670,8 @@ end_show_floor:
     out PORTG, XH
     out PORTC, XL
 
+pop XH
+pop XL
 pop counter
 pop current_floor
 
@@ -664,6 +695,9 @@ convert_to_ascii:
 	push ZL
 	push ZH
 
+
+
+	clr arg2 ///THIS IS ONLY FOR WHEN NUMBERS LESS THAN 255
 
 	;change_line 2, 14
 start:
@@ -800,7 +834,7 @@ scan:
 
 colloop:
     cpi r17, 4   				 ; check if all columns scanned
-    breq end_show   		 ; restart scan if all cols scanned
+    breq scan_end   		 ; restart scan if all cols scanned
     sts PORTL, r19   		 ; scan a column (sts used instead of out since PORTL is in extended I/O space)
     ldi temp1, 0xFF   			 ; slow down scan operation (???? WHY ????)
 
@@ -839,7 +873,7 @@ show:
     breq scan_end   				 ; we dont need to deal with this for this lab, so go to n_a
 
     cpi r16, 3   				 ; if row = 3, a key in row 3 has been pressed, which is any 								special character or 0
-    brne check_bottom_row				 ; zero is the only key we are worried about, so go to check_zero
+    breq check_bottom_row				 ; zero is the only key we are worried about, so go to check_zero
 	
 	mov arg1, r16				; move row to floor
 	lsl arg1					; multiply by 2
