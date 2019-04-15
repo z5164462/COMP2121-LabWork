@@ -133,9 +133,11 @@ end_cl:
 .endmacro
 
 .macro write   							 // write immediate data to LCD screen
-    ldi temp1, @0
+    push temp1
+	ldi temp1, @0
     rcall lcd_data
     rcall lcd_wait
+	pop temp1
 .endmacro
 
 .macro write_reg   						 // write register data to LCD screen
@@ -180,8 +182,8 @@ end_cl:
 
 //CSEG MEMORY STORAGE
 
-Requests:
-   	 .db 1,3,5,7,9,0
+requests:
+   	 .db 5, 0
 divisors:
 	 .dw 10000, 1000, 100, 10, 1
 
@@ -371,16 +373,22 @@ End_I:
 
 //MAIN:
 main:
-	ldi arg1, 12
-	clr arg2
-	rcall convert_to_ascii
-    rjmp main
+/*	scan keypad
+		
+
+	if loaded 0 from requests, do nothing
+	
+    
 
 
 
 
-//
-
+*/
+	rcall scan
+	ldi XL, (requests<<1)
+	ldi XH, requests
+	lpm
+	rjmp main
 
 
 
@@ -490,12 +498,6 @@ lds r22, Queue_len
 check_register_bit goingUp    // check the goingUp bit
 breq down_search    // if zero, sort down
 rjmp up_search   	 //else sort up
-
-//r17 input floor
-//r16 len -->r22
-//r18 counter --> r7
-//r19 ith number
-//r20 current floor
 
 
 //r7 counter r22 len
@@ -806,7 +808,7 @@ rowloop:
     breq nextcol
     mov temp2, arg1  			 
     and temp2, r18   		 ; mask the input with row mask
-    breq show   				 ; if the bit is clear, a key has been pressed
+    breq show   				; if the bit is clear, a key has been pressed
    							 ; eg if a key in row 1 is pressed, temp2 = XXXX1101
    							 ; rmask should equal 00000010
    							 ; when AND is used, result is 00000000 -> button pressed
@@ -820,23 +822,37 @@ nextcol:   					 ; jump to next column when row scan over
     jmp colloop
 
 show:
-    cpi r17, 3   				 ; if column = 3, a key in column 3 is pressed, which is a 									letter key
-    breq n_a   				 ; we dont need to deal with this for this lab, so go to n_a
+    cpi r17, 3   			; if column = 3, a key in column 3 is pressed, which is a 									letter key
+    breq scan_end   				 ; we dont need to deal with this for this lab, so go to n_a
 
     cpi r16, 3   				 ; if row = 3, a key in row 3 has been pressed, which is any 								special character or 0
-    brne n_a   				 ; zero is the only key we are worried about, so go to check_zero
+    brne check_bottom_row				 ; zero is the only key we are worried about, so go to check_zero
+	
+	mov arg1, r16				; move row to floor
+	lsl arg1					; multiply by 2
+	add arg1, r16				; add row again, to multiply row by 3
+	add arg1, r17				; add col
+	subi arg1, -1				; add 1
+	jmp end_show
 
-    cpi r17, 0
-    brne n_a
+check_bottom_row:
+	cpi r17, 0
+	breq asterisk
 
-    ldi arg1, '*'
-    jmp end_show   		 
+	cpi r17, 1
+	ldi arg1, 10
+	breq end_show
 
-n_a:
-    ser arg1   				 ; set all bits in temp to 1 for keys 	we dont care about
+	jmp scan_end
 
+asterisk:
+	rcall emergency_func
+	rjmp scan_end
+
+	
 end_show:
-	mov arg2, arg1
+	mov r18, arg1
+	rcall insert_request
 
 scan_end:
 	pop arg2
