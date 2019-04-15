@@ -196,7 +196,7 @@ RESET:
     out SPH, temp1
 
 	ldi lift_status, 0b00000011
-	ldi current_floor, 1
+	ldi current_floor, 3
 	
 
     clr zero   			 ; zero
