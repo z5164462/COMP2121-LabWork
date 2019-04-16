@@ -184,8 +184,8 @@ end_cl:
 
 //CSEG MEMORY STORAGE
 
-/*requests:
-   	 .db 5, 0*/
+requests:
+   	 .db 3,2,6
 divisors:
 	 .dw 10000, 1000, 100, 10, 1
 
@@ -195,8 +195,8 @@ RESET:
     ldi temp1, high(RAMEND)
     out SPH, temp1
 
-	ldi lift_status, 0b00000011
-	ldi current_floor, 3
+	ldi lift_status, 0b00000001
+	ldi current_floor, 4
 	
 
     clr zero   			 ; zero
@@ -386,6 +386,7 @@ End_I:
 
 //MAIN:
 main:
+
 /*	scan keypad
 		
 
@@ -397,7 +398,7 @@ main:
 
 
 */
-read_queue:
+/*read_queue:
 	rcall scan
 	lds temp1, Queue_len
 
@@ -405,15 +406,33 @@ read_queue:
 	breq disp_queue
 
 	
-	rjmp read_queue
+	rjmp read_queue*/
+clr counter
+ldi ZL, low(requests<<1)
+ldi ZH, high(requests<<1)
+ldi temp2, 5
+insert_queue:
+	cp counter, temp2
+	breq disp_queue
+	lpm input_value, Z+
+	rcall insert_request
+	inc counter
+	rjmp insert_queue
+
 disp_queue:
 	ldi ZL, low(Queue)
 	ldi ZH, high(Queue)
 	clr counter 
 	clear Seconds
+	write '*'
+	lds arg1, Queue_len
+	rcall convert_to_ascii
+	write '*'
+	change_line 2,0
+	mov temp2, arg1
 disp_q_loop:
-	ldi temp1, 3
-	cp counter, temp1
+
+	cp counter, temp2
 	breq end_main
 	ld current_floor, Z+
 	mov arg1, current_floor
@@ -494,8 +513,8 @@ sleep_1ms:
     ldi r24, low(DELAY_1MS)
 
 delayloop_1ms:
-   sbiw r25:r24, 1
-   brne delayloop_1ms
+    ;sbiw r25:r24, 1
+    ;brne delayloop_1ms
     pop r25
     pop r24
     ret
@@ -537,24 +556,19 @@ ldi XH, high(Queue)
 
 
 clr counter // counter = 0
-
+lds r22, Queue_len
 cp current_floor, input_value //if the current floor is the input floor, break to end
 brne input_continue
 jmp end_insert_loop
 input_continue:
-lds r22, Queue_len
 
-cpi r18, 10
-breq test
-back:
+
+
 check_register_bit goingUp    // check the goingUp bit
-breq down_search    // if zero, sort down
-rjmp up_search   	 //else sort up
+breq up_search    // if 1, sort up
+rjmp down_search 	 //else sort down
 
-test:
-ser temp1
-out PORTC, temp1
-rjmp back
+
 
 //r7 counter r22 len
 
@@ -566,7 +580,7 @@ up_ascending_loop:
     breq end_search
     ld temp1, X   		 ; load floor from output array
     cp input_value, temp1   		 ; check if input floor already exists
-    breq end_insert_loop    ; quit if it does
+    breq jumping_to_end_insert    ; quit if it does
     brlo insert_start    ; if input floor lower than ith floor, insert
     cp temp1, current_floor   		 ; compare ith floor to current floor
     brlo insert_start    ; if ith < current, insert
@@ -586,7 +600,8 @@ up_descending_loop:
     inc counter   			 ; increment counter
     rjmp up_descending_loop
 
-
+jumping_to_end_insert:
+rjmp end_insert_loop
 
 down_search:
     cp current_floor, input_value   		 ; compare current floor < input floor
@@ -621,14 +636,19 @@ end_search:
 
 insert_start:    
     inc r22    ;len++   		 ;length of list is now longer
-    
+    write '|'
+	push arg1
+	mov arg1, counter
+	rcall convert_to_ascii
+	pop arg1
+
 
 insert_loop:
     cp r22, counter   			 ; comparison of index and list length to check if the end of the list has been reached
     breq end_insert_loop    
-    st X+, input_value
-    mov input_value, temp1
     ld temp1, X
+	st X+, input_value
+    mov input_value, temp1
     inc counter
     rjmp insert_loop
 
@@ -697,8 +717,10 @@ ret
 
 //CONVERT_TO_ASCII
 convert_to_ascii:
-	;prologue
+	;prologueg
 	push r7
+	push r8
+	push r9
 	push r16
 	push r17
 	push r18
@@ -784,6 +806,8 @@ end_convert:
 	pop r18
 	pop r17
 	pop r16
+	pop r9
+	pop r8
 	pop r7
 	ret
 
@@ -919,6 +943,9 @@ asterisk:
 
 	
 end_show:
+	write '('
+	rcall convert_to_ascii
+	write ')'
 	mov r18, arg1
 	rcall insert_request
 
