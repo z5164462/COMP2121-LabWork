@@ -9,6 +9,7 @@
 ; Replace with your application code
 
 ;initial definitions and assignments
+.include "m2560def.inc"
 
 .dseg
 Queue_len:
@@ -120,6 +121,8 @@ b7 = Halted?
 .endmacro
 
 .macro change_line   						 // change line and cursor position on line
+	push temp1
+	push temp2
     ldi temp1, @0
     cpi temp1, 2
     breq line_two
@@ -132,6 +135,8 @@ line_two:
     ori temp2, @1
     do_lcd_command_reg temp2
 end_cl:
+	pop temp2
+	pop temp1
 .endmacro
 
 .macro write   							 // write immediate data to LCD screen
@@ -258,7 +263,7 @@ RESET:
     do_lcd_command 0b00000110 ; increment, no display shift
     do_lcd_command 0b00001110 ; Cursor on, bar, no blink
 
-	/*ldi temp2, 'H'
+	ldi temp2, 'H'
 	write_reg temp2
 	ldi temp2,'e'
 	write_reg temp2
@@ -267,7 +272,8 @@ RESET:
 	write_reg temp2
 	ldi temp2, 'o'
 	write_reg temp2
-    sei*/
+	clear_disp
+    sei
     jmp main
 
 

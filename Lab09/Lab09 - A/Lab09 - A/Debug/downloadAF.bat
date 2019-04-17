@@ -1,0 +1,1 @@
+"D:\Arduino\hardware\tools\avr\bin\avrdude.exe" -C "D:\Arduino\hardware\tools\avr\etc\avrdude.conf" -c wiring -p m2560 -P %1 -b 115200 -U flash:w:%2:i -D
