@@ -221,6 +221,7 @@ RESET:
 	ser temp1
     out DDRC, temp1   		 ;LED Lower
     out DDRG, temp1   		 ;LED Higher
+	clr temp1
     out DDRD, temp1   		 ;Buttons?
     ldi temp1, 0b01010101    ;LED testing
     ldi temp2, 0
