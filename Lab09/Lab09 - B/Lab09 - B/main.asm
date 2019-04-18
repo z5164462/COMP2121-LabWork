@@ -1,12 +1,9 @@
 ;
-; Lab09 - A.asm
+; Lab09 - B.asm
 ;
-; Created: 16/04/2019 8:35:04 PM
+; Created: 18/04/2019 1:31:06 PM
 ; Author : andre
 ;
-
-
-
 
 .include "m2560def.inc"
 
@@ -149,12 +146,19 @@ RESET:
 
 	nop
  			 
-
+	//outputs
 	ser temp1
     out DDRC, temp1   		 ;LED Lower
     out DDRG, temp1   		 ;LED Higher
+	
+	//inputs
 	clr temp1
     out DDRD, temp1   		 ;Buttons?
+
+
+	ldi temp1, 0b00010000
+	out DDRE, temp1
+
     ldi temp1, 0b01010101    ;LED testing
 /*    ldi temp2, 0*/
     out PORTC, temp1   	 ;LED lower
@@ -175,6 +179,16 @@ RESET:
     out TCCR0B, temp1
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
+
+	ldi temp1, 0x2a
+	sts OCR3BL, temp1
+	ldi temp1, 0
+	sts OCR3BH, temp1
+
+	ldi temp1, (1<<CS30)
+	sts TCCR3B, temp1
+	ldi temp1, (1<<COM3A1) | (1<<WGM30)
+	sts TCCR3A, temp1
 
 //from LCD-example LCD setup
     ser temp1
@@ -286,7 +300,7 @@ divisors:
 
 ; Replace with your application code
 main:
-	clr r5
+
 start_loop:
 	lds r24, Seconds
 	lds r25, Seconds+1
@@ -294,8 +308,12 @@ start_loop:
 	brne main
 	clear Seconds
 	clear_disp
-	lds arg1, Speed
+	/*lds arg1, Speed
 	lds arg2, Speed+1
+	rcall convert_to_ascii*/
+	in temp1, PINE
+	mov arg1, temp1
+	clr arg2
 	rcall convert_to_ascii
 	//clear Speed
 	clear Revs
@@ -472,3 +490,4 @@ end_convert:
 	pop r8
 	pop r7
 	ret
+
