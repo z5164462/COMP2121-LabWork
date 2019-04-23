@@ -91,6 +91,12 @@ end_cl:
 .macro lcd_clr   							 // clear bit in PORTA
     cbi PORTA, @0
 .endmacro
+.macro set_motor_speed 
+	ldi temp1, @0
+	sts OCR3BL, temp1
+	clr temp1
+	sts OCR3BH, temp1	
+.endmacro
 
 .dseg
 Count:
@@ -101,6 +107,11 @@ Revs:
 	.byte 2
 Speed:
 	.byte 2
+Debounce0:
+	.byte 2
+Debounce1:
+	.byte 2
+
 
 
 
@@ -113,9 +124,9 @@ Speed:
 jmp RESET
 
 .org INT0addr
-reti
+jmp EXT_INT0
 .org INT1addr
-reti
+jmp EXT_INT1
 .org INT2addr
 jmp EXT_INT2
 
@@ -157,6 +168,7 @@ RESET:
 
 
 	ldi temp1, 0b00010000
+	
 	out DDRE, temp1
 
     ldi temp1, 0b01010101    ;LED testing
@@ -164,12 +176,18 @@ RESET:
     out PORTC, temp1   	 ;LED lower
 /*    out PORTG, temp2   	 ;LED higher*/
 
-    ldi temp1,  0b00010000    ;falling edges for interrupts 1 and 0
+    ldi temp1,  0b000101010    ;falling edges for interrupts 0,1,2
     sts EICRA, temp1   	 
 
+	ldi temp1, 0xFF
+	sts Debounce1, temp1
+	ldi temp1, 0xFF
+	sts Debounce1+1, temp1
 
 
     in temp1, EIMSK
+	ori temp1, (1<<INT0)
+	ori temp1, (1<<INT1)
     ori temp1, (1<<INT2)
     out EIMSK, temp1
     
@@ -180,14 +198,11 @@ RESET:
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
 
-	ldi temp1, 0x2a
-	sts OCR3BL, temp1
-	ldi temp1, 0
-	sts OCR3BH, temp1
+	set_motor_speed 0x4A
 
 	ldi temp1, (1<<CS30)
 	sts TCCR3B, temp1
-	ldi temp1, (1<<COM3A1) | (1<<WGM30)
+	ldi temp1, (1<<COM3B1) | (1<<WGM30)
 	sts TCCR3A, temp1
 
 //from LCD-example LCD setup
@@ -216,6 +231,27 @@ RESET:
 
     jmp main
 
+EXT_INT0:
+	push temp2
+	in temp2, SREG
+	push temp2
+    
+
+//in theory, we should be able to test: check_register_bit, doorsOpen / brne INT0_END
+	//set_motor_speed 0
+	ldi temp1, 0b11110000
+	out PORTC, temp1
+	clear Debounce0
+INT0_END:
+    pop temp2
+    out SREG, temp2
+    pop temp2
+    reti
+
+EXT_INT1:
+	clear Debounce1
+	reti
+
 
 EXT_INT2:
 	push XL
@@ -242,6 +278,66 @@ Timer0OVF:
     lds r24, Count   	 ; increment count
     lds r25, Count + 1
     adiw r25:r24, 1
+
+
+//------ DEBOUNCING FOR BUTTON 0
+	lds r24, Debounce0
+	lds r25, Debounce0+1
+	ldi temp1, 0xFF
+	cp r24, temp1
+	cpc r25, temp1
+	breq skip_db_0
+
+	ldi temp1, low(100)
+	cp r24, temp1
+	brlt still_bouncing_0
+
+//DO ACTION HERE/ CALL FUNCTION HERE
+	set_motor_speed 0x2A
+	//write '^'
+
+	ldi temp1, 0xFF
+	sts Debounce0, temp1
+	sts Debounce0+1, temp1
+	rjmp skip_db_0
+
+still_bouncing_0:
+	adiw r25:r24, 1
+	sts Debounce0, r24
+	sts Debounce0+1, r25
+
+skip_db_0:
+//------
+
+
+//------ DEBOUNCING FOR BUTTON 1
+	lds r24, Debounce1
+	lds r25, Debounce1+1
+	ldi temp1, 0xFF
+	cp r24, temp1
+	cpc r25, temp1
+	breq skip_db_1
+
+	cpi r24, 100
+	brlt still_bouncing_1
+
+//DO ACTION HERE/ CALL FUNCTION HERE
+	set_motor_speed 0x6A
+	//write '!'
+
+	ldi temp1, 0xFF
+	sts Debounce1, temp1
+	sts Debounce1+1, temp1
+	rjmp skip_db_1
+
+still_bouncing_1:
+	adiw r25:r24, 1
+	sts Debounce1, r24
+	sts Debounce1+1, r25
+
+skip_db_1:
+//------
+
     
     cpi r24, low(clock_speed)    ; compare with clock speed to check if 1/10 of second has passed
     ldi temp1, high(clock_speed)
@@ -250,8 +346,11 @@ Timer0OVF:
     lds r24, Seconds   		 ; increment seconds every 1/10 of second
     lds r25, Seconds+1
 
+
 	//grab the revs *4 for this 0.1 second passing
 	// to gev rev/sec do speed/4*10 ie speed*5/2
+
+
 	lds YL, Speed
 	lds YH, Speed+1
 	
@@ -308,13 +407,14 @@ start_loop:
 	brne main
 	clear Seconds
 	clear_disp
-	/*lds arg1, Speed
-	lds arg2, Speed+1
-	rcall convert_to_ascii*/
-	in temp1, PINE
+	lds arg1, Debounce1
+	lds arg2, Debounce1+1
+	rcall convert_to_ascii
+/*	in temp1, PINE
+	andi temp1, 0b00010000
 	mov arg1, temp1
 	clr arg2
-	rcall convert_to_ascii
+	rcall convert_to_ascii*/
 	//clear Speed
 	clear Revs
     rjmp main

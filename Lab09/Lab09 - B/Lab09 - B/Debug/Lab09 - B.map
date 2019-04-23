@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - B\Lab09 - B\main.asm Thu Apr 18 14:57:11 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - B\Lab09 - B\main.asm Tue Apr 23 11:30:43 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1377,30 +1377,39 @@ DSEG Count        00000200
 DSEG Seconds      00000202
 DSEG Revs         00000204
 DSEG Speed        00000206
+DSEG Debounce0    00000208
+DSEG Debounce1    0000020a
 CSEG RESET        00000030
-CSEG EXT_INT2     00000095
-CSEG Timer0OVF    000000a3
-CSEG lcd_command  000000fa
-CSEG lcd_wait     0000010a
-CSEG sleep_5ms    00000124
-CSEG sleep_1ms    0000011b
-CSEG main         000000e2
-CSEG Not_second   000000d1
-CSEG End_I        000000d5
-CSEG divisors     000000dd
-CSEG start_loop   000000e2
-CSEG convert_to_ascii 0000012a
-CSEG lcd_data     00000101
-CSEG lcd_wait_loop 0000010f
+CSEG EXT_INT0     0000009d
+CSEG EXT_INT1     000000aa
+CSEG EXT_INT2     000000af
+CSEG Timer0OVF    000000bd
+CSEG lcd_command  0000014c
+CSEG lcd_wait     0000015c
+CSEG sleep_5ms    00000176
+CSEG sleep_1ms    0000016d
+CSEG main         00000133
+CSEG INT0_END     000000a6
+CSEG skip_db_0    000000e5
+CSEG still_bouncing_0 000000e0
+CSEG skip_db_1    00000100
+CSEG still_bouncing_1 000000fb
+CSEG Not_second   00000122
+CSEG End_I        00000126
+CSEG divisors     0000012e
+CSEG start_loop   00000133
+CSEG convert_to_ascii 0000017c
+CSEG lcd_data     00000153
+CSEG lcd_wait_loop 00000161
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 0000011f
-CSEG start        00000138
-CSEG convert_loop 0000013d
-CSEG end_convert  00000167
-CSEG divide       00000141
-CSEG loop_start   00000145
-CSEG end_divide   0000014f
-CSEG end_loop     0000014e
-CSEG check_zero   0000015c
-CSEG final_number 00000161
+CSEG delayloop_1ms 00000171
+CSEG start        0000018a
+CSEG convert_loop 0000018f
+CSEG end_convert  000001b9
+CSEG divide       00000193
+CSEG loop_start   00000197
+CSEG end_divide   000001a1
+CSEG end_loop     000001a0
+CSEG check_zero   000001ae
+CSEG final_number 000001b3

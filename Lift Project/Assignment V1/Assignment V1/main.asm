@@ -62,14 +62,14 @@ b5 = Flash on?
 b6 = Emergency?
 b7 = Halted?
 */
-.equ stopped =   	 0b00000001    // is floor stopped?
-.equ goingUp =   	 0b00000010    // is lift going up?
-.equ doorsOpen =    0b00000100    // are the doors open?
-.equ opening =   	 0b00001000    // are the doors opening?
-.equ closing =   	 0b00010000    // are the doors closing? if no to open, opening and closing, they closed
-.equ flashing =   	 0b00100000  // is the LED bar flashing
-.equ emergency =    0b01000000    // is there an emergency
-.equ halted =   	 0b10000000    // is the lift stopped
+.equ stopped =   		0b00000001    // is floor stopped?
+.equ goingUp =   		0b00000010    // is lift going up?
+.equ doorsOpen =		0b00000100    // are the doors open?
+.equ opening =   		0b00001000    // are the doors opening?
+.equ closing =   		0b00010000    // are the doors closing? if no to open, opening and closing, they closed
+.equ flashing =   		0b00100000  // is the LED bar flashing
+.equ emergency =		0b01000000    // is there an emergency
+.equ halted =   		0b10000000    // is the lift stopped
 
 //LCD interface constants
 .equ PORTLDIR = 0xF0   		 ; 0xF0 = 0b11110000 -> Setting PORTA 7:4 as output and 3:0 as input
@@ -200,7 +200,9 @@ RESET:
     ldi temp1, high(RAMEND)
     out SPH, temp1
 
-	ldi lift_status, 0b00000001
+	clr lift_status
+
+	cbr lift_status, goingUp
 	ldi current_floor, 4
 	
 
@@ -405,26 +407,28 @@ main:
 
 
 */
-/*read_queue:
+read_queue:
+
 	rcall scan
+	rcall insert_request
 	lds temp1, Queue_len
 
 	cpi temp1, 3
 	breq disp_queue
 
 	
-	rjmp read_queue*/
-clr counter
+	rjmp read_queue
+/*clr counter
 ldi ZL, low(requests<<1)
 ldi ZH, high(requests<<1)
-ldi temp2, 5
+ldi temp2, 3
 insert_queue:
 	cp counter, temp2
 	breq disp_queue
 	lpm input_value, Z+
 	rcall insert_request
 	inc counter
-	rjmp insert_queue
+	rjmp insert_queue*/
 
 disp_queue:
 	ldi ZL, low(Queue)
@@ -520,8 +524,8 @@ sleep_1ms:
     ldi r24, low(DELAY_1MS)
 
 delayloop_1ms:
-    ;sbiw r25:r24, 1
-    ;brne delayloop_1ms
+    sbiw r25:r24, 1
+    brne delayloop_1ms
     pop r25
     pop r24
     ret
@@ -548,12 +552,18 @@ in temp2 , SREG
 push temp2
 
 push counter
+push r16
+push r17
 //r16 current_floor global
 //r17 requested_floor return value
+
 push r18    //parameter input_value
 //r19 lift_status global
+push r19
 push r20    //temp1
 push r22
+push arg1
+push arg2
 
 push XL
 push XH
@@ -667,9 +677,14 @@ end_insert_loop:
     ;epilogue
     pop XH
     pop XL
+	pop arg2
+	pop arg1
     pop r22
     pop r20
+	pop r19
     pop r18
+	pop r17
+	pop r16
     pop counter
     pop temp2
     out SREG, temp2
@@ -871,11 +886,11 @@ Strobe_end:
     pop temp1
 	ret
 	
-//SCAN
+//SCAN				//return value in arg1
 scan:
     push r16 // row
     push r17 // col
-    push r18 // rmask
+    //push r18 // rmask // r18 will be used to return the input_value
     push r19 // cmask
     push temp1
     push temp2 
@@ -954,7 +969,7 @@ end_show:
 	rcall convert_to_ascii
 	write ')'
 	mov r18, arg1
-	rcall insert_request
+
 
 scan_end:
 	pop arg2
@@ -962,7 +977,6 @@ scan_end:
 	pop temp2
 	pop temp1
 	pop r19
-	pop r18
 	pop r17
 	pop r16
 	ret
