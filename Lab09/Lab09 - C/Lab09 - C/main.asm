@@ -179,7 +179,7 @@ RESET:
     out PORTC, temp1   	 ;LED lower
 /*    out PORTG, temp2   	 ;LED higher*/
 
-    ldi temp1,  0b000001010    ;falling edges for interrupts 0,1,2
+    ldi temp1,  0b000101010    ;falling edges for interrupts 0,1,2
     sts EICRA, temp1   	 
 
 
@@ -203,7 +203,7 @@ RESET:
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
 
-	set_motor_speed 0x4A
+	set_motor_speed 0x60
 
 	ldi temp1, (1<<CS31)
 	sts TCCR3B, temp1
@@ -263,41 +263,13 @@ EXT_INT1:
 
 
 EXT_INT2:
-	clear Speed
 	push XL
 	push XH
 	lds XL, Speed
 	lds XH, Speed+1
 	adiw X,1
-	lsr XH
-	ror XL
-	cpi XL, low(50000)
-	ldi temp1, high(50000)
-	cpc YH, temp1
-	breq skip
-	ldi temp1,0b11001100
-	out PORTC, temp1
-skip:
-
 	sts Speed, XL
 	sts Speed+1, XH
-	clear Speed
-/*	ldi temp1, 0b00000010 //see if higher than 2
-	and temp1, XL
-	breq speed_round_down
-	adiw X, 4			//add 1 
-speed_round_down:
- 
-	andi XL, 0b11111100 //clear last 2 bits
-
-	lsr XH
-	ror XL
-	lsr XH
-	ror XL
-	sts Revs, XL
-	sts Revs+1, XH
-	clear Speed*/
-
 	pop XH
 	pop XL
 	reti
@@ -316,84 +288,8 @@ Timer0OVF:
     lds r25, Count + 1
     adiw r25:r24, 1
 
-/*
-//------ DEBOUNCING FOR BUTTON 0
-	lds r24, Debounce0
-	lds r25, Debounce0+1
-	ldi temp1, 0xFF
-	cp r24, temp1
-	cpc r25, temp1
-	breq skip_db_0
-
-	ldi temp1, low(100)
-	cp r24, temp1
-	brlt still_bouncing_0
-
-//DO ACTION HERE/ CALL FUNCTION HERE
-	set_motor_speed 0x2A
-	write '^'
-
-	ldi temp1, 0xFF
-	sts Debounce0, temp1
-	sts Debounce0+1, temp1
-	rjmp skip_db_0
-
-still_bouncing_0:
-	adiw r25:r24, 1
-	sts Debounce0, r24
-	sts Debounce0+1, r25
-
-skip_db_0:
-//------
 
 
-//------ DEBOUNCING FOR BUTTON 1
-	lds r24, Debounce1
-	lds r25, Debounce1+1
-	ldi temp1, 0xFF
-	cp r24, temp1
-	cpc r25, temp1
-	breq skip_db_1
-
-	cpi r24, 100
-	brlt still_bouncing_1
-
-//DO ACTION HERE/ CALL FUNCTION HERE
-	set_motor_speed 0x6A
-	//write '!'
-
-	ldi temp1, 0xFF
-	sts Debounce1, temp1
-	sts Debounce1+1, temp1
-	rjmp skip_db_1
-
-still_bouncing_1:
-	adiw r25:r24, 1
-	sts Debounce1, r24
-	sts Debounce1+1, r25
-
-skip_db_1:
-//------*/
-
-
-/*	lds YL, Speed
-	lds YH, Speed+1
-
-	lsl YH
-	rol YL
-	lsl YH
-	rol YL
-	lds temp1, Revs
-	lds temp2, Revs+1
-	add temp1, YL
-	add temp2, YH
-	sts Revs, temp1
-	sts Revs+1, temp2
-	clear Speed*/
-	sts Speed, zero
-	sts Speed+1, zero
-	ldi temp1, 1
-	out PORTG, temp1
 
 
 
@@ -410,8 +306,21 @@ skip_db_1:
 	//grab the revs *4 for this 0.1 second passing
 	// to gev rev/sec do speed/4*10 ie speed*5/2
 
+	lds YL, Speed
+	lds YH, Speed+1
+	
+	mov temp1, YL
+	mov temp2, YH
+	lsr YH
+	ror YL
+	lsl YL
+	rol YH
+	lsl YL
+	rol YH
 
-
+	sts Revs, YL
+	sts Revs+1, YH
+	clear Speed
 	
 
 
@@ -442,22 +351,21 @@ divisors:
 
 ; Replace with your application code
 main:
-	
+
 start_loop:
 	
-	lds r20, Seconds
-	lds r21, Seconds+1
+	lds r24, Seconds
+	lds r25, Seconds+1
 
-	cpi r20, 4
+	cpi r24, 4
 	brne main
 	clear_disp
-	//write 'P'
+	//write 'P'	
+	clear Seconds
 	lds arg1, Revs
 	lds arg2, Revs+1
 	rcall convert_to_ascii
-
 	clear Revs
-	clear Seconds
 
 
     rjmp main

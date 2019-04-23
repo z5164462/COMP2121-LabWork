@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - C\Lab09 - C\main.asm Tue Apr 23 19:43:11 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - C\Lab09 - C\main.asm Tue Apr 23 20:17:23 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1381,29 +1381,28 @@ CSEG RESET        00000030
 CSEG EXT_INT0     00000097
 CSEG EXT_INT1     00000098
 CSEG EXT_INT2     00000099
-CSEG Timer0OVF    000000b7
-CSEG lcd_command  00000105
-CSEG lcd_wait     00000115
-CSEG sleep_5ms    0000012f
-CSEG sleep_1ms    00000126
-CSEG main         000000ec
-CSEG skip         000000ac
-CSEG Not_second   000000db
-CSEG End_I        000000df
-CSEG divisors     000000e7
-CSEG start_loop   000000ec
-CSEG convert_to_ascii 00000135
-CSEG lcd_data     0000010c
-CSEG lcd_wait_loop 0000011a
+CSEG Timer0OVF    000000a7
+CSEG lcd_command  00000103
+CSEG lcd_wait     00000113
+CSEG sleep_5ms    0000012d
+CSEG sleep_1ms    00000124
+CSEG main         000000ea
+CSEG Not_second   000000d9
+CSEG End_I        000000dd
+CSEG divisors     000000e5
+CSEG start_loop   000000ea
+CSEG convert_to_ascii 00000133
+CSEG lcd_data     0000010a
+CSEG lcd_wait_loop 00000118
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 0000012a
-CSEG start        00000143
-CSEG convert_loop 00000148
-CSEG end_convert  00000172
-CSEG divide       0000014c
-CSEG loop_start   00000150
-CSEG end_divide   0000015a
-CSEG end_loop     00000159
-CSEG check_zero   00000167
-CSEG final_number 0000016c
+CSEG delayloop_1ms 00000128
+CSEG start        00000141
+CSEG convert_loop 00000146
+CSEG end_convert  00000170
+CSEG divide       0000014a
+CSEG loop_start   0000014e
+CSEG end_divide   00000158
+CSEG end_loop     00000157
+CSEG check_zero   00000165
+CSEG final_number 0000016a
