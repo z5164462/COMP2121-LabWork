@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Thu Apr 18 19:11:30 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Wed Apr 24 09:56:10 2019
 
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm(12): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
@@ -2099,7 +2099,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
 00003b 2733                      	clr lift_status
                                  
 00003c 7f3d                      	cbr lift_status, goingUp
-00003d e004                      	ldi current_floor, 4
+00003d e006                      	ldi current_floor, 6
                                  	
                                  
 00003e 2433                          clr zero   			 ; zero
@@ -2152,64 +2152,64 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
 000066 b942                          out PORTA, temp1
                                  
 000067 e348
-000068 d0e0
-000069 d0ef                          do_lcd_command 0b00111000 ; 2x5x7
-00006a d108                          rcall sleep_5ms
+000068 d0ed
+000069 d0fc                          do_lcd_command 0b00111000 ; 2x5x7
+00006a d115                          rcall sleep_5ms
 00006b e348
-00006c d0dc
-00006d d0eb                          do_lcd_command 0b00111000 ; 2x5x7
-00006e d0fb                      	rcall sleep_1ms
+00006c d0e9
+00006d d0f8                          do_lcd_command 0b00111000 ; 2x5x7
+00006e d108                      	rcall sleep_1ms
 00006f e348
-000070 d0d8
-000071 d0e7                          do_lcd_command 0b00111000 ; 2x5x7
+000070 d0e5
+000071 d0f4                          do_lcd_command 0b00111000 ; 2x5x7
 000072 e348
-000073 d0d5
-000074 d0e4                          do_lcd_command 0b00111000 ; 2x5x7
+000073 d0e2
+000074 d0f1                          do_lcd_command 0b00111000 ; 2x5x7
 000075 e048
-000076 d0d2
-000077 d0e1                          do_lcd_command 0b00001000 ; display off?
+000076 d0df
+000077 d0ee                          do_lcd_command 0b00001000 ; display off?
 000078 e041
-000079 d0cf
-00007a d0de                          do_lcd_command 0b00000001 ; clear display
+000079 d0dc
+00007a d0eb                          do_lcd_command 0b00000001 ; clear display
 00007b e046
-00007c d0cc
-00007d d0db                          do_lcd_command 0b00000110 ; increment, no display shift
+00007c d0d9
+00007d d0e8                          do_lcd_command 0b00000110 ; increment, no display shift
 00007e e04e
-00007f d0c9
-000080 d0d8                          do_lcd_command 0b00001110 ; Cursor on, bar, no blink
+00007f d0d6
+000080 d0e5                          do_lcd_command 0b00001110 ; Cursor on, bar, no blink
                                  
 000081 e458                      	ldi temp2, 'H'
 000082 934f
 000083 2f45
-000084 d0cb
-000085 d0d3
+000084 d0d8
+000085 d0e0
 000086 914f                      	write_reg temp2
 000087 e655                      	ldi temp2,'e'
 000088 934f
 000089 2f45
-00008a d0c5
-00008b d0cd
+00008a d0d2
+00008b d0da
 00008c 914f                      	write_reg temp2
 00008d e65c                      	ldi temp2, 'l'
 00008e 934f
 00008f 2f45
-000090 d0bf
-000091 d0c7
+000090 d0cc
+000091 d0d4
 000092 914f                      	write_reg temp2
 000093 934f
 000094 2f45
-000095 d0ba
-000096 d0c2
+000095 d0c7
+000096 d0cf
 000097 914f                      	write_reg temp2
 000098 e65f                      	ldi temp2, 'o'
 000099 934f
 00009a 2f45
-00009b d0b4
-00009c d0bc
+00009b d0c1
+00009c d0c9
 00009d 914f                      	write_reg temp2
 00009e e041
-00009f d0a9
-0000a0 d0b8                      	clear_disp
+00009f d0b6
+0000a0 d0c5                      	clear_disp
 0000a1 9478                          sei
 0000a2 940c 0102                     jmp main
                                  
@@ -2348,17 +2348,31 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  
                                  
                                  */
+000102 2766                      	clr arg1
+000103 2777                      	clr arg2
+000104 2f20                      	mov r18, current_floor //needs to happen
                                  read_queue:
+000105 2ee2                      	mov r14, r18
+000106 d172                      	rcall scan
+000107 2f62                      	mov arg1, r18
+000108 16e6                      	cp r14, arg1
+000109 f031                      	breq same
+00010a 934f
+00010b e248
+00010c d050
+00010d d058
+00010e 914f                      	write '('
+00010f d0fc                      	rcall convert_to_ascii
+                                 	//write ')'
+                                 same:
+000110 d075                      	rcall insert_request
+000111 9140 0200                 	lds temp1, Queue_len
                                  
-000102 d169                      	rcall scan
-000103 d075                      	rcall insert_request
-000104 9140 0200                 	lds temp1, Queue_len
-                                 
-000106 3043                      	cpi temp1, 3
-000107 f009                      	breq disp_queue
+000113 3043                      	cpi temp1, 3
+000114 f009                      	breq disp_queue
                                  
                                  	
-000108 cff9                      	rjmp read_queue
+000115 cfef                      	rjmp read_queue
                                  /*clr counter
                                  ldi ZL, low(requests<<1)
                                  ldi ZH, high(requests<<1)
@@ -2372,67 +2386,67 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  	rjmp insert_queue*/
                                  
                                  disp_queue:
-000109 e0e1                      	ldi ZL, low(Queue)
-00010a e0f2                      	ldi ZH, high(Queue)
-00010b 2477                      	clr counter 
-00010c 9230 020d
-00010e 9230 020e                 	clear Seconds
-000110 934f
-000111 e24a
-000112 d03d
-000113 d045
-000114 914f                      	write '*'
-000115 9160 0200                 	lds arg1, Queue_len
-000117 d0e7                      	rcall convert_to_ascii
-000118 934f
-000119 e24a
-00011a d035
-00011b d03d
-00011c 914f                      	write '*'
+000116 e0e1                      	ldi ZL, low(Queue)
+000117 e0f2                      	ldi ZH, high(Queue)
+000118 2477                      	clr counter 
+000119 9230 020d
+00011b 9230 020e                 	clear Seconds
 00011d 934f
-00011e 935f
-00011f e042
-000120 3042
-000121 f039
-000122 e850
-000123 6050
-000124 2f45
-000125 d023
-000126 d032
-000127 940c 012e
-000129 ec50
-00012a 6050
-00012b 2f45
-00012c d01c
-00012d d02b
-00012e 915f
-00012f 914f                      	change_line 2,0
-000130 2f56                      	mov temp2, arg1
+00011e e24a
+00011f d03d
+000120 d045
+000121 914f                      	write '*'
+000122 9160 0200                 	lds arg1, Queue_len
+000124 d0e7                      	rcall convert_to_ascii
+000125 934f
+000126 e24a
+000127 d035
+000128 d03d
+000129 914f                      	write '*'
+00012a 934f
+00012b 935f
+00012c e042
+00012d 3042
+00012e f039
+00012f e850
+000130 6050
+000131 2f45
+000132 d023
+000133 d032
+000134 940c 013b
+000136 ec50
+000137 6050
+000138 2f45
+000139 d01c
+00013a d02b
+00013b 915f
+00013c 914f                      	change_line 2,0
+00013d 2f56                      	mov temp2, arg1
                                  disp_q_loop:
                                  
-000131 1675                      	cp counter, temp2
-000132 f0a9                      	breq end_main
-000133 9101                      	ld current_floor, Z+
-000134 2f60                      	mov arg1, current_floor
-000135 d0c9                      	rcall convert_to_ascii
-000136 d0b0                      	rcall show_floor
-000137 9140 0200                 	lds temp1, Queue_len
-000139 954a                      	dec temp1
-00013a 9340 0200                 	sts Queue_len, temp1
-00013c 9230 020d
-00013e 9230 020e                 	clear Seconds
+00013e 1675                      	cp counter, temp2
+00013f f0a9                      	breq end_main
+000140 9101                      	ld current_floor, Z+
+000141 2f60                      	mov arg1, current_floor
+000142 d0c9                      	rcall convert_to_ascii
+000143 d0b0                      	rcall show_floor
+000144 9140 0200                 	lds temp1, Queue_len
+000146 954a                      	dec temp1
+000147 9340 0200                 	sts Queue_len, temp1
+000149 9230 020d
+00014b 9230 020e                 	clear Seconds
                                  pause:
-000140 9180 020d                 	lds r24, Seconds
-000142 9190 020e                 	lds r25, Seconds+1
-000144 3184                      	cpi r24, 20
-000145 f3d4                      	brlt pause
+00014d 9180 020d                 	lds r24, Seconds
+00014f 9190 020e                 	lds r25, Seconds+1
+000151 3184                      	cpi r24, 20
+000152 f3d4                      	brlt pause
                                  	
-000146 9473                      	inc counter
+000153 9473                      	inc counter
                                  	
-000147 cfe9                      	rjmp disp_q_loop
+000154 cfe9                      	rjmp disp_q_loop
                                  
                                  end_main:
-000148 cfff                      	rjmp end_main
+000155 cfff                      	rjmp end_main
                                  
                                  
                                  
@@ -2441,70 +2455,70 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  
                                  //LCD_FUNCTIONS
                                  lcd_command:
-000149 bb41                          out PORTF, temp1
-00014a d01f                          rcall sleep_1ms
-00014b 9a16                          lcd_set LCD_E
-00014c d01d                          rcall sleep_1ms
-00014d 9816                          lcd_clr LCD_E
-00014e d01b                          rcall sleep_1ms
-00014f 9508                          ret
+000156 bb41                          out PORTF, temp1
+000157 d01f                          rcall sleep_1ms
+000158 9a16                          lcd_set LCD_E
+000159 d01d                          rcall sleep_1ms
+00015a 9816                          lcd_clr LCD_E
+00015b d01b                          rcall sleep_1ms
+00015c 9508                          ret
                                  
                                  lcd_data:
-000150 bb41                          out PORTF, temp1
-000151 9a17                          lcd_set LCD_RS
-000152 d017                          rcall sleep_1ms
-000153 9a16                          lcd_set LCD_E
-000154 d015                          rcall sleep_1ms
-000155 9816                          lcd_clr LCD_E
-000156 d013                          rcall sleep_1ms
-000157 9817                          lcd_clr LCD_RS
-000158 9508                          ret
+00015d bb41                          out PORTF, temp1
+00015e 9a17                          lcd_set LCD_RS
+00015f d017                          rcall sleep_1ms
+000160 9a16                          lcd_set LCD_E
+000161 d015                          rcall sleep_1ms
+000162 9816                          lcd_clr LCD_E
+000163 d013                          rcall sleep_1ms
+000164 9817                          lcd_clr LCD_RS
+000165 9508                          ret
                                  
                                  lcd_wait:
-000159 930f                          push r16
-00015a 2700                          clr r16
-00015b bb00                          out DDRF, r16
-00015c bb01                          out PORTF, r16
-00015d 9a15                          lcd_set LCD_RW
+000166 930f                          push r16
+000167 2700                          clr r16
+000168 bb00                          out DDRF, r16
+000169 bb01                          out PORTF, r16
+00016a 9a15                          lcd_set LCD_RW
                                  
                                  lcd_wait_loop:
-00015e d00b                          rcall sleep_1ms
-00015f 9a16                          lcd_set LCD_E
-000160 d009                          rcall sleep_1ms
-000161 b10f                          in r16, PINF
-000162 9816                          lcd_clr LCD_E
-000163 fd07                          sbrc r16, 7
-000164 cff9                          rjmp lcd_wait_loop
-000165 9815                          lcd_clr LCD_RW
-000166 ef0f                          ser r16
-000167 bb00                          out DDRF, r16
-000168 910f                          pop r16
-000169 9508                          ret
+00016b d00b                          rcall sleep_1ms
+00016c 9a16                          lcd_set LCD_E
+00016d d009                          rcall sleep_1ms
+00016e b10f                          in r16, PINF
+00016f 9816                          lcd_clr LCD_E
+000170 fd07                          sbrc r16, 7
+000171 cff9                          rjmp lcd_wait_loop
+000172 9815                          lcd_clr LCD_RW
+000173 ef0f                          ser r16
+000174 bb00                          out DDRF, r16
+000175 910f                          pop r16
+000176 9508                          ret
                                  
                                  .equ F_CPU = 16000000
                                  .equ DELAY_1MS = F_CPU / 4 / 1000 - 4
                                  ; 4 cycles per iteration - setup/call-return overhead
                                  
                                  sleep_1ms:
-00016a 938f                          push r24
-00016b 939f                          push r25
-00016c e09f                          ldi r25, high(DELAY_1MS)
-00016d e98c                          ldi r24, low(DELAY_1MS)
+000177 938f                          push r24
+000178 939f                          push r25
+000179 e09f                          ldi r25, high(DELAY_1MS)
+00017a e98c                          ldi r24, low(DELAY_1MS)
                                  
                                  delayloop_1ms:
-00016e 9701                          sbiw r25:r24, 1
-00016f f7f1                          brne delayloop_1ms
-000170 919f                          pop r25
-000171 918f                          pop r24
-000172 9508                          ret
+00017b 9701                          sbiw r25:r24, 1
+00017c f7f1                          brne delayloop_1ms
+00017d 919f                          pop r25
+00017e 918f                          pop r24
+00017f 9508                          ret
                                  
                                  sleep_5ms:
-000173 dff6                          rcall sleep_1ms
-000174 dff5                          rcall sleep_1ms
-000175 dff4                          rcall sleep_1ms
-000176 dff3                          rcall sleep_1ms
-000177 dff2                          rcall sleep_1ms
-000178 9508                          ret
+000180 dff6                          rcall sleep_1ms
+000181 dff5                          rcall sleep_1ms
+000182 dff4                          rcall sleep_1ms
+000183 dff3                          rcall sleep_1ms
+000184 dff2                          rcall sleep_1ms
+000185 9508                          ret
                                  
                                  
                                  //FUNCTIONS
@@ -2515,155 +2529,155 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  insert_request:
                                  
                                  //prologue
-000179 935f                      push temp2
-00017a b75f                      in temp2 , SREG
-00017b 935f                      push temp2
+000186 935f                      push temp2
+000187 b75f                      in temp2 , SREG
+000188 935f                      push temp2
                                  
-00017c 927f                      push counter
-00017d 930f                      push r16
-00017e 931f                      push r17
+000189 927f                      push counter
+00018a 930f                      push r16
+00018b 931f                      push r17
                                  //r16 current_floor global
                                  //r17 requested_floor return value
                                  
-00017f 932f                      push r18    //parameter input_value
+00018c 932f                      push r18    //parameter input_value
                                  //r19 lift_status global
-000180 933f                      push r19
-000181 934f                      push r20    //temp1
-000182 936f                      push r22
-000183 936f                      push arg1
-000184 937f                      push arg2
+00018d 933f                      push r19
+00018e 934f                      push r20    //temp1
+00018f 936f                      push r22
+000190 936f                      push arg1
+000191 937f                      push arg2
                                  
-000185 93af                      push XL
-000186 93bf                      push XH
+000192 93af                      push XL
+000193 93bf                      push XH
                                  
-000187 e0a1                      ldi XL, low(Queue)
-000188 e0b2                      ldi XH, high(Queue)
+000194 e0a1                      ldi XL, low(Queue)
+000195 e0b2                      ldi XH, high(Queue)
                                  
                                  
-000189 2477                      clr counter // counter = 0
-00018a 9160 0200                 lds r22, Queue_len
-00018c 1702                      cp current_floor, input_value //if the current floor is the input floor, break to end
-00018d f411                      brne input_continue
-00018e 940c 01d6                 jmp end_insert_loop
+000196 2477                      clr counter // counter = 0
+000197 9160 0200                 lds r22, Queue_len
+000199 1702                      cp current_floor, input_value //if the current floor is the input floor, break to end
+00019a f411                      brne input_continue
+00019b 940c 01e3                 jmp end_insert_loop
                                  input_continue:
                                  
                                  
                                  
-000190 2f43
-000191 7042
-000192 3042                      check_register_bit goingUp    // check the goingUp bit
-000193 f009                      breq up_search    // if 1, sort up
-000194 c018                      rjmp down_search 	 //else sort down
+00019d 2f43
+00019e 7042
+00019f 3042                      check_register_bit goingUp    // check the goingUp bit
+0001a0 f009                      breq up_search    // if 1, sort up
+0001a1 c018                      rjmp down_search 	 //else sort down
                                  
                                  
                                  
                                  //r7 counter r22 len
                                  
                                  up_search:
-000195 1720                          cp input_value, current_floor   		 ; if input floor < current floor, jump to up_descending_loop, else up_ascending_loop
-000196 f05c                          brlt up_descending_loop
+0001a2 1720                          cp input_value, current_floor   		 ; if input floor < current floor, jump to up_descending_loop, else up_ascending_loop
+0001a3 f05c                          brlt up_descending_loop
                                  up_ascending_loop:
-000197 1676                          cp counter, r22   		 ; compare counter to len (check if end of list reached)
-000198 f159                          breq end_search
-000199 914c                          ld temp1, X   		 ; load floor from output array
-00019a 1724                          cp input_value, temp1   		 ; check if input floor already exists
-00019b f081                          breq jumping_to_end_insert    ; quit if it does
-00019c f140                          brlo insert_start    ; if input floor lower than ith floor, insert
-00019d 1740                          cp temp1, current_floor   		 ; compare ith floor to current floor
-00019e f130                          brlo insert_start    ; if ith < current, insert
-00019f 9611                          adiw X, 1   		 ; increment output array
-0001a0 9473                          inc counter   			 ; increment counter
-0001a1 cff5                          rjmp up_ascending_loop
+0001a4 1676                          cp counter, r22   		 ; compare counter to len (check if end of list reached)
+0001a5 f159                          breq end_search
+0001a6 914c                          ld temp1, X   		 ; load floor from output array
+0001a7 1724                          cp input_value, temp1   		 ; check if input floor already exists
+0001a8 f081                          breq jumping_to_end_insert    ; quit if it does
+0001a9 f140                          brlo insert_start    ; if input floor lower than ith floor, insert
+0001aa 1740                          cp temp1, current_floor   		 ; compare ith floor to current floor
+0001ab f130                          brlo insert_start    ; if ith < current, insert
+0001ac 9611                          adiw X, 1   		 ; increment output array
+0001ad 9473                          inc counter   			 ; increment counter
+0001ae cff5                          rjmp up_ascending_loop
                                  
                                  up_descending_loop:
-0001a2 1676                          cp counter, r22   		 ; compare counter to len (check if end of list reached)
-0001a3 f101                          breq end_search   	 
-0001a4 914c                          ld temp1, X   		 ; load floor from output array
-0001a5 1724                          cp input_value, temp1   		 ; check if input floor already exists
-0001a6 f179                          breq end_insert_loop    ; quit if it does
-0001a7 1740                          cp temp1, current_floor   		 ; compare ith floor to current floor
-0001a8 f020                          brlo down_search    ; if input floor < current floor and ith floor < current floor jmp to down search
-0001a9 9611                          adiw X, 1   		 ; increment output array
-0001aa 9473                          inc counter   			 ; increment counter
-0001ab cff6                          rjmp up_descending_loop
+0001af 1676                          cp counter, r22   		 ; compare counter to len (check if end of list reached)
+0001b0 f101                          breq end_search   	 
+0001b1 914c                          ld temp1, X   		 ; load floor from output array
+0001b2 1724                          cp input_value, temp1   		 ; check if input floor already exists
+0001b3 f179                          breq end_insert_loop    ; quit if it does
+0001b4 1740                          cp temp1, current_floor   		 ; compare ith floor to current floor
+0001b5 f020                          brlo down_search    ; if input floor < current floor and ith floor < current floor jmp to down search
+0001b6 9611                          adiw X, 1   		 ; increment output array
+0001b7 9473                          inc counter   			 ; increment counter
+0001b8 cff6                          rjmp up_descending_loop
                                  
                                  jumping_to_end_insert:
-0001ac c029                      rjmp end_insert_loop
+0001b9 c029                      rjmp end_insert_loop
                                  
                                  down_search:
-0001ad 1702                          cp current_floor, input_value   		 ; compare current floor < input floor
-0001ae f05c                          brlt down_ascending_loop
+0001ba 1702                          cp current_floor, input_value   		 ; compare current floor < input floor
+0001bb f05c                          brlt down_ascending_loop
                                  down_descending_loop:
-0001af 1676                          cp counter, r22   		 ; compare counter to len (check if end of list reached)
-0001b0 f099                          breq end_search   	 
-0001b1 914c                          ld temp1, X   		 ; load floor from output array
-0001b2 1742                          cp temp1, input_value   		 ; check if input floor already exists
-0001b3 f111                          breq end_insert_loop    ; quit if it does
-0001b4 f080                          brlo insert_start    ; if current floor < input floor insert here
-0001b5 1704                          cp current_floor, temp1   		 ; compare current floor to ith floor
-0001b6 f070                          brlo insert_start    
-0001b7 9611                          adiw X, 1   		 ; increment output array
-0001b8 9473                          inc counter   			 ; increment counter
-0001b9 cff5                          rjmp down_descending_loop
+0001bc 1676                          cp counter, r22   		 ; compare counter to len (check if end of list reached)
+0001bd f099                          breq end_search   	 
+0001be 914c                          ld temp1, X   		 ; load floor from output array
+0001bf 1742                          cp temp1, input_value   		 ; check if input floor already exists
+0001c0 f111                          breq end_insert_loop    ; quit if it does
+0001c1 f080                          brlo insert_start    ; if current floor < input floor insert here
+0001c2 1704                          cp current_floor, temp1   		 ; compare current floor to ith floor
+0001c3 f070                          brlo insert_start    
+0001c4 9611                          adiw X, 1   		 ; increment output array
+0001c5 9473                          inc counter   			 ; increment counter
+0001c6 cff5                          rjmp down_descending_loop
                                  
                                  down_ascending_loop:
-0001ba 1676                          cp counter, r22   		 ; compare counter to len (check if end of list reached)
-0001bb f041                          breq end_search   	 
-0001bc 914c                          ld temp1, X   		 ; load floor from output array
-0001bd 1742                          cp temp1, input_value   		 ; check if input floor already exists
-0001be f0b9                          breq end_insert_loop    ; quit if it does
-0001bf 1704                          cp current_floor, temp1   		 ; compare ith floor to current floor
-0001c0 f2a0                          brlo up_search   	 ; if ith floor > current and input floor > current floor, jmp to upsearch
-0001c1 9611                          adiw X, 1   		 ; increment output array
-0001c2 9473                          inc counter   			 ; increment counter
-0001c3 cff6                          rjmp down_ascending_loop
+0001c7 1676                          cp counter, r22   		 ; compare counter to len (check if end of list reached)
+0001c8 f041                          breq end_search   	 
+0001c9 914c                          ld temp1, X   		 ; load floor from output array
+0001ca 1742                          cp temp1, input_value   		 ; check if input floor already exists
+0001cb f0b9                          breq end_insert_loop    ; quit if it does
+0001cc 1704                          cp current_floor, temp1   		 ; compare ith floor to current floor
+0001cd f2a0                          brlo up_search   	 ; if ith floor > current and input floor > current floor, jmp to upsearch
+0001ce 9611                          adiw X, 1   		 ; increment output array
+0001cf 9473                          inc counter   			 ; increment counter
+0001d0 cff6                          rjmp down_ascending_loop
                                  
                                  end_search:
-0001c4 c000                          rjmp insert_start
+0001d1 c000                          rjmp insert_start
                                  
                                  insert_start:    
-0001c5 9563                          inc r22    ;len++   		 ;length of list is now longer
-0001c6 934f
-0001c7 e74c
-0001c8 df87
-0001c9 df8f
-0001ca 914f                          write '|'
-0001cb 936f                      	push arg1
-0001cc 2d67                      	mov arg1, counter
-0001cd d031                      	rcall convert_to_ascii
-0001ce 916f                      	pop arg1
+0001d2 9563                          inc r22    ;len++   		 ;length of list is now longer
+0001d3 934f
+0001d4 e74c
+0001d5 df87
+0001d6 df8f
+0001d7 914f                          write '|'
+0001d8 936f                      	push arg1
+0001d9 2f62                      	mov arg1, input_value
+0001da d031                      	rcall convert_to_ascii
+0001db 916f                      	pop arg1
                                  
                                  
                                  insert_loop:
-0001cf 1567                          cp r22, counter   			 ; comparison of index and list length to check if the end of the list has been reached
-0001d0 f029                          breq end_insert_loop    
-0001d1 914c                          ld temp1, X
-0001d2 932d                      	st X+, input_value
-0001d3 2f24                          mov input_value, temp1
-0001d4 9473                          inc counter
-0001d5 cff9                          rjmp insert_loop
+0001dc 1567                          cp r22, counter   			 ; comparison of index and list length to check if the end of the list has been reached
+0001dd f029                          breq end_insert_loop    
+0001de 914c                          ld temp1, X
+0001df 932d                      	st X+, input_value
+0001e0 2f24                          mov input_value, temp1
+0001e1 9473                          inc counter
+0001e2 cff9                          rjmp insert_loop
                                  
                                  end_insert_loop:
                                  
                                  
-0001d6 9360 0200                     sts Queue_len, r22   	 ;store new length back in memory
+0001e3 9360 0200                     sts Queue_len, r22   	 ;store new length back in memory
                                  
                                      ;epilogue
-0001d8 91bf                          pop XH
-0001d9 91af                          pop XL
-0001da 917f                      	pop arg2
-0001db 916f                      	pop arg1
-0001dc 916f                          pop r22
-0001dd 914f                          pop r20
-0001de 913f                      	pop r19
-0001df 912f                          pop r18
-0001e0 911f                      	pop r17
-0001e1 910f                      	pop r16
-0001e2 907f                          pop counter
-0001e3 915f                          pop temp2
-0001e4 bf5f                          out SREG, temp2
-0001e5 915f                          pop temp2
-0001e6 9508                          ret
+0001e5 91bf                          pop XH
+0001e6 91af                          pop XL
+0001e7 917f                      	pop arg2
+0001e8 916f                      	pop arg1
+0001e9 916f                          pop r22
+0001ea 914f                          pop r20
+0001eb 913f                      	pop r19
+0001ec 912f                          pop r18
+0001ed 911f                      	pop r17
+0001ee 910f                      	pop r16
+0001ef 907f                          pop counter
+0001f0 915f                          pop temp2
+0001f1 bf5f                          out SREG, temp2
+0001f2 915f                          pop temp2
+0001f3 9508                          ret
                                  
                                  
                                  //SHOW_FLOOR:
@@ -2674,146 +2688,146 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  ;prologue
                                  ;    push YL
                                  ;    push YH
-0001e7 93af                      push XL
-0001e8 93bf                      push XH
-0001e9 930f                          push current_floor
-0001ea 927f                          push counter
+0001f4 93af                      push XL
+0001f5 93bf                      push XH
+0001f6 930f                          push current_floor
+0001f7 927f                          push counter
                                  
-0001eb 2477                          clr counter    
-0001ec 27aa                          clr XL    ; output
-0001ed 27bb                          clr XH
+0001f8 2477                          clr counter    
+0001f9 27aa                          clr XL    ; output
+0001fa 27bb                          clr XH
                                  loop:
-0001ee 1670                          cp counter, current_floor
-0001ef f041                          breq end_show_floor
-0001f0 0faa                          lsl XL
-0001f1 95a3                          inc XL
-0001f2 f008                          brcs grtr8
-0001f3 c002                          rjmp end_x
+0001fb 1670                          cp counter, current_floor
+0001fc f041                          breq end_show_floor
+0001fd 0faa                          lsl XL
+0001fe 95a3                          inc XL
+0001ff f008                          brcs grtr8
+000200 c002                          rjmp end_x
                                  grtr8:
-0001f4 0fbb                          lsl XH
-0001f5 95b3                          inc XH
+000201 0fbb                          lsl XH
+000202 95b3                          inc XH
                                  end_x:    
-0001f6 9473                          inc counter
-0001f7 cff6                          rjmp loop
+000203 9473                          inc counter
+000204 cff6                          rjmp loop
                                  
                                  
                                  ;epilogue
                                  end_show_floor:
-0001f8 bbb4                          out PORTG, XH
-0001f9 b9a8                          out PORTC, XL
+000205 bbb4                          out PORTG, XH
+000206 b9a8                          out PORTC, XL
                                  
-0001fa 91bf                      pop XH
-0001fb 91af                      pop XL
-0001fc 907f                      pop counter
-0001fd 910f                      pop current_floor
+000207 91bf                      pop XH
+000208 91af                      pop XL
+000209 907f                      pop counter
+00020a 910f                      pop current_floor
                                  
-0001fe 9508                      ret
+00020b 9508                      ret
                                  
                                  
                                  
                                  //CONVERT_TO_ASCII
                                  convert_to_ascii:
                                  	;prologueg
-0001ff 927f                      	push r7
-000200 928f                      	push r8
-000201 929f                      	push r9
-000202 930f                      	push r16
-000203 931f                      	push r17
-000204 932f                      	push r18
-000205 933f                      	push r19
-000206 934f                      	push r20
-000207 936f                      	push arg1
-000208 937f                      	push arg2
-000209 938f                      	push r24
-00020a 939f                      	push r25
-00020b 93ef                      	push ZL
-00020c 93ff                      	push ZH
+00020c 927f                      	push r7
+00020d 928f                      	push r8
+00020e 929f                      	push r9
+00020f 930f                      	push r16
+000210 931f                      	push r17
+000211 932f                      	push r18
+000212 933f                      	push r19
+000213 934f                      	push r20
+000214 936f                      	push arg1
+000215 937f                      	push arg2
+000216 938f                      	push r24
+000217 939f                      	push r25
+000218 93ef                      	push ZL
+000219 93ff                      	push ZH
                                  
                                  
                                  
-00020d 2777                      	clr arg2 ///THIS IS ONLY FOR WHEN NUMBERS LESS THAN 255
+00021a 2777                      	clr arg2 ///THIS IS ONLY FOR WHEN NUMBERS LESS THAN 255
                                  
                                  	;change_line 2, 14
                                  start:
-00020e e6e4                      	ldi ZL, low(divisors<<1)
-00020f e0f0                      	ldi ZH, high(divisors<<1)
-000210 e340                      	ldi r20, 0x30		// ascii value for zero
-000211 2488                      	clr r8
-000212 2499                      	clr r9
+00021b e6e4                      	ldi ZL, low(divisors<<1)
+00021c e0f0                      	ldi ZH, high(divisors<<1)
+00021d e340                      	ldi r20, 0x30		// ascii value for zero
+00021e 2488                      	clr r8
+00021f 2499                      	clr r9
                                  convert_loop:
-000213 e055                      	ldi temp2, 5
-000214 1695                      	cp r9, temp2
-000215 f121                      	breq end_convert
-000216 c000                      	rjmp divide
+000220 e055                      	ldi temp2, 5
+000221 1695                      	cp r9, temp2
+000222 f121                      	breq end_convert
+000223 c000                      	rjmp divide
                                  
                                  	// r19:r18 hold the dividend (numerator)
                                  divide:
-000217 9105                          lpm r16, Z+  //divisor (denominator)
-000218 9115                      	lpm r17, Z+ //^^^
-000219 e080                      	ldi r24, 0  //quotient
-00021a e090                      	ldi r25, 0	//^^^
+000224 9105                          lpm r16, Z+  //divisor (denominator)
+000225 9115                      	lpm r17, Z+ //^^^
+000226 e080                      	ldi r24, 0  //quotient
+000227 e090                      	ldi r25, 0	//^^^
                                  loop_start:
-00021b 3000                      	cpi r16, 0  // not dividing by zero
-00021c f041                      	breq end_divide
-00021d 1760                      	cp arg1, r16 //check dividend !< divisor i.e. you can still minus
-00021e 0771                      	cpc arg2, r17
-00021f f020                      	brlo end_loop 
-000220 1b60                      	sub arg1, r16  //dividend = dividend - divisor 
-000221 0b71                      	sbc arg2, r17
-000222 9601                      	adiw r25:r24, 1 //quotient++	
-000223 cff7                          rjmp loop_start
+000228 3000                      	cpi r16, 0  // not dividing by zero
+000229 f041                      	breq end_divide
+00022a 1760                      	cp arg1, r16 //check dividend !< divisor i.e. you can still minus
+00022b 0771                      	cpc arg2, r17
+00022c f020                      	brlo end_loop 
+00022d 1b60                      	sub arg1, r16  //dividend = dividend - divisor 
+00022e 0b71                      	sbc arg2, r17
+00022f 9601                      	adiw r25:r24, 1 //quotient++	
+000230 cff7                          rjmp loop_start
                                  end_loop:
-000224 019b                      	movw r19:r18, arg2:arg1
+000231 019b                      	movw r19:r18, arg2:arg1
                                  end_divide:
                                  	
                                  	//r23:r22 holds the remainder, r25:r24 holds the quotient
                                  
-000225 01b9                      	movw arg2:arg1, r19:r18 //the remainder moves to the dividend to be divided again
-000226 9493                      	inc r9
-000227 3080                      	cpi r24, 0
-000228 f049                      	breq check_zero
-000229 2e74                      	mov r7, r20	//r7 holds ASCII val for '0'
-00022a 0e78                      	add r7, r24 //r7 holds ASCII val for '0' + remainder
+000232 01b9                      	movw arg2:arg1, r19:r18 //the remainder moves to the dividend to be divided again
+000233 9493                      	inc r9
+000234 3080                      	cpi r24, 0
+000235 f049                      	breq check_zero
+000236 2e74                      	mov r7, r20	//r7 holds ASCII val for '0'
+000237 0e78                      	add r7, r24 //r7 holds ASCII val for '0' + remainder
                                  
                                  	//st X+, r7 //store ASCII val in next part of data memory
                                  
-00022b 934f
-00022c 2d47
-00022d df22
-00022e df2a
-00022f 914f                      	write_reg r7
-000230 9483                      	inc r8
-000231 cfe1                      	rjmp convert_loop
+000238 934f
+000239 2d47
+00023a df22
+00023b df2a
+00023c 914f                      	write_reg r7
+00023d 9483                      	inc r8
+00023e cfe1                      	rjmp convert_loop
                                  check_zero:
-000232 1483                      	cp r8, zero
-000233 f2f9                      	breq convert_loop
-000234 934f
-000235 e340
-000236 df19
-000237 df21
-000238 914f                      	write '0'
+00023f 1483                      	cp r8, zero
+000240 f2f9                      	breq convert_loop
+000241 934f
+000242 e340
+000243 df19
+000244 df21
+000245 914f                      	write '0'
                                  
-000239 cfd9                      	rjmp convert_loop
+000246 cfd9                      	rjmp convert_loop
                                  
                                  
                                  
                                  end_convert:
                                  ;epilogue
-00023a 91ff                      	pop ZH
-00023b 91ef                      	pop ZL
-00023c 919f                      	pop r25
-00023d 918f                      	pop r24
-00023e 917f                      	pop arg2
-00023f 916f                      	pop arg1
-000240 914f                      	pop r20
-000241 913f                      	pop r19
-000242 912f                      	pop r18
-000243 911f                      	pop r17
-000244 910f                      	pop r16
-000245 909f                      	pop r9
-000246 908f                      	pop r8
-000247 907f                      	pop r7
-000248 9508                      	ret
+000247 91ff                      	pop ZH
+000248 91ef                      	pop ZL
+000249 919f                      	pop r25
+00024a 918f                      	pop r24
+00024b 917f                      	pop arg2
+00024c 916f                      	pop arg1
+00024d 914f                      	pop r20
+00024e 913f                      	pop r19
+00024f 912f                      	pop r18
+000250 911f                      	pop r17
+000251 910f                      	pop r16
+000252 909f                      	pop r9
+000253 908f                      	pop r8
+000254 907f                      	pop r7
+000255 9508                      	ret
                                  
                                  
                                  
@@ -2821,157 +2835,147 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  //inputs current_floor(global), lift_status(global)
                                  
                                  flash_LED:
-000249 934f                      push temp1
-00024a 935f                      push temp2
-00024b 9140 0213                 lds temp1, Flash_wait   	 //value of second counter when flash is next toggled
-00024d 9150 0214                 lds temp2, Flash_wait+1
+000256 934f                      push temp1
+000257 935f                      push temp2
+000258 9140 0213                 lds temp1, Flash_wait   	 //value of second counter when flash is next toggled
+00025a 9150 0214                 lds temp2, Flash_wait+1
                                  
                                  
-00024f 2f43
-000250 7240
-000251 3240                      check_register_bit flashing
-000252 f009                      breq flashTrue
-000253 c003                      rjmp flashFalse    
+00025c 2f43
+00025d 7240
+00025e 3240                      check_register_bit flashing
+00025f f009                      breq flashTrue
+000260 c003                      rjmp flashFalse    
                                  
                                  flashTrue:
-000254 df92                          rcall show_floor
-000255 7d3f                          cbr lift_status, flashing
-000256 c005                          rjmp end_flash_LED
+000261 df92                          rcall show_floor
+000262 7d3f                          cbr lift_status, flashing
+000263 c005                          rjmp end_flash_LED
                                  flashFalse:
-000257 930f                          push current_floor
-000258 950a                          dec current_floor
-000259 df8d                          rcall show_floor
-00025a 910f                          pop current_floor
-00025b 6230                          sbr lift_status, flashing
+000264 930f                          push current_floor
+000265 950a                          dec current_floor
+000266 df8d                          rcall show_floor
+000267 910f                          pop current_floor
+000268 6230                          sbr lift_status, flashing
                                  
                                  end_flash_LED:
-00025c 915f                      pop temp2
-00025d 914f                      pop temp1
-00025e 9508                      ret
+000269 915f                      pop temp2
+00026a 914f                      pop temp1
+00026b 9508                      ret
                                  
                                  
                                  //STROBE_FLASH
                                  Strobe_flash:	//Reads in the seconds value in X
-00025f 934f                          push temp1
-000260 93af                          push XL
-000261 2f4a                          mov temp1, XL
-000262 9547                          ror temp1		//rotates the time into the carry
-000263 f008                          brcs strobe_on	//if old LSB was 1, i.e. odd turn strobe on
-000264 f410                          brcc strobe_off	//if old LSB was 0, i.e even turn strobe off
+00026c 934f                          push temp1
+00026d 93af                          push XL
+00026e 2f4a                          mov temp1, XL
+00026f 9547                          ror temp1		//rotates the time into the carry
+000270 f008                          brcs strobe_on	//if old LSB was 1, i.e. odd turn strobe on
+000271 f410                          brcc strobe_off	//if old LSB was 0, i.e even turn strobe off
                                  
                                  strobe_on:
-000265 9a11                          lcd_set 1		//set PORTA bit to 1
-000266 c002                      	rjmp strobe_end
+000272 9a11                          lcd_set 1		//set PORTA bit to 1
+000273 c002                      	rjmp strobe_end
                                  strobe_off:
-000267 9811                          lcd_clr 1
-000268 c000                      	rjmp strobe_end
+000274 9811                          lcd_clr 1
+000275 c000                      	rjmp strobe_end
                                  Strobe_end:
-000269 91af                          pop XL
-00026a 914f                          pop temp1
-00026b 9508                      	ret
+000276 91af                          pop XL
+000277 914f                          pop temp1
+000278 9508                      	ret
                                  	
                                  //SCAN				//return value in arg1
                                  scan:
-00026c 930f                          push r16 // row
-00026d 931f                          push r17 // col
+000279 930f                          push r16 // row
+00027a 931f                          push r17 // col
                                      //push r18 // rmask // r18 will be used to return the input_value
-00026e 933f                          push r19 // cmask
-00026f 934f                          push temp1
-000270 935f                          push temp2 
-000271 936f                          push arg1 // floor
-000272 937f                          push arg2 // floor2
-000273 ee3f                          ldi r19, INITCOLMASK   	 ; load column mask to scan a column
-000274 2711                          clr r17
+00027b 933f                          push r19 // cmask
+00027c 934f                          push temp1
+00027d 935f                          push temp2 
+00027e 936f                          push arg1 // floor
+00027f 937f                          push arg2 // floor2
+000280 ee3f                          ldi r19, INITCOLMASK   	 ; load column mask to scan a column
+000281 2711                          clr r17
                                  
                                  colloop:
-000275 3014                          cpi r17, 4   				 ; check if all columns scanned
-000276 f1c1                          breq scan_end   		 ; restart scan if all cols scanned
-000277 9330 010b                     sts PORTL, r19   		 ; scan a column (sts used instead of out since PORTL is in extended I/O space)
-000279 ef4f                          ldi temp1, 0xFF   			 ; slow down scan operation (???? WHY ????)
+000282 3014                          cpi r17, 4   				 ; check if all columns scanned
+000283 f169                          breq scan_end   		 ; restart scan if all cols scanned
+000284 9330 010b                     sts PORTL, r19   		 ; scan a column (sts used instead of out since PORTL is in extended I/O space)
+000286 ef4f                          ldi temp1, 0xFF   			 ; slow down scan operation (???? WHY ????)
                                  
                                  delay:
-00027a 954a                          dec temp1
-00027b f7f1                          brne delay
+000287 954a                          dec temp1
+000288 f7f1                          brne delay
                                  
-00027c 9160 0109                     lds arg1, PINL   		;load current status of PORTL pins(lds must be used instead of in)
-00027e 706f                          andi arg1, ROWMASK   		 ; and the PINL register with row mask
-00027f 306f                          cpi arg1, 0xF   			 ; check if any row low
-000280 f059                          breq nextcol   			 ; if temp is all 1s (i.e 0xF), then there are now lows
+000289 9160 0109                     lds arg1, PINL   		;load current status of PORTL pins(lds must be used instead of in)
+00028b 706f                          andi arg1, ROWMASK   		 ; and the PINL register with row mask
+00028c 306f                          cpi arg1, 0xF   			 ; check if any row low
+00028d f059                          breq nextcol   			 ; if temp is all 1s (i.e 0xF), then there are now lows
                                     							 ; if there is a low, find which row it is
-000281 e021                          ldi r18, INITROWMASK   	 ; load Row mask
-000282 2700                          clr r16
+00028e e021                          ldi r18, INITROWMASK   	 ; load Row mask
+00028f 2700                          clr r16
                                  
                                  rowloop:
-000283 3004                          cpi r16, 4   			; if all rows scanned, jump to next column
-000284 f039                          breq nextcol
-000285 2f56                          mov temp2, arg1  			 
-000286 2352                          and temp2, r18   		 ; mask the input with row mask
-000287 f041                          breq show   				; if the bit is clear, a key has been pressed
+000290 3004                          cpi r16, 4   			; if all rows scanned, jump to next column
+000291 f039                          breq nextcol
+000292 2f56                          mov temp2, arg1  			 
+000293 2352                          and temp2, r18   		 ; mask the input with row mask
+000294 f041                          breq show   				; if the bit is clear, a key has been pressed
                                     							 ; eg if a key in row 1 is pressed, temp2 = XXXX1101
                                     							 ; rmask should equal 00000010
                                     							 ; when AND is used, result is 00000000 -> button pressed
-000288 9503                          inc r16   				 ; move to next row
-000289 0f22                          lsl r18   				 ; left shift mask to check next row
-00028a 940c 0283                     jmp rowloop
+000295 9503                          inc r16   				 ; move to next row
+000296 0f22                          lsl r18   				 ; left shift mask to check next row
+000297 940c 0290                     jmp rowloop
                                  
                                  nextcol:   					 ; jump to next column when row scan over
-00028c 0f33                          lsl r19   				 ; left shift mask to check next col
-00028d 9513                          inc r17
-00028e 940c 0275                     jmp colloop
+000299 0f33                          lsl r19   				 ; left shift mask to check next col
+00029a 9513                          inc r17
+00029b 940c 0282                     jmp colloop
                                  
                                  show:
-000290 3013                          cpi r17, 3   			; if column = 3, a key in column 3 is pressed, which is a 									letter key
-000291 f0e9                          breq scan_end   				 ; we dont need to deal with this for this lab, so go to n_a
+00029d 3013                          cpi r17, 3   			; if column = 3, a key in column 3 is pressed, which is a 									letter key
+00029e f091                          breq scan_end   				 ; we dont need to deal with this for this lab, so go to n_a
                                  
-000292 3003                          cpi r16, 3   				 ; if row = 3, a key in row 3 has been pressed, which is any 								special character or 0
-000293 f039                          breq check_bottom_row				 ; zero is the only key we are worried about, so go to check_zero
+00029f 3003                          cpi r16, 3   				 ; if row = 3, a key in row 3 has been pressed, which is any 								special character or 0
+0002a0 f039                          breq check_bottom_row				 ; zero is the only key we are worried about, so go to check_zero
                                  	
-000294 2f60                      	mov arg1, r16				; move row to floor
-000295 0f66                      	lsl arg1					; multiply by 2
-000296 0f60                      	add arg1, r16				; add row again, to multiply row by 3
-000297 0f61                      	add arg1, r17				; add col
-000298 5f6f                      	subi arg1, -1				; add 1
-000299 940c 02a3                 	jmp end_show
+0002a1 2f60                      	mov arg1, r16				; move row to floor
+0002a2 0f66                      	lsl arg1					; multiply by 2
+0002a3 0f60                      	add arg1, r16				; add row again, to multiply row by 3
+0002a4 0f61                      	add arg1, r17				; add col
+0002a5 5f6f                      	subi arg1, -1				; add 1
+0002a6 940c 02b0                 	jmp end_show
                                  
                                  check_bottom_row:
-00029b 3010                      	cpi r17, 0
-00029c f029                      	breq asterisk
+0002a8 3010                      	cpi r17, 0
+0002a9 f029                      	breq asterisk
                                  
-00029d 3011                      	cpi r17, 1
-00029e e06a                      	ldi arg1, 10
-00029f f019                      	breq end_show
+0002aa 3011                      	cpi r17, 1
+0002ab e06a                      	ldi arg1, 10
+0002ac f019                      	breq end_show
                                  
-0002a0 940c 02af                 	jmp scan_end
+0002ad 940c 02b1                 	jmp scan_end
                                  
                                  asterisk:
                                  	;rcall emergency_func
-0002a2 c00c                      	rjmp scan_end
+0002af c001                      	rjmp scan_end
                                  
                                  	
                                  end_show:
-0002a3 934f
-0002a4 e248
-0002a5 deaa
-0002a6 deb2
-0002a7 914f                      	write '('
-0002a8 df56                      	rcall convert_to_ascii
-0002a9 934f
-0002aa e249
-0002ab dea4
-0002ac deac
-0002ad 914f                      	write ')'
-0002ae 2f26                      	mov r18, arg1
+                                 
+0002b0 2f26                      	mov r18, arg1
                                  
                                  
                                  scan_end:
-0002af 917f                      	pop arg2
-0002b0 916f                      	pop arg1
-0002b1 915f                      	pop temp2
-0002b2 914f                      	pop temp1
-0002b3 913f                      	pop r19
-0002b4 911f                      	pop r17
-0002b5 910f                      	pop r16
-0002b6 9508                      	ret
+0002b1 917f                      	pop arg2
+0002b2 916f                      	pop arg1
+0002b3 915f                      	pop temp2
+0002b4 914f                      	pop temp1
+0002b5 913f                      	pop r19
+0002b6 911f                      	pop r17
+0002b7 910f                      	pop r16
+0002b8 9508                      	ret
                                  
                                  
 
@@ -2992,27 +2996,27 @@ counted separately from r26..r31 here.
 
 "ATmega2560" register use summary:
 x  :  10 y  :   0 z  :   3 r0 :   0 r1 :   0 r2 :   0 r3 :   9 r4 :   2 
-r5 :   0 r6 :   0 r7 :  27 r8 :   5 r9 :   5 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  41 r17:  16 r18:  19 r19:  20 r20: 148 
-r21:  54 r22:  37 r23:  11 r24:  21 r25:  18 r26:  12 r27:   9 r28:   4 
+r5 :   0 r6 :   0 r7 :  26 r8 :   5 r9 :   5 r10:   0 r11:   0 r12:   0 
+r13:   0 r14:   2 r15:   0 r16:  42 r17:  16 r18:  23 r19:  20 r20: 145 
+r21:  54 r22:  40 r23:  12 r24:  21 r25:  18 r26:  12 r27:   9 r28:   4 
 r29:   4 r30:   4 r31:   4 
-Registers used: 23 out of 35 (65.7%)
+Registers used: 24 out of 35 (68.6%)
 
 "ATmega2560" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   3 adiw  :   8 and   :   1 
 andi  :   6 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   1 brcs  :   2 break :   0 breq  :  28 brge  :   0 brhc  :   0 
+brcc  :   1 brcs  :   2 break :   0 breq  :  29 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   7 brlt  :   3 brmi  :   0 
 brne  :   8 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   6 cbr   :   2 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  18 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :  21 cpc   :   2 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  20 cls   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :  22 cpc   :   2 
 cpi   :  20 cpse  :   0 dec   :   5 eicall:   0 eijmp :   0 elpm  :   0 
 eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
-in    :   5 inc   :  15 jmp   :  11 ld    :   6 ldd   :   0 ldi   :  52 
-lds   :  17 lpm   :   2 lsl   :   5 lsr   :   0 mov   :  22 movw  :   2 
+in    :   5 inc   :  15 jmp   :  11 ld    :   6 ldd   :   0 ldi   :  51 
+lds   :  17 lpm   :   2 lsl   :   5 lsr   :   0 mov   :  25 movw  :   2 
 mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   :   1 or    :   0 
-ori   :   4 out   :  25 pop   :  68 push  :  66 rcall :  70 ret   :  11 
+ori   :   4 out   :  25 pop   :  67 push  :  65 rcall :  68 ret   :  11 
 reti  :   3 rjmp  :  24 rol   :   0 ror   :   1 sbc   :   1 sbci  :   0 
 sbi   :   6 sbic  :   0 sbis  :   0 sbiw  :   1 sbr   :   1 sbrc  :   1 
 sbrs  :   0 sec   :   0 seh   :   0 sei   :   1 sen   :   0 ser   :   3 
@@ -3024,7 +3028,7 @@ Instructions used: 48 out of 116 (41.4%)
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00056e   1296     14   1310  262144   0.5%
+[.cseg] 0x000000 0x000572   1300     14   1314  262144   0.5%
 [.dseg] 0x000200 0x000215      0     21     21    8192   0.3%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 

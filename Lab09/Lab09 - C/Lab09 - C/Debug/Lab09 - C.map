@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - C\Lab09 - C\main.asm Tue Apr 23 22:10:39 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - C\Lab09 - C\main.asm Wed Apr 24 09:25:38 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1378,32 +1378,32 @@ DSEG Revs         00000200
 DSEG Speed        00000202
 DSEG Count        00000204
 DSEG Seconds      00000206
-CSEG RESET        00000030
-CSEG EXT_INT0     00000099
-CSEG EXT_INT1     0000009a
-CSEG EXT_INT2     0000009b
-CSEG Timer0OVF    000000a8
-CSEG lcd_command  000000f8
-CSEG lcd_wait     00000108
-CSEG sleep_5ms    00000122
-CSEG sleep_1ms    00000119
-CSEG main         000000e8
-CSEG Not_second   000000d7
-CSEG rnd_down     000000c0
-CSEG End_I        000000db
-CSEG divisors     000000e3
-CSEG lcd_data     000000ff
-CSEG lcd_wait_loop 0000010d
+CSEG RESET        000000ff
+CSEG EXT_INT0     00000168
+CSEG EXT_INT1     00000169
+CSEG EXT_INT2     0000016a
+CSEG Timer0OVF    00000170
+CSEG lcd_command  000001ca
+CSEG lcd_wait     000001da
+CSEG sleep_5ms    000001f4
+CSEG sleep_1ms    000001eb
+CSEG main         000001b5
+CSEG Not_second   000001a4
+CSEG lcd_data     000001d1
+CSEG rnd_down     0000018d
+CSEG End_I        000001a8
+CSEG divisors     000001b0
+CSEG convert_to_ascii 000001fa
+CSEG lcd_wait_loop 000001df
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 0000011d
-CSEG convert_to_ascii 00000128
-CSEG start        00000136
-CSEG convert_loop 0000013b
-CSEG end_convert  00000165
-CSEG divide       0000013f
-CSEG loop_start   00000143
-CSEG end_divide   0000014d
-CSEG end_loop     0000014c
-CSEG check_zero   0000015a
-CSEG final_number 0000015f
+CSEG delayloop_1ms 000001ef
+CSEG start        00000208
+CSEG convert_loop 0000020d
+CSEG end_convert  00000237
+CSEG divide       00000211
+CSEG loop_start   00000215
+CSEG end_divide   0000021f
+CSEG end_loop     0000021e
+CSEG check_zero   0000022c
+CSEG final_number 00000231

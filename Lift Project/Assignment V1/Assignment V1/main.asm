@@ -203,7 +203,7 @@ RESET:
 	clr lift_status
 
 	cbr lift_status, goingUp
-	ldi current_floor, 4
+	ldi current_floor, 6
 	
 
     clr zero   			 ; zero
@@ -407,9 +407,19 @@ main:
 
 
 */
+	clr arg1
+	clr arg2
+	mov r18, current_floor //needs to happen
 read_queue:
-
+	mov r14, r18
 	rcall scan
+	mov arg1, r18
+	cp r14, arg1
+	breq same
+	write '('
+	rcall convert_to_ascii
+	//write ')'
+same:
 	rcall insert_request
 	lds temp1, Queue_len
 
@@ -655,7 +665,7 @@ insert_start:
     inc r22    ;len++   		 ;length of list is now longer
     write '|'
 	push arg1
-	mov arg1, counter
+	mov arg1, input_value
 	rcall convert_to_ascii
 	pop arg1
 
@@ -965,9 +975,7 @@ asterisk:
 
 	
 end_show:
-	write '('
-	rcall convert_to_ascii
-	write ')'
+
 	mov r18, arg1
 
 

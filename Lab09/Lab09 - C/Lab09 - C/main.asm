@@ -138,8 +138,12 @@ jmp EXT_INT2
 
 .org OVF0addr
     jmp Timer0OVF
+.org OVF1addr
+	reti
+.org OVF2addr
+	reti
 
-
+.org 0xFF
 
 RESET:
     ldi temp1, low(RAMEND)    ; Init stack frame
@@ -269,12 +273,12 @@ EXT_INT1:
 EXT_INT2:
 	push YL
 	push YH
-	lds YL, Revs
-	lds YH, Revs+1
+/*	lds YL, Revs
+	lds YH, Revs+1*/
 
-	//adiw Y, 1
-	sts Revs, YL
-	sts Revs+1, YH
+	inc one
+/*	sts Revs, YL
+	sts Revs+1, YH*/
 	pop YH
 	pop YL
 	reti
@@ -306,6 +310,8 @@ Timer0OVF:
     brne Not_second
 //ALl of this happens ever 0.1 sec    
 	
+	write 'P'
+
 	lds r24, Revs
 	lds r25, Revs+1
 	
@@ -357,6 +363,11 @@ main:
 	cpi r24, 5
 	brlt main
 	write 'P'
+	ldi XL, low(Revs)
+	ldi XH, high(Revs)
+	ld arg1, X
+	ldi arg2, 0
+	rcall convert_to_ascii
 	clear Seconds
 
 
