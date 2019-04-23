@@ -26,6 +26,7 @@
 .def temp2 = r17
 .def arg1 = r22
 .def arg2 = r23
+.def motor_speed = r15
 //Clear word macro
 .macro clear
     sts @0, zero
@@ -174,12 +175,12 @@ RESET:
 	
 	out DDRE, temp1
 
-    ldi temp1, 0b01010101    ;LED testing
-/*    ldi temp2, 0*/
+/*    ldi temp1, 0b01010101    ;LED testing
+    ldi temp2, 0
     out PORTC, temp1   	 ;LED lower
-/*    out PORTG, temp2   	 ;LED higher*/
+    out PORTG, temp2   	 ;LED higher*/
 
-    ldi temp1,  0b000101010    ;falling edges for interrupts 0,1,2
+    ldi temp1,  0b000001010    ;falling edges for interrupts 0,1,2
     sts EICRA, temp1   	 
 
 
@@ -203,9 +204,10 @@ RESET:
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
 
-	set_motor_speed 0x60
+	set_motor_speed 0xFF
 
-	ldi temp1, (1<<CS31)
+
+	ldi temp1, (1<<CS30)
 	sts TCCR3B, temp1
 	ldi temp1, (1<<COM3B1) | (1<<WGM30)
 	sts TCCR3A, temp1
@@ -234,6 +236,7 @@ RESET:
 	
 
 	clear Speed
+	clear Revs
 	clear Seconds
     sei
 	
@@ -265,11 +268,27 @@ EXT_INT1:
 EXT_INT2:
 	push XL
 	push XH
+	push YL
+	push YH
 	lds XL, Speed
 	lds XH, Speed+1
+	lds YL, Revs
+	lds YH, Revs+1
 	adiw X,1
+	cpi XL, 0xFF
+	cpi XH, 0xFF
+	brlt no_reset
+	adiw Y, 1
+	clear Speed
+no_reset:
+
+
 	sts Speed, XL
 	sts Speed+1, XH
+	sts Revs, YL
+	sts Revs+1, YH
+	pop YH
+	pop YL
 	pop XH
 	pop XL
 	reti
@@ -306,23 +325,46 @@ Timer0OVF:
 	//grab the revs *4 for this 0.1 second passing
 	// to gev rev/sec do speed/4*10 ie speed*5/2
 
-	lds YL, Speed
+/*	lds YL, Speed
 	lds YH, Speed+1
 	
 	mov temp1, YL
 	mov temp2, YH
-	lsr YH
-	ror YL
+	
+	ldi temp1, 0b00000010
+	and temp1, YL
+	breq rnd_down
+	adiw Y, 1
+rnd_down:
+	andi YL, 0b11111100
 	lsl YL
-	rol YH
-	lsl YL
-	rol YH
+	rol YH*/
 
+
+
+	
+/*	cp YL, motor_speed
+	brlt accel
+	brge decel
+
+accel:
+	adiw Y, 63
+	
+	ldi temp1, 1
+	out PORTG, temp1
+	rjmp speed_adjusted
+
+decel:
+	sbiw Y, 63
+	
+	ldi temp1, 2
+	out PORTG, temp1
+	rjmp speed_adjusted*/
+
+speed_adjusted:
 	sts Revs, YL
 	sts Revs+1, YH
 	clear Speed
-	
-
 
 
     adiw r25:r24, 1
