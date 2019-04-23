@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - C\Lab09 - C\main.asm Tue Apr 23 21:04:45 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - C\Lab09 - C\main.asm Tue Apr 23 22:10:39 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1374,38 +1374,36 @@ DEF  temp2        r17
 DEF  arg1         r22
 DEF  arg2         r23
 DEF  motor_speed  r15
-DSEG Count        00000200
-DSEG Seconds      00000202
-DSEG Revs         00000204
-DSEG Speed        00000206
+DSEG Revs         00000200
+DSEG Speed        00000202
+DSEG Count        00000204
+DSEG Seconds      00000206
 CSEG RESET        00000030
 CSEG EXT_INT0     00000099
 CSEG EXT_INT1     0000009a
 CSEG EXT_INT2     0000009b
-CSEG Timer0OVF    000000bd
-CSEG lcd_command  0000010d
-CSEG lcd_wait     0000011d
-CSEG sleep_5ms    00000137
-CSEG sleep_1ms    0000012e
-CSEG main         000000f4
-CSEG no_reset     000000b0
-CSEG Not_second   000000e3
-CSEG speed_adjusted 000000d1
-CSEG End_I        000000e7
-CSEG divisors     000000ef
-CSEG start_loop   000000f4
-CSEG convert_to_ascii 0000013d
-CSEG lcd_data     00000114
-CSEG lcd_wait_loop 00000122
+CSEG Timer0OVF    000000a8
+CSEG lcd_command  000000f8
+CSEG lcd_wait     00000108
+CSEG sleep_5ms    00000122
+CSEG sleep_1ms    00000119
+CSEG main         000000e8
+CSEG Not_second   000000d7
+CSEG rnd_down     000000c0
+CSEG End_I        000000db
+CSEG divisors     000000e3
+CSEG lcd_data     000000ff
+CSEG lcd_wait_loop 0000010d
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 00000132
-CSEG start        0000014b
-CSEG convert_loop 00000150
-CSEG end_convert  0000017a
-CSEG divide       00000154
-CSEG loop_start   00000158
-CSEG end_divide   00000162
-CSEG end_loop     00000161
-CSEG check_zero   0000016f
-CSEG final_number 00000174
+CSEG delayloop_1ms 0000011d
+CSEG convert_to_ascii 00000128
+CSEG start        00000136
+CSEG convert_loop 0000013b
+CSEG end_convert  00000165
+CSEG divide       0000013f
+CSEG loop_start   00000143
+CSEG end_divide   0000014d
+CSEG end_loop     0000014c
+CSEG check_zero   0000015a
+CSEG final_number 0000015f

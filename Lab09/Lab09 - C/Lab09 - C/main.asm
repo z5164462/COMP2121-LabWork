@@ -103,14 +103,15 @@ end_cl:
 .endmacro
 
 .dseg
-Count:
-    .byte 2
-Seconds:
-    .byte 2
 Revs:
 	.byte 2
 Speed:
 	.byte 2
+Count:
+    .byte 2
+Seconds:
+    .byte 2
+
 /*Debounce0:
 	.byte 2
 Debounce1:
@@ -180,7 +181,7 @@ RESET:
     out PORTC, temp1   	 ;LED lower
     out PORTG, temp2   	 ;LED higher*/
 
-    ldi temp1,  0b000001010    ;falling edges for interrupts 0,1,2
+    ldi temp1,  0b00101010    ;falling edges for interrupts 0,1,2
     sts EICRA, temp1   	 
 
 
@@ -204,7 +205,7 @@ RESET:
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
 
-	set_motor_speed 0xFF
+	set_motor_speed 0x2F
 
 
 	ldi temp1, (1<<CS30)
@@ -266,31 +267,16 @@ EXT_INT1:
 
 
 EXT_INT2:
-	push XL
-	push XH
 	push YL
 	push YH
-	lds XL, Speed
-	lds XH, Speed+1
 	lds YL, Revs
 	lds YH, Revs+1
-	adiw X,1
-	cpi XL, 0xFF
-	cpi XH, 0xFF
-	brlt no_reset
-	adiw Y, 1
-	clear Speed
-no_reset:
 
-
-	sts Speed, XL
-	sts Speed+1, XH
+	//adiw Y, 1
 	sts Revs, YL
 	sts Revs+1, YH
 	pop YH
 	pop YL
-	pop XH
-	pop XL
 	reti
 
 //---- TIMER
@@ -318,55 +304,27 @@ Timer0OVF:
     ldi temp1, high(clock_speed)
     cpc r25, temp1
     brne Not_second
-    lds r24, Seconds   		 ; increment seconds every 1/10 of second
-    lds r25, Seconds+1
-
-
-	//grab the revs *4 for this 0.1 second passing
-	// to gev rev/sec do speed/4*10 ie speed*5/2
-
-/*	lds YL, Speed
-	lds YH, Speed+1
+//ALl of this happens ever 0.1 sec    
 	
-	mov temp1, YL
-	mov temp2, YH
+	lds r24, Revs
+	lds r25, Revs+1
 	
 	ldi temp1, 0b00000010
-	and temp1, YL
+	and temp1, r24  //compare bit 1
 	breq rnd_down
-	adiw Y, 1
+adiw r25:r24, 4
+
 rnd_down:
-	andi YL, 0b11111100
-	lsl YL
-	rol YH*/
 
+	andi r24, 0b11111100 //clears the last 2 bits
 
+	sts Speed, r24
+	sts Speed+1, r25
 
-	
-/*	cp YL, motor_speed
-	brlt accel
-	brge decel
+	clear Revs
 
-accel:
-	adiw Y, 63
-	
-	ldi temp1, 1
-	out PORTG, temp1
-	rjmp speed_adjusted
-
-decel:
-	sbiw Y, 63
-	
-	ldi temp1, 2
-	out PORTG, temp1
-	rjmp speed_adjusted*/
-
-speed_adjusted:
-	sts Revs, YL
-	sts Revs+1, YH
-	clear Speed
-
-
+	lds r24, Seconds   		 ; increment seconds every 1/10 of second
+    lds r25, Seconds+1
     adiw r25:r24, 1
     sts Seconds, r24
     sts Seconds+1, r25
@@ -393,21 +351,15 @@ divisors:
 
 ; Replace with your application code
 main:
-
-start_loop:
 	
 	lds r24, Seconds
 	lds r25, Seconds+1
-
-	cpi r24, 4
-	brne main
-	clear_disp
-	//write 'P'	
+	cpi r24, 5
+	brlt main
+	write 'P'
 	clear Seconds
-	lds arg1, Revs
-	lds arg2, Revs+1
-	rcall convert_to_ascii
-	clear Revs
+
+
 
 
     rjmp main
