@@ -41,6 +41,8 @@ floor_array?
 .def zero = r3
 .def one = r4
 .def counter = r7
+.def ret1 = r10
+.def ret2 = r11
 .def current_floor = r16
 .def requested_floor = r17
 .def input_value = r18
@@ -209,6 +211,8 @@ RESET:
     clr zero   			 ; zero
     clr one   				 
     inc one   				 ; one
+	clr ret1
+	clr ret2
 
 	sts Queue_len, zero
 
@@ -407,72 +411,29 @@ main:
 
 
 */
-	clr arg1
-	clr arg2
-	mov r18, current_floor //needs to happen
+
 read_queue:
-	mov r14, r18
-	rcall scan
-	mov arg1, r18
-	cp r14, arg1
-	breq same
-	write '('
+	rcall scan				//reading the queue
+	mov arg1, ret1 
 	rcall convert_to_ascii
-	//write ')'
-same:
+	mov input_value, ret1
 	rcall insert_request
 	lds temp1, Queue_len
-
-	cpi temp1, 3
-	breq disp_queue
-
-	
-	rjmp read_queue
-/*clr counter
-ldi ZL, low(requests<<1)
-ldi ZH, high(requests<<1)
-ldi temp2, 3
-insert_queue:
-	cp counter, temp2
-	breq disp_queue
-	lpm input_value, Z+
-	rcall insert_request
-	inc counter
-	rjmp insert_queue*/
-
-disp_queue:
+	cpi temp1, 0
+	breq read_queue
 	ldi ZL, low(Queue)
 	ldi ZH, high(Queue)
-	clr counter 
-	clear Seconds
-	write '*'
-	lds arg1, Queue_len
-	rcall convert_to_ascii
-	write '*'
-	change_line 2,0
-	mov temp2, arg1
-disp_q_loop:
+	ld requested_floor, Z
 
-	cp counter, temp2
-	breq end_main
-	ld current_floor, Z+
-	mov arg1, current_floor
-	rcall convert_to_ascii
+	lds r24, Seconds		//moving the lift
+	lds r25, Seconds+1
+	cp requested_floor
+
+
 	rcall show_floor
-	lds temp1, Queue_len
 	dec temp1
 	sts Queue_len, temp1
-	clear Seconds
-pause:
-	lds r24, Seconds
-	lds r25, Seconds+1
-	cpi r24, 20
-	brlt pause
-	
-	inc counter
-	
-	rjmp disp_q_loop
-
+	rjmp read_queue
 end_main:
 	rjmp end_main
 
@@ -580,7 +541,17 @@ push XH
 
 ldi XL, low(Queue)
 ldi XH, high(Queue)
+lds r22, Queue_len
 
+
+cpi input_value, 11
+brlt under_11
+jmp end_insert_loop
+under_11:
+cpi input_value, 1
+brge valid_insert
+jmp end_insert_loop
+valid_insert:
 
 clr counter // counter = 0
 lds r22, Queue_len
@@ -663,11 +634,10 @@ end_search:
 
 insert_start:    
     inc r22    ;len++   		 ;length of list is now longer
-    write '|'
-	push arg1
+/*	push arg1
 	mov arg1, input_value
 	rcall convert_to_ascii
-	pop arg1
+	pop arg1*/
 
 
 insert_loop:
@@ -710,10 +680,11 @@ show_floor:
 ;prologue
 ;    push YL
 ;    push YH
-push XL
-push XH
+
     push current_floor
     push counter
+	push XL
+	push XH
 
     clr counter    
     clr XL    ; output
@@ -900,7 +871,7 @@ Strobe_end:
 scan:
     push r16 // row
     push r17 // col
-    //push r18 // rmask // r18 will be used to return the input_value
+    push r18 // rmask // r18 will be used to return the input_value
     push r19 // cmask
     push temp1
     push temp2 
@@ -909,6 +880,8 @@ scan:
     ldi r19, INITCOLMASK   	 ; load column mask to scan a column
     clr r17
 
+
+	clr ret1
 colloop:
     cpi r17, 4   				 ; check if all columns scanned
     breq scan_end   		 ; restart scan if all cols scanned
@@ -946,6 +919,7 @@ nextcol:   					 ; jump to next column when row scan over
     jmp colloop
 
 show:
+	write 'H'
     cpi r17, 3   			; if column = 3, a key in column 3 is pressed, which is a 									letter key
     breq scan_end   				 ; we dont need to deal with this for this lab, so go to n_a
 
@@ -976,7 +950,7 @@ asterisk:
 	
 end_show:
 
-	mov r18, arg1
+	mov ret1, arg1
 
 
 scan_end:
@@ -985,6 +959,7 @@ scan_end:
 	pop temp2
 	pop temp1
 	pop r19
+	pop r18
 	pop r17
 	pop r16
 	ret
