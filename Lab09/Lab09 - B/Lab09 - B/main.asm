@@ -180,8 +180,9 @@ RESET:
     sts EICRA, temp1   	 
 
 	ldi temp1, 0xFF
+	sts Debounce0, temp1
+	sts Debounce0+1, temp1
 	sts Debounce1, temp1
-	ldi temp1, 0xFF
 	sts Debounce1+1, temp1
 
 
@@ -198,7 +199,8 @@ RESET:
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
 
-	set_motor_speed 0x4A
+	set_motor_speed 0x00
+	ldi r20, 0
 
 	ldi temp1, (1<<CS30)
 	sts TCCR3B, temp1
@@ -241,6 +243,7 @@ EXT_INT0:
 	//set_motor_speed 0
 	ldi temp1, 0b11110000
 	out PORTC, temp1
+	set_motor_speed 0x2A
 	clear Debounce0
 INT0_END:
     pop temp2
@@ -249,6 +252,7 @@ INT0_END:
     reti
 
 EXT_INT1:
+	set_motor_speed 0x6A
 	clear Debounce1
 	reti
 
@@ -281,7 +285,7 @@ Timer0OVF:
 
 
 //------ DEBOUNCING FOR BUTTON 0
-	lds r24, Debounce0
+/*	lds r24, Debounce0
 	lds r25, Debounce0+1
 	ldi temp1, 0xFF
 	cp r24, temp1
@@ -294,7 +298,9 @@ Timer0OVF:
 
 //DO ACTION HERE/ CALL FUNCTION HERE
 	set_motor_speed 0x2A
-	//write '^'
+	ldi r20, 1
+	clr r6
+	;write '^'
 
 	ldi temp1, 0xFF
 	sts Debounce0, temp1
@@ -307,10 +313,10 @@ still_bouncing_0:
 	sts Debounce0+1, r25
 
 skip_db_0:
-//------
+//------*/
 
 
-//------ DEBOUNCING FOR BUTTON 1
+/*//------ DEBOUNCING FOR BUTTON 1
 	lds r24, Debounce1
 	lds r25, Debounce1+1
 	ldi temp1, 0xFF
@@ -324,6 +330,8 @@ skip_db_0:
 //DO ACTION HERE/ CALL FUNCTION HERE
 	set_motor_speed 0x6A
 	//write '!'
+	ldi r20, 2
+	clr r3
 
 	ldi temp1, 0xFF
 	sts Debounce1, temp1
@@ -336,7 +344,7 @@ still_bouncing_1:
 	sts Debounce1+1, r25
 
 skip_db_1:
-//------
+//------*/
 
     
     cpi r24, low(clock_speed)    ; compare with clock speed to check if 1/10 of second has passed
@@ -348,8 +356,14 @@ skip_db_1:
 
 
 	//grab the revs *4 for this 0.1 second passing
-	// to gev rev/sec do speed/4*10 ie speed*5/2
-
+	// to get rev/sec do speed/4*10 ie speed*5/2
+/*	inc r3
+	write_reg r3
+	ldi temp1, 10
+	set_motor_speed 0
+	out PORTC, r3
+still_spin1:*/
+	
 
 	lds YL, Speed
 	lds YH, Speed+1
@@ -400,15 +414,19 @@ divisors:
 ; Replace with your application code
 main:
 
+
+
 start_loop:
 	lds r24, Seconds
 	lds r25, Seconds+1
 	cpi r24, 4
-	brne main
-	clear Seconds
+	brne main	
+	
 	clear_disp
-	lds arg1, Debounce1
-	lds arg2, Debounce1+1
+	clear Seconds
+	write 'P'
+	lds arg1, Revs
+	lds arg2, Revs+1
 	rcall convert_to_ascii
 /*	in temp1, PINE
 	andi temp1, 0b00010000

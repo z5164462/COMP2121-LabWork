@@ -204,7 +204,15 @@ RESET:
 
 	clr lift_status
 
+	sbr lift_status, stopped
 	cbr lift_status, goingUp
+	cbr lift_status, doorsOpen
+	cbr lift_status, opening
+	cbr lift_status, closing
+	cbr lift_status, flashing
+	cbr lift_status, emergency
+	cbr lift_status, halted
+
 	ldi current_floor, 6
 	
 
@@ -414,25 +422,41 @@ main:
 
 read_queue:
 	rcall scan				//reading the queue
-	mov arg1, ret1 
-	rcall convert_to_ascii
+/*	mov arg1, ret1 
+	rcall convert_to_ascii*/ //DEBUGGING
 	mov input_value, ret1
 	rcall insert_request
-	lds temp1, Queue_len
+	lds temp1, Queue_len	//is the queue empty
 	cpi temp1, 0
 	breq read_queue
+
+	check_register_bit stopped	//is stopped?
+	brne moving
 	ldi ZL, low(Queue)
 	ldi ZH, high(Queue)
 	ld requested_floor, Z
+	dec temp1
+	sts Queue_len, temp1		//Queue is shorter
 
+moving:
+	cbr lift_status, stopped
 	lds r24, Seconds		//moving the lift
 	lds r25, Seconds+1
-	cp requested_floor
+	cp requested_floor, current_floor	//are we on the right floor
+	breq stop_here
+	cpi r24, 20
+	brlt read_queue
+
+stop_here:
+	sbr lift_status, stopped
+	rcall LED_flash
+	lds XL, Wait_duration
+	lds XH, Wait_duration
+
 
 
 	rcall show_floor
-	dec temp1
-	sts Queue_len, temp1
+
 	rjmp read_queue
 end_main:
 	rjmp end_main
@@ -817,7 +841,7 @@ end_convert:
 
 
 //FLASH_LED
-//inputs current_floor(global), lift_status(global)
+/*//inputs current_floor(global), lift_status(global)
 
 flash_LED:
 push temp1
@@ -844,7 +868,33 @@ flashFalse:
 end_flash_LED:
 pop temp2
 pop temp1
-ret
+ret*/
+
+
+LED_flash:	//Reads in the seconds value in X
+    push temp1
+	push current_floor
+    push XL
+    mov temp1, XL
+    ror temp1		//rotates the time into the carry
+    brcs LED_up	//if old LSB was 1, i.e. odd turn strobe on
+    brcc LED_down	//if old LSB was 0, i.e even turn strobe off
+
+LED_up:
+    rcall show_floor		//set PORTA bit to 1
+	rjmp strobe_end
+LED_down:
+    dec current_floor
+	rcall show_floor
+	rjmp strobe_end
+Strobe_end:
+    pop XL
+	pop current_floor
+    pop temp1
+	ret
+
+
+
 
 
 //STROBE_FLASH
