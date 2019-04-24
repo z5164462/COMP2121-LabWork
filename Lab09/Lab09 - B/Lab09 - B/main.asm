@@ -17,8 +17,11 @@
 
 .equ clock_speed = 781
 
+
 .def zero = r3
 .def one = r4
+.def closing = r8
+.def opening = r9
 .def temp1 = r16
 .def temp2 = r17
 .def arg1 = r22
@@ -108,9 +111,9 @@ Revs:
 Speed:
 	.byte 2
 Debounce0:
-	.byte 2
+	.byte 1
 Debounce1:
-	.byte 2
+	.byte 1
 
 
 
@@ -149,6 +152,9 @@ RESET:
     inc one   				 ; one
 
 
+	clr closing
+	clr opening
+
 /*
     ldi temp1, PORTLDIR   	 ;p7-4 outputs, p3-0 inputs
 	ldi temp2, 0b00001111;send 1 to p3-0 to activate pull up resistors
@@ -171,19 +177,19 @@ RESET:
 	
 	out DDRE, temp1
 
-    ldi temp1, 0b01010101    ;LED testing
-/*    ldi temp2, 0*/
+/*    ldi temp1, 0b01010101    ;LED testing
+    ldi temp2, 0
     out PORTC, temp1   	 ;LED lower
-/*    out PORTG, temp2   	 ;LED higher*/
+    out PORTG, temp2   	 ;LED higher*/
 
     ldi temp1,  0b000101010    ;falling edges for interrupts 0,1,2
     sts EICRA, temp1   	 
 
-	ldi temp1, 0xFF
-	sts Debounce0, temp1
-	sts Debounce0+1, temp1
-	sts Debounce1, temp1
-	sts Debounce1+1, temp1
+
+	sts Debounce0, zero
+	sts Debounce0+1, zero
+	sts Debounce1, zero
+	sts Debounce1+1, zero
 
 
     in temp1, EIMSK
@@ -200,7 +206,6 @@ RESET:
     sts TIMSK0, temp1
 
 	set_motor_speed 0x00
-	ldi r20, 0
 
 	ldi temp1, (1<<CS30)
 	sts TCCR3B, temp1
@@ -237,25 +242,45 @@ EXT_INT0:
 	push temp2
 	in temp2, SREG
 	push temp2
-    
+	lds temp2, Debounce0
+	inc temp2
+	cpi temp2, 2
+	brlt INT0_END
+	
+	set_motor_speed 0xCA
+	ldi temp2, 2
+	mov opening, temp2
+	//write '('    
+	clr temp2
 
-//in theory, we should be able to test: check_register_bit, doorsOpen / brne INT0_END
-	//set_motor_speed 0
-	ldi temp1, 0b11110000
-	out PORTC, temp1
-	set_motor_speed 0x2A
-	clear Debounce0
 INT0_END:
+	sts Debounce0, temp2
     pop temp2
     out SREG, temp2
     pop temp2
     reti
 
 EXT_INT1:
+	push temp2
+	in temp2, SREG
+	push temp2
+	lds temp2, Debounce1
+	inc temp2
+	cpi temp2, 2
+	brlt INT1_END
+	
 	set_motor_speed 0x6A
-	clear Debounce1
-	reti
+	ldi temp2, 2
+	mov closing, temp2
+	//write ')'    
+	clr temp2
 
+INT1_END:
+	sts Debounce1, temp2
+    pop temp2
+    out SREG, temp2
+    pop temp2
+    reti
 
 EXT_INT2:
 	push XL
@@ -284,67 +309,7 @@ Timer0OVF:
     adiw r25:r24, 1
 
 
-//------ DEBOUNCING FOR BUTTON 0
-/*	lds r24, Debounce0
-	lds r25, Debounce0+1
-	ldi temp1, 0xFF
-	cp r24, temp1
-	cpc r25, temp1
-	breq skip_db_0
 
-	ldi temp1, low(100)
-	cp r24, temp1
-	brlt still_bouncing_0
-
-//DO ACTION HERE/ CALL FUNCTION HERE
-	set_motor_speed 0x2A
-	ldi r20, 1
-	clr r6
-	;write '^'
-
-	ldi temp1, 0xFF
-	sts Debounce0, temp1
-	sts Debounce0+1, temp1
-	rjmp skip_db_0
-
-still_bouncing_0:
-	adiw r25:r24, 1
-	sts Debounce0, r24
-	sts Debounce0+1, r25
-
-skip_db_0:
-//------*/
-
-
-/*//------ DEBOUNCING FOR BUTTON 1
-	lds r24, Debounce1
-	lds r25, Debounce1+1
-	ldi temp1, 0xFF
-	cp r24, temp1
-	cpc r25, temp1
-	breq skip_db_1
-
-	cpi r24, 100
-	brlt still_bouncing_1
-
-//DO ACTION HERE/ CALL FUNCTION HERE
-	set_motor_speed 0x6A
-	//write '!'
-	ldi r20, 2
-	clr r3
-
-	ldi temp1, 0xFF
-	sts Debounce1, temp1
-	sts Debounce1+1, temp1
-	rjmp skip_db_1
-
-still_bouncing_1:
-	adiw r25:r24, 1
-	sts Debounce1, r24
-	sts Debounce1+1, r25
-
-skip_db_1:
-//------*/
 
     
     cpi r24, low(clock_speed)    ; compare with clock speed to check if 1/10 of second has passed
@@ -355,14 +320,7 @@ skip_db_1:
     lds r25, Seconds+1
 
 
-	//grab the revs *4 for this 0.1 second passing
-	// to get rev/sec do speed/4*10 ie speed*5/2
-/*	inc r3
-	write_reg r3
-	ldi temp1, 10
-	set_motor_speed 0
-	out PORTC, r3
-still_spin1:*/
+
 	
 
 	lds YL, Speed
@@ -374,14 +332,10 @@ still_spin1:*/
 	lsl YL	//x2
 	rol YH
 
-/*	lsl YL //x2
+	lsl YL	//x2
 	rol YH
-	
-	add YL, temp1 //x*2 +x*2 + x = 5x
-	add YH, temp2
 
-	lsr YH  ///(2x + 2x + x)/2 = 4/10 x
-	ror YL*/
+
 
 	sts Revs, YL
 	sts Revs+1, YH
@@ -419,21 +373,36 @@ main:
 start_loop:
 	lds r24, Seconds
 	lds r25, Seconds+1
-	cpi r24, 4
+	cpi r24, 5
 	brne main	
-	
+	cp opening, zero
+	brne open_wait
+	cp closing, zero
+	brne close_wait
+	rjmp continue
+open_wait:
+	dec opening
+	cp opening, zero
+	brne continue
+	set_motor_speed 0
+	rjmp continue
+
+close_wait:
+	dec closing
+	cp closing, zero
+	brne continue
+	//out PORTC, one
+	set_motor_speed 0
+	rjmp continue
+
+continue:
 	clear_disp
 	clear Seconds
-	write 'P'
+	//write 'P'
 	lds arg1, Revs
 	lds arg2, Revs+1
 	rcall convert_to_ascii
-/*	in temp1, PINE
-	andi temp1, 0b00010000
-	mov arg1, temp1
-	clr arg2
-	rcall convert_to_ascii*/
-	//clear Speed
+
 	clear Revs
     rjmp main
 

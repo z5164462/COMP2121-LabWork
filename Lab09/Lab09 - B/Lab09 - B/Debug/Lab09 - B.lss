@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - B\Lab09 - B\main.asm Wed Apr 24 17:46:59 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - B\Lab09 - B\main.asm Wed Apr 24 19:44:56 2019
 
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - B\Lab09 - B\main.asm(8): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
@@ -1905,8 +1905,11 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  
                                  .equ clock_speed = 781
                                  
+                                 
                                  .def zero = r3
                                  .def one = r4
+                                 .def closing = r8
+                                 .def opening = r9
                                  .def temp1 = r16
                                  .def temp2 = r17
                                  .def arg1 = r22
@@ -1996,9 +1999,9 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  Speed:
 000206                           	.byte 2
                                  Debounce0:
-000208                           	.byte 2
+000208                           	.byte 1
                                  Debounce1:
-00020a                           	.byte 2
+000209                           	.byte 1
                                  
                                  
                                  
@@ -2012,15 +2015,15 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
 000000 940c 0030                 jmp RESET
                                  
                                  .org INT0addr
-000002 940c 00a1                 jmp EXT_INT0
+000002 940c 009f                 jmp EXT_INT0
                                  .org INT1addr
-000004 940c 00b4                 jmp EXT_INT1
+000004 940c 00b6                 jmp EXT_INT1
                                  .org INT2addr
-000006 940c 00bf                 jmp EXT_INT2
+000006 940c 00cd                 jmp EXT_INT2
                                  
                                  
                                  .org OVF0addr
-00002e 940c 00cd                     jmp Timer0OVF
+00002e 940c 00db                     jmp Timer0OVF
                                  
                                  
                                  
@@ -2037,318 +2040,267 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
 000036 9443                          inc one   				 ; one
                                  
                                  
+000037 2488                      	clr closing
+000038 2499                      	clr opening
+                                 
                                  /*
                                      ldi temp1, PORTLDIR   	 ;p7-4 outputs, p3-0 inputs
                                  	ldi temp2, 0b00001111;send 1 to p3-0 to activate pull up resistors
                                      sts DDRL, temp1
                                  	sts PORTL, temp1*/
                                  
-000037 0000                      	nop
+000039 0000                      	nop
                                   			 
                                  	//outputs
-000038 ef0f                      	ser temp1
-000039 b907                          out DDRC, temp1   		 ;LED Lower
-00003a bb03                          out DDRG, temp1   		 ;LED Higher
+00003a ef0f                      	ser temp1
+00003b b907                          out DDRC, temp1   		 ;LED Lower
+00003c bb03                          out DDRG, temp1   		 ;LED Higher
                                  	
                                  	//inputs
-00003b 2700                      	clr temp1
-00003c b90a                          out DDRD, temp1   		 ;Buttons?
+00003d 2700                      	clr temp1
+00003e b90a                          out DDRD, temp1   		 ;Buttons?
                                  
                                  
-00003d e100                      	ldi temp1, 0b00010000
+00003f e100                      	ldi temp1, 0b00010000
                                  	
-00003e b90d                      	out DDRE, temp1
+000040 b90d                      	out DDRE, temp1
                                  
-00003f e505                          ldi temp1, 0b01010101    ;LED testing
-                                 /*    ldi temp2, 0*/
-000040 b908                          out PORTC, temp1   	 ;LED lower
-                                 /*    out PORTG, temp2   	 ;LED higher*/
+                                 /*    ldi temp1, 0b01010101    ;LED testing
+                                     ldi temp2, 0
+                                     out PORTC, temp1   	 ;LED lower
+                                     out PORTG, temp2   	 ;LED higher*/
                                  
 000041 e20a                          ldi temp1,  0b000101010    ;falling edges for interrupts 0,1,2
 000042 9300 0069                     sts EICRA, temp1   	 
                                  
-000044 ef0f                      	ldi temp1, 0xFF
-000045 9300 0208                 	sts Debounce0, temp1
-000047 9300 0209                 	sts Debounce0+1, temp1
-000049 9300 020a                 	sts Debounce1, temp1
-00004b 9300 020b                 	sts Debounce1+1, temp1
+                                 
+000044 9230 0208                 	sts Debounce0, zero
+000046 9230 0209                 	sts Debounce0+1, zero
+000048 9230 0209                 	sts Debounce1, zero
+00004a 9230 020a                 	sts Debounce1+1, zero
                                  
                                  
-00004d b30d                          in temp1, EIMSK
-00004e 6001                      	ori temp1, (1<<INT0)
-00004f 6002                      	ori temp1, (1<<INT1)
-000050 6004                          ori temp1, (1<<INT2)
-000051 bb0d                          out EIMSK, temp1
+00004c b30d                          in temp1, EIMSK
+00004d 6001                      	ori temp1, (1<<INT0)
+00004e 6002                      	ori temp1, (1<<INT1)
+00004f 6004                          ori temp1, (1<<INT2)
+000050 bb0d                          out EIMSK, temp1
                                      
-000052 e000                          ldi temp1, 0b00000000
-000053 bd04                          out TCCR0A, temp1
-000054 e002                          ldi temp1, 0b00000010
-000055 bd05                          out TCCR0B, temp1
-000056 e001                          ldi temp1, 1<<TOIE0
-000057 9300 006e                     sts TIMSK0, temp1
+000051 e000                          ldi temp1, 0b00000000
+000052 bd04                          out TCCR0A, temp1
+000053 e002                          ldi temp1, 0b00000010
+000054 bd05                          out TCCR0B, temp1
+000055 e001                          ldi temp1, 1<<TOIE0
+000056 9300 006e                     sts TIMSK0, temp1
                                  
-000059 e000
-00005a 9300 009a
-00005c 2700
-00005d 9300 009b                 	set_motor_speed 0x00
-00005f e040                      	ldi r20, 0
+000058 e000
+000059 9300 009a
+00005b 2700
+00005c 9300 009b                 	set_motor_speed 0x00
                                  
-000060 e001                      	ldi temp1, (1<<CS30)
-000061 9300 0091                 	sts TCCR3B, temp1
-000063 e201                      	ldi temp1, (1<<COM3B1) | (1<<WGM30)
-000064 9300 0090                 	sts TCCR3A, temp1
+00005e e001                      	ldi temp1, (1<<CS30)
+00005f 9300 0091                 	sts TCCR3B, temp1
+000061 e201                      	ldi temp1, (1<<COM3B1) | (1<<WGM30)
+000062 9300 0090                 	sts TCCR3A, temp1
                                  
                                  //from LCD-example LCD setup
-000066 ef0f                          ser temp1
-000067 bb00                          out DDRF, temp1
-000068 b901                          out DDRA, temp1
-000069 2700                          clr temp1
-00006a bb01                          out PORTF, temp1
-00006b b902                          out PORTA, temp1
+000064 ef0f                          ser temp1
+000065 bb00                          out DDRF, temp1
+000066 b901                          out DDRA, temp1
+000067 2700                          clr temp1
+000068 bb01                          out PORTF, temp1
+000069 b902                          out PORTA, temp1
                                  
-00006c 930f
-00006d e308
-00006e d0bb
-00006f d0ca
-000070 910f                          do_lcd_command 0b00111000 ; 2x5x7
-000071 d0e2                          rcall sleep_5ms
-000072 930f
-000073 e308
-000074 d0b5
-000075 d0c4
-000076 910f                          do_lcd_command 0b00111000 ; 2x5x7
-000077 d0d3                      	rcall sleep_1ms
-000078 930f
-000079 e308
-00007a d0af
-00007b d0be
-00007c 910f                          do_lcd_command 0b00111000 ; 2x5x7
-00007d 930f
-00007e e308
-00007f d0aa
-000080 d0b9
-000081 910f                          do_lcd_command 0b00111000 ; 2x5x7
-000082 930f
-000083 e008
-000084 d0a5
-000085 d0b4
-000086 910f                          do_lcd_command 0b00001000 ; display off?
-000087 930f
-000088 e001
-000089 d0a0
-00008a d0af
-00008b 910f                          do_lcd_command 0b00000001 ; clear display
-00008c 930f
-00008d e006
-00008e d09b
-00008f d0aa
-000090 910f                          do_lcd_command 0b00000110 ; increment, no display shift
-000091 930f
-000092 e00e
-000093 d096
-000094 d0a5
-000095 910f                          do_lcd_command 0b00001110 ; Cursor on, bar, no blink
+00006a 930f
+00006b e308
+00006c d0e1
+00006d d0f0
+00006e 910f                          do_lcd_command 0b00111000 ; 2x5x7
+00006f d108                          rcall sleep_5ms
+000070 930f
+000071 e308
+000072 d0db
+000073 d0ea
+000074 910f                          do_lcd_command 0b00111000 ; 2x5x7
+000075 d0f9                      	rcall sleep_1ms
+000076 930f
+000077 e308
+000078 d0d5
+000079 d0e4
+00007a 910f                          do_lcd_command 0b00111000 ; 2x5x7
+00007b 930f
+00007c e308
+00007d d0d0
+00007e d0df
+00007f 910f                          do_lcd_command 0b00111000 ; 2x5x7
+000080 930f
+000081 e008
+000082 d0cb
+000083 d0da
+000084 910f                          do_lcd_command 0b00001000 ; display off?
+000085 930f
+000086 e001
+000087 d0c6
+000088 d0d5
+000089 910f                          do_lcd_command 0b00000001 ; clear display
+00008a 930f
+00008b e006
+00008c d0c1
+00008d d0d0
+00008e 910f                          do_lcd_command 0b00000110 ; increment, no display shift
+00008f 930f
+000090 e00e
+000091 d0bc
+000092 d0cb
+000093 910f                          do_lcd_command 0b00001110 ; Cursor on, bar, no blink
                                  
-000096 9230 0206
-000098 9230 0207                 	clear Speed
-00009a 9230 0202
-00009c 9230 0203                 	clear Seconds
-00009e 9478                          sei
+000094 9230 0206
+000096 9230 0207                 	clear Speed
+000098 9230 0202
+00009a 9230 0203                 	clear Seconds
+00009c 9478                          sei
                                  	
                                  
-00009f 940c 010c                     jmp main
+00009d 940c 011c                     jmp main
                                  
                                  EXT_INT0:
+00009f 931f                      	push temp2
+0000a0 b71f                      	in temp2, SREG
 0000a1 931f                      	push temp2
-0000a2 b71f                      	in temp2, SREG
-0000a3 931f                      	push temp2
-                                     
+0000a2 9110 0208                 	lds temp2, Debounce0
+0000a4 9513                      	inc temp2
+0000a5 3012                      	cpi temp2, 2
+0000a6 f04c                      	brlt INT0_END
+                                 	
+0000a7 ec0a
+0000a8 9300 009a
+0000aa 2700
+0000ab 9300 009b                 	set_motor_speed 0xCA
+0000ad e012                      	ldi temp2, 2
+0000ae 2e91                      	mov opening, temp2
+                                 	//write '('    
+0000af 2711                      	clr temp2
                                  
-                                 //in theory, we should be able to test: check_register_bit, doorsOpen / brne INT0_END
-                                 	//set_motor_speed 0
-0000a4 ef00                      	ldi temp1, 0b11110000
-0000a5 b908                      	out PORTC, temp1
-0000a6 e20a
-0000a7 9300 009a
-0000a9 2700
-0000aa 9300 009b                 	set_motor_speed 0x2A
-0000ac 9230 0208
-0000ae 9230 0209                 	clear Debounce0
                                  INT0_END:
-0000b0 911f                          pop temp2
-0000b1 bf1f                          out SREG, temp2
+0000b0 9310 0208                 	sts Debounce0, temp2
 0000b2 911f                          pop temp2
-0000b3 9518                          reti
+0000b3 bf1f                          out SREG, temp2
+0000b4 911f                          pop temp2
+0000b5 9518                          reti
                                  
                                  EXT_INT1:
-0000b4 e60a
-0000b5 9300 009a
-0000b7 2700
-0000b8 9300 009b                 	set_motor_speed 0x6A
-0000ba 9230 020a
-0000bc 9230 020b                 	clear Debounce1
-0000be 9518                      	reti
+0000b6 931f                      	push temp2
+0000b7 b71f                      	in temp2, SREG
+0000b8 931f                      	push temp2
+0000b9 9110 0209                 	lds temp2, Debounce1
+0000bb 9513                      	inc temp2
+0000bc 3012                      	cpi temp2, 2
+0000bd f04c                      	brlt INT1_END
+                                 	
+0000be e60a
+0000bf 9300 009a
+0000c1 2700
+0000c2 9300 009b                 	set_motor_speed 0x6A
+0000c4 e012                      	ldi temp2, 2
+0000c5 2e81                      	mov closing, temp2
+                                 	//write ')'    
+0000c6 2711                      	clr temp2
                                  
+                                 INT1_END:
+0000c7 9310 0209                 	sts Debounce1, temp2
+0000c9 911f                          pop temp2
+0000ca bf1f                          out SREG, temp2
+0000cb 911f                          pop temp2
+0000cc 9518                          reti
                                  
                                  EXT_INT2:
-0000bf 93af                      	push XL
-0000c0 93bf                      	push XH
-0000c1 91a0 0206                 	lds XL, Speed
-0000c3 91b0 0207                 	lds XH, Speed+1
-0000c5 9611                      	adiw X,1
-0000c6 93a0 0206                 	sts Speed, XL
-0000c8 93b0 0207                 	sts Speed+1, XH
-0000ca 91bf                      	pop XH
-0000cb 91af                      	pop XL
-0000cc 9518                      	reti
+0000cd 93af                      	push XL
+0000ce 93bf                      	push XH
+0000cf 91a0 0206                 	lds XL, Speed
+0000d1 91b0 0207                 	lds XH, Speed+1
+0000d3 9611                      	adiw X,1
+0000d4 93a0 0206                 	sts Speed, XL
+0000d6 93b0 0207                 	sts Speed+1, XH
+0000d8 91bf                      	pop XH
+0000d9 91af                      	pop XL
+0000da 9518                      	reti
                                  
                                  
                                  Timer0OVF:
-0000cd b70f                          in temp1, SREG   	 ; stack frame for timer interrupt handler
-0000ce 930f                          push temp1
-0000cf 931f                      	push temp2
-0000d0 939f                          push r25
-0000d1 938f                          push r24
-0000d2 93cf                      	push YL
-0000d3 93df                      	push YH
+0000db b70f                          in temp1, SREG   	 ; stack frame for timer interrupt handler
+0000dc 930f                          push temp1
+0000dd 931f                      	push temp2
+0000de 939f                          push r25
+0000df 938f                          push r24
+0000e0 93cf                      	push YL
+0000e1 93df                      	push YH
                                  
-0000d4 9180 0200                     lds r24, Count   	 ; increment count
-0000d6 9190 0201                     lds r25, Count + 1
-0000d8 9601                          adiw r25:r24, 1
-                                 
-                                 
-                                 //------ DEBOUNCING FOR BUTTON 0
-                                 /*	lds r24, Debounce0
-                                 	lds r25, Debounce0+1
-                                 	ldi temp1, 0xFF
-                                 	cp r24, temp1
-                                 	cpc r25, temp1
-                                 	breq skip_db_0
-                                 
-                                 	ldi temp1, low(100)
-                                 	cp r24, temp1
-                                 	brlt still_bouncing_0
-                                 
-                                 //DO ACTION HERE/ CALL FUNCTION HERE
-                                 	set_motor_speed 0x2A
-                                 	ldi r20, 1
-                                 	clr r6
-                                 	;write '^'
-                                 
-                                 	ldi temp1, 0xFF
-                                 	sts Debounce0, temp1
-                                 	sts Debounce0+1, temp1
-                                 	rjmp skip_db_0
-                                 
-                                 still_bouncing_0:
-                                 	adiw r25:r24, 1
-                                 	sts Debounce0, r24
-                                 	sts Debounce0+1, r25
-                                 
-                                 skip_db_0:
-                                 //------*/
+0000e2 9180 0200                     lds r24, Count   	 ; increment count
+0000e4 9190 0201                     lds r25, Count + 1
+0000e6 9601                          adiw r25:r24, 1
                                  
                                  
-                                 /*//------ DEBOUNCING FOR BUTTON 1
-                                 	lds r24, Debounce1
-                                 	lds r25, Debounce1+1
-                                 	ldi temp1, 0xFF
-                                 	cp r24, temp1
-                                 	cpc r25, temp1
-                                 	breq skip_db_1
                                  
-                                 	cpi r24, 100
-                                 	brlt still_bouncing_1
-                                 
-                                 //DO ACTION HERE/ CALL FUNCTION HERE
-                                 	set_motor_speed 0x6A
-                                 	//write '!'
-                                 	ldi r20, 2
-                                 	clr r3
-                                 
-                                 	ldi temp1, 0xFF
-                                 	sts Debounce1, temp1
-                                 	sts Debounce1+1, temp1
-                                 	rjmp skip_db_1
-                                 
-                                 still_bouncing_1:
-                                 	adiw r25:r24, 1
-                                 	sts Debounce1, r24
-                                 	sts Debounce1+1, r25
-                                 
-                                 skip_db_1:
-                                 //------*/
                                  
                                      
-0000d9 308d                          cpi r24, low(clock_speed)    ; compare with clock speed to check if 1/10 of second has passed
-0000da e003                          ldi temp1, high(clock_speed)
-0000db 0790                          cpc r25, temp1
-0000dc f4f1                          brne Not_second
-0000dd 9180 0202                     lds r24, Seconds   		 ; increment seconds every 1/10 of second
-0000df 9190 0203                     lds r25, Seconds+1
+0000e7 308d                          cpi r24, low(clock_speed)    ; compare with clock speed to check if 1/10 of second has passed
+0000e8 e003                          ldi temp1, high(clock_speed)
+0000e9 0790                          cpc r25, temp1
+0000ea f501                          brne Not_second
+0000eb 9180 0202                     lds r24, Seconds   		 ; increment seconds every 1/10 of second
+0000ed 9190 0203                     lds r25, Seconds+1
                                  
                                  
-                                 	//grab the revs *4 for this 0.1 second passing
-                                 	// to get rev/sec do speed/4*10 ie speed*5/2
-                                 /*	inc r3
-                                 	write_reg r3
-                                 	ldi temp1, 10
-                                 	set_motor_speed 0
-                                 	out PORTC, r3
-                                 still_spin1:*/
+                                 
                                  	
                                  
-0000e1 91c0 0206                 	lds YL, Speed
-0000e3 91d0 0207                 	lds YH, Speed+1
+0000ef 91c0 0206                 	lds YL, Speed
+0000f1 91d0 0207                 	lds YH, Speed+1
                                  	
-0000e5 2f0c                      	mov temp1, YL
-0000e6 2f1d                      	mov temp2, YH
+0000f3 2f0c                      	mov temp1, YL
+0000f4 2f1d                      	mov temp2, YH
                                  	
-0000e7 0fcc                      	lsl YL	//x2
-0000e8 1fdd                      	rol YH
+0000f5 0fcc                      	lsl YL	//x2
+0000f6 1fdd                      	rol YH
                                  
-                                 /*	lsl YL //x2
-                                 	rol YH
-                                 	
-                                 	add YL, temp1 //x*2 +x*2 + x = 5x
-                                 	add YH, temp2
+0000f7 0fcc                      	lsl YL	//x2
+0000f8 1fdd                      	rol YH
                                  
-                                 	lsr YH  ///(2x + 2x + x)/2 = 4/10 x
-                                 	ror YL*/
                                  
-0000e9 93c0 0204                 	sts Revs, YL
-0000eb 93d0 0205                 	sts Revs+1, YH
-0000ed 9230 0206
-0000ef 9230 0207                 	clear Speed
                                  
-0000f1 9601                          adiw r25:r24, 1
-0000f2 9380 0202                     sts Seconds, r24
-0000f4 9390 0203                     sts Seconds+1, r25
-0000f6 9230 0200
-0000f8 9230 0201                     clear Count
-0000fa c004                          rjmp End_I
+0000f9 93c0 0204                 	sts Revs, YL
+0000fb 93d0 0205                 	sts Revs+1, YH
+0000fd 9230 0206
+0000ff 9230 0207                 	clear Speed
+                                 
+000101 9601                          adiw r25:r24, 1
+000102 9380 0202                     sts Seconds, r24
+000104 9390 0203                     sts Seconds+1, r25
+000106 9230 0200
+000108 9230 0201                     clear Count
+00010a c004                          rjmp End_I
                                  
                                  Not_second:
-0000fb 9380 0200                     sts Count, r24
-0000fd 9390 0201                     sts Count+1, r25
+00010b 9380 0200                     sts Count, r24
+00010d 9390 0201                     sts Count+1, r25
                                  
                                  End_I:
                                  ; Epilogue
-0000ff 91df                      	pop YH
-000100 91cf                      	pop YL
-000101 918f                          pop r24
-000102 919f                          pop r25
-000103 911f                      	pop temp2
-000104 910f                          pop temp1
-000105 bf0f                          out SREG, temp1
-000106 9518                          reti
+00010f 91df                      	pop YH
+000110 91cf                      	pop YL
+000111 918f                          pop r24
+000112 919f                          pop r25
+000113 911f                      	pop temp2
+000114 910f                          pop temp1
+000115 bf0f                          out SREG, temp1
+000116 9518                          reti
                                  
                                  divisors:
-000107 2710
-000108 03e8
-000109 0064
-00010a 000a
-00010b 0001                      	 .dw 10000, 1000, 100, 10, 1
+000117 2710
+000118 03e8
+000119 0064
+00011a 000a
+00011b 0001                      	 .dw 10000, 1000, 100, 10, 1
                                  
                                  ; Replace with your application code
                                  main:
@@ -2356,124 +2308,141 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  
                                  
                                  start_loop:
-00010c 9180 0202                 	lds r24, Seconds
-00010e 9190 0203                 	lds r25, Seconds+1
-000110 3084                      	cpi r24, 4
-000111 f7d1                      	brne main	
-                                 	
-000112 930f
-000113 e001
-000114 d015
-000115 d024
-000116 910f                      	clear_disp
-000117 9230 0202
-000119 9230 0203                 	clear Seconds
-00011b 930f
-00011c e500
-00011d d013
-00011e d01b
-00011f 910f                      	write 'P'
-000120 9160 0204                 	lds arg1, Revs
-000122 9170 0205                 	lds arg2, Revs+1
-000124 d035                      	rcall convert_to_ascii
-                                 /*	in temp1, PINE
-                                 	andi temp1, 0b00010000
-                                 	mov arg1, temp1
-                                 	clr arg2
-                                 	rcall convert_to_ascii*/
-                                 	//clear Speed
-000125 9230 0204
-000127 9230 0205                 	clear Revs
-000129 cfe2                          rjmp main
+00011c 9180 0202                 	lds r24, Seconds
+00011e 9190 0203                 	lds r25, Seconds+1
+000120 3085                      	cpi r24, 5
+000121 f7d1                      	brne main	
+000122 1493                      	cp opening, zero
+000123 f419                      	brne open_wait
+000124 1483                      	cp closing, zero
+000125 f459                      	brne close_wait
+000126 c014                      	rjmp continue
+                                 open_wait:
+000127 949a                      	dec opening
+000128 1493                      	cp opening, zero
+000129 f489                      	brne continue
+00012a e000
+00012b 9300 009a
+00012d 2700
+00012e 9300 009b                 	set_motor_speed 0
+000130 c00a                      	rjmp continue
+                                 
+                                 close_wait:
+000131 948a                      	dec closing
+000132 1483                      	cp closing, zero
+000133 f439                      	brne continue
+                                 	//out PORTC, one
+000134 e000
+000135 9300 009a
+000137 2700
+000138 9300 009b                 	set_motor_speed 0
+00013a c000                      	rjmp continue
+                                 
+                                 continue:
+00013b 930f
+00013c e001
+00013d d010
+00013e d01f
+00013f 910f                      	clear_disp
+000140 9230 0202
+000142 9230 0203                 	clear Seconds
+                                 	//write 'P'
+000144 9160 0204                 	lds arg1, Revs
+000146 9170 0205                 	lds arg2, Revs+1
+000148 d035                      	rcall convert_to_ascii
+                                 
+000149 9230 0204
+00014b 9230 0205                 	clear Revs
+00014d cfce                          rjmp main
                                  
                                  
                                  
                                  
                                  //LCD_FUNCTIONS
                                  lcd_command:
-00012a bb01                          out PORTF, temp1
-00012b d01f                          rcall sleep_1ms
-00012c 9a16                          lcd_set LCD_E
-00012d d01d                          rcall sleep_1ms
-00012e 9816                          lcd_clr LCD_E
-00012f d01b                          rcall sleep_1ms
-000130 9508                          ret
+00014e bb01                          out PORTF, temp1
+00014f d01f                          rcall sleep_1ms
+000150 9a16                          lcd_set LCD_E
+000151 d01d                          rcall sleep_1ms
+000152 9816                          lcd_clr LCD_E
+000153 d01b                          rcall sleep_1ms
+000154 9508                          ret
                                  
                                  lcd_data:
-000131 bb01                          out PORTF, temp1
-000132 9a17                          lcd_set LCD_RS
-000133 d017                          rcall sleep_1ms
-000134 9a16                          lcd_set LCD_E
-000135 d015                          rcall sleep_1ms
-000136 9816                          lcd_clr LCD_E
-000137 d013                          rcall sleep_1ms
-000138 9817                          lcd_clr LCD_RS
-000139 9508                          ret
+000155 bb01                          out PORTF, temp1
+000156 9a17                          lcd_set LCD_RS
+000157 d017                          rcall sleep_1ms
+000158 9a16                          lcd_set LCD_E
+000159 d015                          rcall sleep_1ms
+00015a 9816                          lcd_clr LCD_E
+00015b d013                          rcall sleep_1ms
+00015c 9817                          lcd_clr LCD_RS
+00015d 9508                          ret
                                  
                                  lcd_wait:
-00013a 930f                          push r16
-00013b 2700                          clr r16
-00013c bb00                          out DDRF, r16
-00013d bb01                          out PORTF, r16
-00013e 9a15                          lcd_set LCD_RW
+00015e 930f                          push r16
+00015f 2700                          clr r16
+000160 bb00                          out DDRF, r16
+000161 bb01                          out PORTF, r16
+000162 9a15                          lcd_set LCD_RW
                                  
                                  lcd_wait_loop:
-00013f d00b                          rcall sleep_1ms
-000140 9a16                          lcd_set LCD_E
-000141 d009                          rcall sleep_1ms
-000142 b10f                          in r16, PINF
-000143 9816                          lcd_clr LCD_E
-000144 fd07                          sbrc r16, 7
-000145 cff9                          rjmp lcd_wait_loop
-000146 9815                          lcd_clr LCD_RW
-000147 ef0f                          ser r16
-000148 bb00                          out DDRF, r16
-000149 910f                          pop r16
-00014a 9508                          ret
+000163 d00b                          rcall sleep_1ms
+000164 9a16                          lcd_set LCD_E
+000165 d009                          rcall sleep_1ms
+000166 b10f                          in r16, PINF
+000167 9816                          lcd_clr LCD_E
+000168 fd07                          sbrc r16, 7
+000169 cff9                          rjmp lcd_wait_loop
+00016a 9815                          lcd_clr LCD_RW
+00016b ef0f                          ser r16
+00016c bb00                          out DDRF, r16
+00016d 910f                          pop r16
+00016e 9508                          ret
                                  
                                  .equ F_CPU = 16000000
                                  .equ DELAY_1MS = F_CPU / 4 / 1000 - 4
                                  ; 4 cycles per iteration - setup/call-return overhead
                                  
                                  sleep_1ms:
-00014b 938f                          push r24
-00014c 939f                          push r25
-00014d e09f                          ldi r25, high(DELAY_1MS)
-00014e e98c                          ldi r24, low(DELAY_1MS)
+00016f 938f                          push r24
+000170 939f                          push r25
+000171 e09f                          ldi r25, high(DELAY_1MS)
+000172 e98c                          ldi r24, low(DELAY_1MS)
                                  
                                  delayloop_1ms:
-00014f 9701                          sbiw r25:r24, 1
-000150 f7f1                          brne delayloop_1ms
-000151 919f                          pop r25
-000152 918f                          pop r24
-000153 9508                          ret
+000173 9701                          sbiw r25:r24, 1
+000174 f7f1                          brne delayloop_1ms
+000175 919f                          pop r25
+000176 918f                          pop r24
+000177 9508                          ret
                                  
                                  sleep_5ms:
-000154 dff6                          rcall sleep_1ms
-000155 dff5                          rcall sleep_1ms
-000156 dff4                          rcall sleep_1ms
-000157 dff3                          rcall sleep_1ms
-000158 dff2                          rcall sleep_1ms
-000159 9508                          ret
+000178 dff6                          rcall sleep_1ms
+000179 dff5                          rcall sleep_1ms
+00017a dff4                          rcall sleep_1ms
+00017b dff3                          rcall sleep_1ms
+00017c dff2                          rcall sleep_1ms
+00017d 9508                          ret
                                  
                                  
                                  //CONVERT_TO_ASCII
                                  convert_to_ascii:
                                  	;prologue
-00015a 927f                      	push r7
-00015b 928f                      	push r8
-00015c 929f                      	push r9
-00015d 930f                      	push r16
-00015e 931f                      	push r17
-00015f 932f                      	push r18
-000160 933f                      	push r19
-000161 934f                      	push r20
-000162 936f                      	push arg1
-000163 937f                      	push arg2
-000164 938f                      	push r24
-000165 939f                      	push r25
-000166 93ef                      	push ZL
-000167 93ff                      	push ZH
+00017e 927f                      	push r7
+00017f 928f                      	push r8
+000180 929f                      	push r9
+000181 930f                      	push r16
+000182 931f                      	push r17
+000183 932f                      	push r18
+000184 933f                      	push r19
+000185 934f                      	push r20
+000186 936f                      	push arg1
+000187 937f                      	push arg2
+000188 938f                      	push r24
+000189 939f                      	push r25
+00018a 93ef                      	push ZL
+00018b 93ff                      	push ZH
                                  
                                  
                                  
@@ -2481,90 +2450,90 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab
                                  
                                  	;change_line 2, 14
                                  start:
-000168 e0ee                      	ldi ZL, low(divisors<<1)
-000169 e0f2                      	ldi ZH, high(divisors<<1)
-00016a e340                      	ldi r20, 0x30		// ascii value for zero
-00016b 2488                      	clr r8
-00016c 2499                      	clr r9
+00018c e2ee                      	ldi ZL, low(divisors<<1)
+00018d e0f2                      	ldi ZH, high(divisors<<1)
+00018e e340                      	ldi r20, 0x30		// ascii value for zero
+00018f 2488                      	clr r8
+000190 2499                      	clr r9
                                  convert_loop:
-00016d e015                      	ldi temp2, 5
-00016e 1691                      	cp r9, temp2
-00016f f139                      	breq end_convert
-000170 c000                      	rjmp divide
+000191 e015                      	ldi temp2, 5
+000192 1691                      	cp r9, temp2
+000193 f139                      	breq end_convert
+000194 c000                      	rjmp divide
                                  
                                  	// r19:r18 hold the dividend (numerator)
                                  divide:
-000171 9105                          lpm r16, Z+  //divisor (denominator)
-000172 9115                      	lpm r17, Z+ //^^^
-000173 e080                      	ldi r24, 0  //quotient
-000174 e090                      	ldi r25, 0	//^^^
+000195 9105                          lpm r16, Z+  //divisor (denominator)
+000196 9115                      	lpm r17, Z+ //^^^
+000197 e080                      	ldi r24, 0  //quotient
+000198 e090                      	ldi r25, 0	//^^^
                                  loop_start:
-000175 3000                      	cpi r16, 0  // not dividing by zero
-000176 f041                      	breq end_divide
-000177 1760                      	cp arg1, r16 //check dividend !< divisor i.e. you can still minus
-000178 0771                      	cpc arg2, r17
-000179 f020                      	brlo end_loop 
-00017a 1b60                      	sub arg1, r16  //dividend = dividend - divisor 
-00017b 0b71                      	sbc arg2, r17
-00017c 9601                      	adiw r25:r24, 1 //quotient++	
-00017d cff7                          rjmp loop_start
+000199 3000                      	cpi r16, 0  // not dividing by zero
+00019a f041                      	breq end_divide
+00019b 1760                      	cp arg1, r16 //check dividend !< divisor i.e. you can still minus
+00019c 0771                      	cpc arg2, r17
+00019d f020                      	brlo end_loop 
+00019e 1b60                      	sub arg1, r16  //dividend = dividend - divisor 
+00019f 0b71                      	sbc arg2, r17
+0001a0 9601                      	adiw r25:r24, 1 //quotient++	
+0001a1 cff7                          rjmp loop_start
                                  end_loop:
-00017e 019b                      	movw r19:r18, arg2:arg1
+0001a2 019b                      	movw r19:r18, arg2:arg1
                                  end_divide:
                                  	
                                  	//r23:r22 holds the remainder, r25:r24 holds the quotient
                                  
-00017f 01b9                      	movw arg2:arg1, r19:r18 //the remainder moves to the dividend to be divided again
-000180 9493                      	inc r9
-000181 3080                      	cpi r24, 0
-000182 f049                      	breq check_zero
-000183 2e74                      	mov r7, r20	//r7 holds ASCII val for '0'
-000184 0e78                      	add r7, r24 //r7 holds ASCII val for '0' + remainder
+0001a3 01b9                      	movw arg2:arg1, r19:r18 //the remainder moves to the dividend to be divided again
+0001a4 9493                      	inc r9
+0001a5 3080                      	cpi r24, 0
+0001a6 f049                      	breq check_zero
+0001a7 2e74                      	mov r7, r20	//r7 holds ASCII val for '0'
+0001a8 0e78                      	add r7, r24 //r7 holds ASCII val for '0' + remainder
                                  
                                  	//st X+, r7 //store ASCII val in next part of data memory
                                  
-000185 930f
-000186 2d07
-000187 dfa9
-000188 dfb1
-000189 910f                      	write_reg r7
-00018a 9483                      	inc r8
-00018b cfe1                      	rjmp convert_loop
+0001a9 930f
+0001aa 2d07
+0001ab dfa9
+0001ac dfb1
+0001ad 910f                      	write_reg r7
+0001ae 9483                      	inc r8
+0001af cfe1                      	rjmp convert_loop
                                  check_zero:
-00018c e015                      	ldi temp2, 5
-00018d 1691                      	cp r9, temp2
-00018e f011                      	breq final_number
-00018f 1483                      	cp r8, zero
-000190 f2e1                      	breq convert_loop
+0001b0 e015                      	ldi temp2, 5
+0001b1 1691                      	cp r9, temp2
+0001b2 f011                      	breq final_number
+0001b3 1483                      	cp r8, zero
+0001b4 f2e1                      	breq convert_loop
                                  
                                  final_number:	
-000191 930f
-000192 e300
-000193 df9d
-000194 dfa5
-000195 910f                      	write '0'
+0001b5 930f
+0001b6 e300
+0001b7 df9d
+0001b8 dfa5
+0001b9 910f                      	write '0'
                                  
-000196 cfd6                      	rjmp convert_loop
+0001ba cfd6                      	rjmp convert_loop
                                  
                                  
                                  
                                  end_convert:
                                  ;epilogue
-000197 91ff                      	pop ZH
-000198 91ef                      	pop ZL
-000199 919f                      	pop r25
-00019a 918f                      	pop r24
-00019b 917f                      	pop arg2
-00019c 916f                      	pop arg1
-00019d 914f                      	pop r20
-00019e 913f                      	pop r19
-00019f 912f                      	pop r18
-0001a0 911f                      	pop r17
-0001a1 910f                      	pop r16
-0001a2 909f                      	pop r9
-0001a3 908f                      	pop r8
-0001a4 907f                      	pop r7
-0001a5 9508                      	ret
+0001bb 91ff                      	pop ZH
+0001bc 91ef                      	pop ZL
+0001bd 919f                      	pop r25
+0001be 918f                      	pop r24
+0001bf 917f                      	pop arg2
+0001c0 916f                      	pop arg1
+0001c1 914f                      	pop r20
+0001c2 913f                      	pop r19
+0001c3 912f                      	pop r18
+0001c4 911f                      	pop r17
+0001c5 910f                      	pop r16
+0001c6 909f                      	pop r9
+0001c7 908f                      	pop r8
+0001c8 907f                      	pop r7
+0001c9 9508                      	ret
                                  
 
 
@@ -2583,41 +2552,41 @@ counted separately from r26..r31 here.
 .dseg memory usage only counts static data declared with .byte
 
 "ATmega2560" register use summary:
-x  :   1 y  :   0 z  :   2 r0 :   0 r1 :   0 r2 :   0 r3 :  18 r4 :   2 
-r5 :   0 r6 :   0 r7 :   5 r8 :   5 r9 :   6 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16: 115 r17:  18 r18:   4 r19:   4 r20:   5 
-r21:   0 r22:   7 r23:   7 r24:  21 r25:  18 r26:   4 r27:   4 r28:   6 
-r29:   6 r30:   3 r31:   3 
+x  :   1 y  :   0 z  :   2 r0 :   0 r1 :   0 r2 :   0 r3 :  22 r4 :   2 
+r5 :   0 r6 :   0 r7 :   5 r8 :  10 r9 :  11 r10:   0 r11:   0 r12:   0 
+r13:   0 r14:   0 r15:   0 r16: 111 r17:  38 r18:   4 r19:   4 r20:   4 
+r21:   0 r22:   7 r23:   7 r24:  21 r25:  18 r26:   4 r27:   4 r28:   7 
+r29:   7 r30:   3 r31:   3 
 Registers used: 22 out of 35 (62.9%)
 
 "ATmega2560" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   0 add   :   1 adiw  :   4 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   5 brge  :   0 brhc  :   0 
-brhs  :   0 brid  :   0 brie  :   0 brlo  :   1 brlt  :   0 brmi  :   0 
-brne  :   3 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
+brhs  :   0 brid  :   0 brie  :   0 brlo  :   1 brlt  :   2 brmi  :   0 
+brne  :   7 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   5 cbr   :   0 
-clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  10 cls   :   0 
-clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   4 cpc   :   2 
-cpi   :   4 cpse  :   0 dec   :   0 eicall:   0 eijmp :   0 elpm  :   0 
+clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  16 cls   :   0 
+clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   8 cpc   :   2 
+cpi   :   6 cpse  :   0 dec   :   2 eicall:   0 eijmp :   0 elpm  :   0 
 eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
-in    :   4 inc   :   3 jmp   :   6 ld    :   0 ldd   :   0 ldi   :  37 
-lds   :  12 lpm   :   2 lsl   :   1 lsr   :   0 mov   :   4 movw  :   2 
+in    :   5 inc   :   5 jmp   :   6 ld    :   0 ldd   :   0 ldi   :  36 
+lds   :  14 lpm   :   2 lsl   :   2 lsr   :   0 mov   :   6 movw  :   2 
 mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   :   1 or    :   0 
-ori   :   3 out   :  22 pop   :  39 push  :  39 rcall :  40 ret   :   6 
-reti  :   4 rjmp  :   7 rol   :   1 ror   :   0 sbc   :   1 sbci  :   0 
+ori   :   3 out   :  21 pop   :  40 push  :  40 rcall :  38 ret   :   6 
+reti  :   4 rjmp  :  10 rol   :   2 ror   :   0 sbc   :   1 sbci  :   0 
 sbi   :   5 sbic  :   0 sbis  :   0 sbiw  :   1 sbr   :   0 sbrc  :   1 
 sbrs  :   0 sec   :   0 seh   :   0 sei   :   1 sen   :   0 ser   :   3 
 ses   :   0 set   :   0 sev   :   0 sez   :   0 sleep :   0 spm   :   0 
-st    :   0 std   :   0 sts   :  38 sub   :   1 subi  :   0 swap  :   0 
+st    :   0 std   :   0 sts   :  40 sub   :   1 subi  :   0 swap  :   0 
 tst   :   0 wdr   :   0 
-Instructions used: 37 out of 116 (31.9%)
+Instructions used: 39 out of 116 (33.6%)
 
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x00034c    758     10    768  262144   0.3%
-[.dseg] 0x000200 0x00020c      0     12     12    8192   0.1%
+[.cseg] 0x000000 0x000394    830     10    840  262144   0.3%
+[.dseg] 0x000200 0x00020a      0     10     10    8192   0.1%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 
 Assembly complete, 0 errors, 0 warnings
