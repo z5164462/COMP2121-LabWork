@@ -1,11 +1,8 @@
 ;
 ; Lab09 - C.asm
 ;
-; Created: 23/04/2019 11:37:25 AM
+; Created: 18/04/2019 1:31:06 PM
 ; Author : andre
-;
-
-
 ;
 
 .include "m2560def.inc"
@@ -20,13 +17,16 @@
 
 .equ clock_speed = 781
 
+
 .def zero = r3
 .def one = r4
+.def closing = r8
+.def opening = r9
 .def temp1 = r16
 .def temp2 = r17
+.def motorSpeed = r21
 .def arg1 = r22
 .def arg2 = r23
-.def motor_speed = r15
 //Clear word macro
 .macro clear
     sts @0, zero
@@ -95,27 +95,39 @@ end_cl:
 .macro lcd_clr   							 // clear bit in PORTA
     cbi PORTA, @0
 .endmacro
-.macro set_motor_speed 
+.macro set_motor_speed
+	push temp1 
 	ldi temp1, @0
 	sts OCR3BL, temp1
 	clr temp1
+	sts OCR3BH, temp1
+	pop temp1
+.endmacro
+
+.macro set_motor_speed_reg 
+	push temp1
+	mov temp1, @0
+	sts OCR3BL, temp1
+	clr temp1
 	sts OCR3BH, temp1	
+	pop temp1
 .endmacro
 
 .dseg
-Revs:
-	.byte 2
-Speed:
-	.byte 2
 Count:
     .byte 2
 Seconds:
     .byte 2
-
-/*Debounce0:
+Revs:
 	.byte 2
+Speed:
+	.byte 2
+Debounce0:
+	.byte 1
 Debounce1:
-	.byte 2*/
+	.byte 1
+Target:
+	.byte 2
 
 
 
@@ -138,12 +150,8 @@ jmp EXT_INT2
 
 .org OVF0addr
     jmp Timer0OVF
-.org OVF1addr
-	reti
-.org OVF2addr
-	reti
 
-.org 0xFF
+
 
 RESET:
     ldi temp1, low(RAMEND)    ; Init stack frame
@@ -156,6 +164,16 @@ RESET:
     clr zero   			 ; zero
     clr one   				 
     inc one   				 ; one
+
+
+	clr closing
+	clr opening
+
+	ldi temp1, 100
+	sts Target, temp1
+	clr temp1
+	sts Target+1, temp1
+
 
 
 /*
@@ -185,15 +203,20 @@ RESET:
     out PORTC, temp1   	 ;LED lower
     out PORTG, temp2   	 ;LED higher*/
 
-    ldi temp1,  0b00101010    ;falling edges for interrupts 0,1,2
+    ldi temp1,  0b000101010    ;falling edges for interrupts 0,1,2
     sts EICRA, temp1   	 
 
 
-/*	ldi temp1, 0xFF
-	sts Debounce0, temp1
-	sts Debounce0+1, temp1
-	sts Debounce1, temp1
-	sts Debounce1+1, temp1*/
+
+
+	sts Debounce0, zero
+
+	
+
+	sts Debounce1, zero
+	
+
+
 
 
     in temp1, EIMSK
@@ -209,7 +232,9 @@ RESET:
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
 
-	set_motor_speed 0x2F
+	ldi motorSpeed, 0X2A
+	set_motor_speed_reg motorSpeed
+
 
 
 	ldi temp1, (1<<CS30)
@@ -236,54 +261,94 @@ RESET:
     do_lcd_command 0b00000110 ; increment, no display shift
     do_lcd_command 0b00001110 ; Cursor on, bar, no blink
 
-
-
-	
-
 	clear Speed
-	clear Revs
 	clear Seconds
     sei
 	
 
-    jmp main	
+    jmp main
 
 EXT_INT0:
-/*	push temp2
+	push XL
+	push XH
+	push temp2
 	in temp2, SREG
 	push temp2
-    
+	lds temp2, Debounce0
+	inc temp2
+	cpi temp2, 3
+	brlt INT0_END
+	
+	lds XL, Target
+	lds XH, Target+1
+/*	ldi temp2, low(50)
+	cp XL, temp2
+	ldi temp2, high(50)
+	cp XH, temp2
+	brlt INT0_END*/
+	sbiw X, 5
+	sts Target, XL
+	sts Target+1, XH
+	//write '('    
+	clr temp2
 
-//in theory, we should be able to test: check_register_bit, doorsOpen / brne INT0_END
-	//set_motor_speed 0
-	ldi temp1, 0b11110000
-	out PORTC, temp1
-	clear Debounce0
 INT0_END:
+	sts Debounce0, temp2
     pop temp2
     out SREG, temp2
-    pop temp2*/
+    pop temp2
+	pop XH
+	pop XL
     reti
 
 EXT_INT1:
-/*	clear Debounce1*/
-	reti
+	push XL
+	push XH
+	push temp2
+	in temp2, SREG
+	push temp2
+	lds temp2, Debounce1
+	inc temp2
+	cpi temp2, 3
+	brlt INT1_END
+	
+	lds XL, Target
+	lds XH, Target+1
 
+/*	ldi temp2, low(250)
+	cp XL, temp2
+	ldi temp2, high(250)
+	cp XH, temp2
+	brge INT1_END*/
+	adiw X, 5
+	sts Target, XL
+	sts Target+1, XH
+	
+	//write ')'    
+	clr temp2
+
+INT1_END:
+	sts Debounce1, temp2
+    pop temp2
+    out SREG, temp2
+    pop temp2
+	pop XH
+	pop XL
+    reti
 
 EXT_INT2:
-	push YL
-	push YH
-/*	lds YL, Revs
-	lds YH, Revs+1*/
-
-	inc one
-/*	sts Revs, YL
-	sts Revs+1, YH*/
-	pop YH
-	pop YL
+	push XL
+	push XH
+	lds XL, Speed
+	lds XH, Speed+1
+	adiw X,1
+	sts Speed, XL
+	sts Speed+1, XH
+	pop XH
+	pop XL
 	reti
 
-//---- TIMER
+
 Timer0OVF:
     in temp1, SREG   	 ; stack frame for timer interrupt handler
     push temp1
@@ -300,37 +365,36 @@ Timer0OVF:
 
 
 
-
-
-
     
     cpi r24, low(clock_speed)    ; compare with clock speed to check if 1/10 of second has passed
     ldi temp1, high(clock_speed)
     cpc r25, temp1
     brne Not_second
-//ALl of this happens ever 0.1 sec    
-	
-	write 'P'
-
-	lds r24, Revs
-	lds r25, Revs+1
-	
-	ldi temp1, 0b00000010
-	and temp1, r24  //compare bit 1
-	breq rnd_down
-adiw r25:r24, 4
-
-rnd_down:
-
-	andi r24, 0b11111100 //clears the last 2 bits
-
-	sts Speed, r24
-	sts Speed+1, r25
-
-	clear Revs
-
-	lds r24, Seconds   		 ; increment seconds every 1/10 of second
+    lds r24, Seconds   		 ; increment seconds every 1/10 of second
     lds r25, Seconds+1
+
+
+
+	
+
+	lds YL, Speed
+	lds YH, Speed+1
+	
+	mov temp1, YL
+	mov temp2, YH
+	
+	lsl YL	//x2
+	rol YH
+
+	lsl YL	//x2
+	rol YH
+
+
+
+	sts Revs, YL
+	sts Revs+1, YH
+	clear Speed
+
     adiw r25:r24, 1
     sts Seconds, r24
     sts Seconds+1, r25
@@ -357,23 +421,72 @@ divisors:
 
 ; Replace with your application code
 main:
+
+	write 'C'
+	change_line 1, 8
+	write 'M'
+	write 'S'
+	change_line 2, 0
+	write 'T'
+
+
+start_loop:
+
 	
+
+	set_motor_speed_reg motorSpeed
 	lds r24, Seconds
 	lds r25, Seconds+1
-	cpi r24, 5
-	brlt main
-	write 'P'
-	ldi XL, low(Revs)
-	ldi XH, high(Revs)
-	ld arg1, X
-	ldi arg2, 0
-	rcall convert_to_ascii
+	cpi r24, 2
+	brne start_loop
+
+	lds XL, Target
+	lds XH, Target+1
+	lds YL, Revs
+	lds YH, Revs+1
+	cp YL, XL	
+	cpc YH, XH
+	brlt accelerate
+	brge decelerate 
+	rjmp continue
+accelerate:
+	subi motorSpeed, -1
+	ldi temp1, 240
+	out PORTC, temp1
+	rjmp continue
+
+decelerate:
+	subi motorSpeed,1
+	ldi temp1, 15
+	out PORTC, temp1
+	rjmp continue
+
+continue:
+
+
+
+
 	clear Seconds
 
+	change_line 1, 2
+	lds arg1, Revs
+	lds arg2, Revs+1
+	rcall convert_to_ascii
+	change_line 1, 10
+	mov arg1, motorSpeed
+	ldi arg2, 0
+	rcall convert_to_ascii
+	change_line 2, 2
+	lds arg1, Target
+	lds arg2, Target+1
+	rcall convert_to_ascii
 
 
 
-    rjmp main
+
+
+	clear Revs
+    rjmp start_loop
 
 
 
@@ -506,7 +619,7 @@ end_divide:
 	movw arg2:arg1, r19:r18 //the remainder moves to the dividend to be divided again
 	inc r9
 	cpi r24, 0
-	breq check_zero
+/*	breq check_zero*/
 	mov r7, r20	//r7 holds ASCII val for '0'
 	add r7, r24 //r7 holds ASCII val for '0' + remainder
 
@@ -546,5 +659,4 @@ end_convert:
 	pop r8
 	pop r7
 	ret
-
 
