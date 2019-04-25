@@ -16,7 +16,6 @@
 .equ l_two = 0b11000000
 
 .equ clock_speed = 781
-.equ debounce_speed = 800
 
 
 .def zero = r3
@@ -127,9 +126,6 @@ Speed:
 	.byte 2
 Target:
 	.byte 2
-Count_2:
-	.byte 2
-
 
 
 
@@ -153,10 +149,7 @@ jmp EXT_INT2
 .org OVF0addr
     jmp Timer0OVF
 
-.org OVF2addr
-	jmp Timer2OVF
 
-.org 0x30
 
 RESET:
     ldi temp1, low(RAMEND)    ; Init stack frame
@@ -212,13 +205,12 @@ RESET:
     sts EICRA, temp1   	 
 
 
-	
+
 	clr debounce1
 	clr debounce2
-	com debounce1
-	com debounce2
+	
 
-	// out PORTC, debounce1
+
 
 
     in temp1, EIMSK
@@ -233,15 +225,6 @@ RESET:
     out TCCR0B, temp1
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
-
-    ldi temp1, 0b00000000
-    sts TCCR2A, temp1
-    ldi temp1, 0b00000010
-    sts TCCR2B, temp1
-    ldi temp1, 1<<TOIE2
-    sts TIMSK2, temp1
-
-
 
 	ldi motorSpeed, 0X2A
 	set_motor_speed_reg motorSpeed
@@ -274,31 +257,26 @@ RESET:
 
 	clear Speed
 	clear Seconds
-	clear Count
-	clear Count_2
     sei
 	
 
     jmp main
 
 EXT_INT0:
-	;write 'L'
-	clr debounce1
-	reti
-/*	push XL
+	push XL
 	push XH
 	push temp1
 	push temp2
 	in temp2, SREG
 	push temp2
 	
-	ldi temp2, 3
+	ldi temp2, 5
 	cp debounce1, temp2
-	//brlt bounce1
+	brlt bounce1
 	
 	lds XL, Target
 	lds XH, Target+1
-	adiw X, 1
+	adiw X, 20
 	//write ')'
 	ldi temp1, low(100)
 	cp temp1, XL
@@ -325,13 +303,10 @@ INT0_END:
 	pop temp1
 	pop XH
 	pop XL
-    reti*/
+    reti
 
 EXT_INT1:
-	;write 'R'
-	clr debounce2
-	reti
-/*	push XL
+	push XL
 	push XH
 	push temp1
 	push temp2
@@ -340,11 +315,11 @@ EXT_INT1:
 	
 	ldi temp2, 3
 	cp debounce2, temp2
-	//brlt bounce2
+	brlt bounce2
 	
 	lds XL, Target
 	lds XH, Target+1
-	sbiw X, 1
+	sbiw X, 20
 	//write '('
 	ldi temp1, low(0)
 	cp XL, temp1
@@ -372,7 +347,7 @@ INT1_END:
 	pop temp1
 	pop XH
 	pop XL
-    reti*/
+    reti
 
 EXT_INT2:
 	push XL
@@ -454,68 +429,6 @@ End_I:
     out SREG, temp1
     reti
 
-Timer2OVF:
-	in temp1, SREG
-	push temp1
-	push temp2
-	push r24
-	push r25
-
-	lds r24, Count_2
-	lds r25, Count_2 + 1
-	adiw r25:r24, 1
-
-	cpi r24, low(debounce_speed)
-	ldi temp1, high(debounce_speed)
-	cpc r25, temp1
-	brne Not_milli
-	;write 'm'
-	clear Count_2
-	write_reg debounce1
-	//rcall convert_to_ascii
-
-	ldi temp1,0xFF
-	cp debounce1, temp1
-	brge End_J
-	ldi temp1, 100
-	cp debounce1, temp1
-	brge activate_event_one
-	inc debounce1
-	rjmp End_J 
-
-	ldi temp1,0xFF
-	cp debounce2, temp1
-	brge hit
-	rjmp continue2
-hit:
-	write 'H'
-	rjmp End_J
-continue2:
-	ldi temp1, 100
-	cp debounce2, temp1
-	brge activate_event_two
-	inc debounce2
-	rjmp End_J
-activate_event_one:
-	// action ONE
-	write '1'
-activate_event_two:
-	// action TWO
-	write '2'
-	
-Not_milli:
-	sts Count_2, r24
-	sts Count_2+1, r25
-	
-End_J:
-; Epilogue
-	pop r24
-	pop r25
-	pop temp2
-	pop temp1
-	out SREG, temp1
-	reti
-
 divisors:
 	 .dw 10000, 1000, 100, 10, 1
 
@@ -532,7 +445,7 @@ start_loop:
 	set_motor_speed_reg motorSpeed
 	lds r24, Seconds
 	lds r25, Seconds+1
-	cpi r24, 2
+	cpi r24, 4
 	brne start_loop
 
 	lds XL, Target
@@ -545,43 +458,46 @@ start_loop:
 	brge decelerate 
 	rjmp continue
 accelerate:
-	subi motorSpeed, -1
-/*	ldi temp1, 240
-	out PORTC, temp1*/
+	subi motorSpeed, -5
+	ldi temp1, 240
+	out PORTC, temp1
 	rjmp continue
 
 decelerate:
-	subi motorSpeed,1
-/*	ldi temp1, 15
-	out PORTC, temp1*/
+	subi motorSpeed,4
+	ldi temp1, 15
+	out PORTC, temp1
 	rjmp continue
 
 continue:
 
 
 
-
-	/*clear Seconds
+	clear_disp
+	clear Seconds
 	change_line 1, 0
 	write 'T'
-	change_line 2, 8
-	write 'M'
-	write 'S'
+	change_line 1, 2
+	lds arg1, Target
+	lds arg2, Target+1
+	rcall convert_to_ascii
 	change_line 2, 0
 	write 'C'
-
 	change_line 2, 2
 	lds arg1, Revs
 	lds arg2, Revs+1
 	rcall convert_to_ascii
+	change_line 2, 8
+	write 'M'
+	write 'S'
+
+
+
 	change_line 2, 11
 	mov arg1, motorSpeed
 	ldi arg2, 0
 	rcall convert_to_ascii
-	change_line 1, 2
-	lds arg1, Target
-	lds arg2, Target+1
-	rcall convert_to_ascii*/
+
 
 
 
