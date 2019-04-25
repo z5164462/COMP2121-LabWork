@@ -16,10 +16,13 @@
 .equ l_two = 0b11000000
 
 .equ clock_speed = 781
+.equ debounce_speed = 8
 
 
 .def zero = r3
 .def one = r4
+.def debounce1 = r11
+.def debounce2 = r12
 .def closing = r8
 .def opening = r9
 .def temp1 = r16
@@ -122,12 +125,11 @@ Revs:
 	.byte 2
 Speed:
 	.byte 2
-Debounce0:
-	.byte 1
-Debounce1:
-	.byte 1
 Target:
 	.byte 2
+Count_2:
+	.byte 2
+
 
 
 
@@ -150,6 +152,10 @@ jmp EXT_INT2
 
 .org OVF0addr
     jmp Timer0OVF
+.org OVF1addr
+	reti
+.org OVF2addr
+	jmp Timer2OVF
 
 
 
@@ -169,7 +175,7 @@ RESET:
 	clr closing
 	clr opening
 
-	ldi temp1, 100
+	ldi temp1, 60
 	sts Target, temp1
 	clr temp1
 	sts Target+1, temp1
@@ -207,14 +213,11 @@ RESET:
     sts EICRA, temp1   	 
 
 
-
-
-	sts Debounce0, zero
-
 	
-
-	sts Debounce1, zero
-	
+	clr debounce1
+	clr debounce2
+	com debounce1
+	com debounce2
 
 
 
@@ -231,6 +234,15 @@ RESET:
     out TCCR0B, temp1
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
+
+    ldi temp1, 0b00000000
+    out TCCR2A, temp1
+    ldi temp1, 0b00000010
+    out TCCR2B, temp1
+    ldi temp1, 1<<TOIE2
+    sts TIMSK2, temp1
+
+
 
 	ldi motorSpeed, 0X2A
 	set_motor_speed_reg motorSpeed
@@ -263,6 +275,8 @@ RESET:
 
 	clear Speed
 	clear Seconds
+	clear Count
+	clear Count_2
     sei
 	
 
@@ -271,32 +285,42 @@ RESET:
 EXT_INT0:
 	push XL
 	push XH
+	push temp1
 	push temp2
 	in temp2, SREG
 	push temp2
-	lds temp2, Debounce0
-	inc temp2
-	cpi temp2, 3
-	brlt INT0_END
+	
+	ldi temp2, 3
+	cp debounce1, temp2
+	//brlt bounce1
 	
 	lds XL, Target
 	lds XH, Target+1
-/*	ldi temp2, low(50)
-	cp XL, temp2
-	ldi temp2, high(50)
-	cp XH, temp2
-	brlt INT0_END*/
-	sbiw X, 5
+	adiw X, 1
+	//write ')'
+	ldi temp1, low(100)
+	cp temp1, XL
+	ldi temp1, high(100)
+	cpc temp1, XH
+	brge over_limit
+	sbiw X, 20
+	ldi temp1, 2
+	out PORTG, temp1
+	
+over_limit:
 	sts Target, XL
-	sts Target+1, XH
-	//write '('    
+	sts Target+1, XH   
+	clr temp1
 	clr temp2
-
+	clr debounce1
+	rjmp INT0_END
+bounce1:
+inc debounce1
 INT0_END:
-	sts Debounce0, temp2
     pop temp2
     out SREG, temp2
     pop temp2
+	pop temp1
 	pop XH
 	pop XL
     reti
@@ -304,34 +328,43 @@ INT0_END:
 EXT_INT1:
 	push XL
 	push XH
+	push temp1
 	push temp2
 	in temp2, SREG
 	push temp2
-	lds temp2, Debounce1
-	inc temp2
-	cpi temp2, 3
-	brlt INT1_END
+	
+	ldi temp2, 3
+	cp debounce2, temp2
+	//brlt bounce2
 	
 	lds XL, Target
 	lds XH, Target+1
-
-/*	ldi temp2, low(250)
-	cp XL, temp2
-	ldi temp2, high(250)
-	cp XH, temp2
-	brge INT1_END*/
-	adiw X, 5
-	sts Target, XL
-	sts Target+1, XH
+	sbiw X, 1
+	//write '('
+	ldi temp1, low(0)
+	cp XL, temp1
+	ldi temp1, high(0)
+	cpc XH, temp1
+	brge under_limit
+	adiw X, 20
+	ldi temp1, 1
+	out PORTG, temp1
 	
-	//write ')'    
+under_limit:
+	sts Target, XL
+	sts Target+1, XH   
+	clr temp1
 	clr temp2
-
+	clr debounce2
+	rjmp INT1_END
+bounce2:
+   inc debounce2
 INT1_END:
-	sts Debounce1, temp2
+	
     pop temp2
     out SREG, temp2
     pop temp2
+	pop temp1
 	pop XH
 	pop XL
     reti
@@ -388,7 +421,7 @@ Timer0OVF:
 
 	lsl YL	//x2
 	rol YH
-
+	
 
 
 	sts Revs, YL
@@ -416,18 +449,65 @@ End_I:
     out SREG, temp1
     reti
 
+Timer2OVF:
+	in temp1, SREG
+	push temp1
+	push temp2
+	push r24
+	push r25
+
+	lds r24, Count_2
+	lds r25, Count_2 + 1
+	adiw r25:r24, 1
+
+	cpi r24, low(debounce_speed)
+	ldi temp1, high(debounce_speed)
+	cpc r25, temp1
+	brne Not_milli
+	clear Count_2
+
+	ldi temp1,0xFF
+	cp debounce1, temp1
+	brge End_J
+	ldi temp1, 100
+	cp debounce1, temp1
+	brge activate_event_one
+	inc debounce1
+	rjmp End_J 
+
+	ldi temp1,0xFF
+	cp debounce2, temp1
+	brge End_J
+	ldi temp1, 100
+	cp debounce2, temp1
+	brge activate_event_two
+	inc debounce2
+	rjmp End_J
+activate_event_one:
+	// action ONE
+activate_event_two:
+	// action TWO
+	
+Not_milli:
+	sts Count_2, r24
+	sts Count_2+1, r25
+	
+End_J:
+; Epilogue
+	pop r24
+	pop r25
+	pop temp2
+	pop temp1
+	out SREG, temp1
+	reti
+
 divisors:
 	 .dw 10000, 1000, 100, 10, 1
 
 ; Replace with your application code
 main:
 
-	write 'C'
-	change_line 1, 8
-	write 'M'
-	write 'S'
-	change_line 2, 0
-	write 'T'
+
 
 
 start_loop:
@@ -467,16 +547,23 @@ continue:
 
 
 	clear Seconds
+	change_line 1, 0
+	write 'T'
+	change_line 2, 8
+	write 'M'
+	write 'S'
+	change_line 2, 0
+	write 'C'
 
-	change_line 1, 2
+	change_line 2, 2
 	lds arg1, Revs
 	lds arg2, Revs+1
 	rcall convert_to_ascii
-	change_line 1, 10
+	change_line 2, 11
 	mov arg1, motorSpeed
 	ldi arg2, 0
 	rcall convert_to_ascii
-	change_line 2, 2
+	change_line 1, 2
 	lds arg1, Target
 	lds arg2, Target+1
 	rcall convert_to_ascii

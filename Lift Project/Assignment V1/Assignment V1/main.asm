@@ -5,6 +5,12 @@
 ; Author : andrew fleming z5164462 anirudh ramia z5164466
 ;
 
+/*Assumptions !!!!
+
+The Emergency call cannot be cancelled until the lift reaches the first floor
+and has completed the opening and closing routinues
+*/
+
 
 ; Replace with your application code
 
@@ -245,10 +251,10 @@ RESET:
     out DDRG, temp1   		 ;LED Higher
 	clr temp1
     out DDRD, temp1   		 ;Buttons?
-    ldi temp1, 0b01010101    ;LED testing
+/*    ldi temp1, 0b01010101    ;LED testing
     ldi temp2, 0
     out PORTC, temp1   	 ;LED lower
-    out PORTG, temp2   	 ;LED higher
+    out PORTG, temp2   	 ;LED higher*/
 
 	ldi temp1, 0b00010000
 	out DDRE, temp1
@@ -305,6 +311,8 @@ RESET:
 	ldi temp2, 'o'
 	write_reg temp2
 	clear_disp
+
+	rcall show_floor
     sei
     jmp main
 
@@ -425,7 +433,7 @@ End_I:
 //MAIN:
 main:
 
-// ---------------------------------------- SCANNING THE KEYPAD
+// ---------------------------------------- SCANNING THE KEYPAD \/
 
 	//display current_floor and requested_floor on LCD
 	//requested floor = 0 in Reset (TODO)
@@ -439,23 +447,23 @@ main:
 		emergency func*/
 
 	rcall insert_request
-// ---------------------------------------- SCANNING THE KEYPAD
+// ---------------------------------------- SCANNING THE KEYPAD	/\
 
-// ---------------------------------------- CHECKING STOPPED
+// ---------------------------------------- CHECKING STOPPED \/
 
 	check_register_bit stopped		//already stopped
-	brne display
+	brne read_queue
 	rjmp stop_here
 
-// ---------------------------------------- CHECKING STOPPED
+// ---------------------------------------- CHECKING STOPPED /\
 
-// ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR
-display:
+// ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR \/
+read_queue:
 
-	rcall show_floor
-// ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR
+	
+// ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR /\
 
-// ---------------------------------------- READING THE QUEUE 		
+// ---------------------------------------- READING THE QUEUE \/	
 	lds temp1, Queue_len		//is the queue empty?
 	cpi temp1, 0
 	breq main
@@ -468,9 +476,9 @@ display:
 	sbr lift_status, stopped			//first detection of requested_floor
 	sbr lift_status, opening
 	rjmp stop_here
-// ---------------------------------------- READING THE QUEUE 
+// ---------------------------------------- READING THE QUEUE /\
 
-// ---------------------------------------- MOVING BETWEEN FLOORS 	
+// ---------------------------------------- MOVING BETWEEN FLOORS \/
 check_direction:
 	brlt direction_up
 	brge direction_down
@@ -498,17 +506,19 @@ moving_up:
 	ldi temp1, 10				//don't increment past 10
 	cpse current_floor, temp1
 	inc current_floor			//move up a floor
+	rcall show_floor
 	rjmp main
 
 moving_down:
 	ldi temp1, 1
 	cpse current_floor, temp1
 	dec current_floor
+	rcall show_floor
 	rjmp main
-// ---------------------------------------- MOVING BETWEEN FLOORS 
+// ---------------------------------------- MOVING BETWEEN FLOORS /\
 
 
-// ---------------------------------------- STOPPING AT THE FLOOR
+// ---------------------------------------- STOPPING AT THE FLOOR \/
 stop_here:
 	check_register_bit opening
 	breq opening_sequence
@@ -563,16 +573,16 @@ closing_done:
 	dec temp1
 	sts Queue_len, temp1
 	rjmp main
-// ---------------------------------------- STOPPING AT THE FLOOR
+// ---------------------------------------- STOPPING AT THE FLOOR /\
 
-// ---------------------------------------- ERROR HANDLING
+// ---------------------------------------- ERROR HANDLING \/
 end_main:
 	ldi temp1, 0b11001100
 	out PORTC, temp1
 	rjmp end_main
-// ---------------------------------------- ERROR HANDLING
+// ---------------------------------------- ERROR HANDLING /\
 
-// ---------------------------------------- EMERGENCY FUNCTION
+// ---------------------------------------- EMERGENCY FUNCTION \/
 
 
 
@@ -580,10 +590,21 @@ end_main:
 emergency_func:
 
 	push temp1
+	
+	in temp1, SREG
+	push temp1
+	
+	lds temp1, Seconds
+	push temp1
+	
+	lds temp1, Seconds+1
+	push temp1
+	
 	push r14
 	push current_floor
 
 	clear_disp
+	clear Seconds
 	write 'E'
 	write 'm'
 	write 'e'
@@ -605,15 +626,27 @@ emergency_func:
 
 	lcd_set 2
 
+	mov r14, current_floor	   // for restoring original floor
+
 drop_floor_loop:
-	
+	rcall show_floor
+	cpi current_floor, 1
+	breq drop_floor_end
+	lds r24, Seconds
+	lds r25, Seconds+1
+	mov arg1, r24
+	rcall Strobe_flash
+	cpi r24, 20
+	brlt drop_floor_loop
+	dec current_floor
+	clear Seconds
 	
 	
 
-// ---------------------------------------- EMERGENCY FUNCTION
+// ---------------------------------------- EMERGENCY FUNCTION /\
 
 
-// ---------------------------------------- LCD_FUNCTIONS
+// ---------------------------------------- LCD_FUNCTIONS \/
 lcd_command:
     out PORTF, temp1
     rcall sleep_1ms
