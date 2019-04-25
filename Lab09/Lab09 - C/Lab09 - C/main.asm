@@ -16,7 +16,7 @@
 .equ l_two = 0b11000000
 
 .equ clock_speed = 781
-.equ debounce_speed = 8
+.equ debounce_speed = 800
 
 
 .def zero = r3
@@ -152,12 +152,11 @@ jmp EXT_INT2
 
 .org OVF0addr
     jmp Timer0OVF
-.org OVF1addr
-	reti
+
 .org OVF2addr
 	jmp Timer2OVF
 
-
+.org 0x30
 
 RESET:
     ldi temp1, low(RAMEND)    ; Init stack frame
@@ -219,7 +218,7 @@ RESET:
 	com debounce1
 	com debounce2
 
-
+	// out PORTC, debounce1
 
 
     in temp1, EIMSK
@@ -236,9 +235,9 @@ RESET:
     sts TIMSK0, temp1
 
     ldi temp1, 0b00000000
-    out TCCR2A, temp1
+    sts TCCR2A, temp1
     ldi temp1, 0b00000010
-    out TCCR2B, temp1
+    sts TCCR2B, temp1
     ldi temp1, 1<<TOIE2
     sts TIMSK2, temp1
 
@@ -283,7 +282,10 @@ RESET:
     jmp main
 
 EXT_INT0:
-	push XL
+	;write 'L'
+	clr debounce1
+	reti
+/*	push XL
 	push XH
 	push temp1
 	push temp2
@@ -323,10 +325,13 @@ INT0_END:
 	pop temp1
 	pop XH
 	pop XL
-    reti
+    reti*/
 
 EXT_INT1:
-	push XL
+	;write 'R'
+	clr debounce2
+	reti
+/*	push XL
 	push XH
 	push temp1
 	push temp2
@@ -367,7 +372,7 @@ INT1_END:
 	pop temp1
 	pop XH
 	pop XL
-    reti
+    reti*/
 
 EXT_INT2:
 	push XL
@@ -464,7 +469,10 @@ Timer2OVF:
 	ldi temp1, high(debounce_speed)
 	cpc r25, temp1
 	brne Not_milli
+	;write 'm'
 	clear Count_2
+	write_reg debounce1
+	//rcall convert_to_ascii
 
 	ldi temp1,0xFF
 	cp debounce1, temp1
@@ -477,7 +485,12 @@ Timer2OVF:
 
 	ldi temp1,0xFF
 	cp debounce2, temp1
-	brge End_J
+	brge hit
+	rjmp continue2
+hit:
+	write 'H'
+	rjmp End_J
+continue2:
 	ldi temp1, 100
 	cp debounce2, temp1
 	brge activate_event_two
@@ -485,8 +498,10 @@ Timer2OVF:
 	rjmp End_J
 activate_event_one:
 	// action ONE
+	write '1'
 activate_event_two:
 	// action TWO
+	write '2'
 	
 Not_milli:
 	sts Count_2, r24
@@ -531,14 +546,14 @@ start_loop:
 	rjmp continue
 accelerate:
 	subi motorSpeed, -1
-	ldi temp1, 240
-	out PORTC, temp1
+/*	ldi temp1, 240
+	out PORTC, temp1*/
 	rjmp continue
 
 decelerate:
 	subi motorSpeed,1
-	ldi temp1, 15
-	out PORTC, temp1
+/*	ldi temp1, 15
+	out PORTC, temp1*/
 	rjmp continue
 
 continue:
@@ -546,7 +561,7 @@ continue:
 
 
 
-	clear Seconds
+	/*clear Seconds
 	change_line 1, 0
 	write 'T'
 	change_line 2, 8
@@ -566,7 +581,7 @@ continue:
 	change_line 1, 2
 	lds arg1, Target
 	lds arg2, Target+1
-	rcall convert_to_ascii
+	rcall convert_to_ascii*/
 
 
 
