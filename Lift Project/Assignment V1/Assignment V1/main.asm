@@ -167,6 +167,15 @@ end_cl:
 .macro lcd_clr   							 // clear bit in PORTA
     cbi PORTA, @0
 .endmacro
+.macro set_motor_speed
+	push temp1
+	ldi temp1, @0
+	sts OCR3BL, temp1
+	clr temp1
+	sts OCR3BH, temp1	
+	pop temp1
+.endmacro
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 // INTERRUPTS
@@ -191,8 +200,8 @@ end_cl:
 
 //CSEG MEMORY STORAGE
 
-requests:
-   	 .db 3,2,6
+/*requests:
+   	 .db 3,2,6*/
 divisors:
 	 .dw 10000, 1000, 100, 10, 1
 
@@ -202,18 +211,17 @@ RESET:
     ldi temp1, high(RAMEND)
     out SPH, temp1
 
-	clr lift_status
 
-	sbr lift_status, stopped
-	cbr lift_status, goingUp
-	cbr lift_status, doorsOpen
-	cbr lift_status, opening
-	cbr lift_status, closing
-	cbr lift_status, flashing
-	cbr lift_status, emergency
-	cbr lift_status, halted
+	cbr lift_status, stopped	;0
+	sbr lift_status, goingUp	;1
+	cbr lift_status, doorsOpen	;0
+	cbr lift_status, opening	;0
+	cbr lift_status, closing	;0
+	cbr lift_status, flashing	;0
+	cbr lift_status, emergency	;0
+	cbr lift_status, halted		;0
 
-	ldi current_floor, 6
+	ldi current_floor, 1
 	
 
     clr zero   			 ; zero
@@ -242,14 +250,18 @@ RESET:
     out PORTC, temp1   	 ;LED lower
     out PORTG, temp2   	 ;LED higher
 
+	ldi temp1, 0b00010000
+	out DDRE, temp1
+
     ldi temp1,  0b00001010    ;falling edges for interrupts 1 and 0
     sts EICRA, temp1   	 
 
 
 
     in temp1, EIMSK
-    ori temp1, (1<<INT0)
-    ori temp1, (1<<INT1)
+	ori temp1, (1<<INT0)
+	ori temp1, (1<<INT1)
+    ori temp1, (1<<INT2)
     out EIMSK, temp1
     
     ldi temp1, 0b00000000
@@ -258,6 +270,11 @@ RESET:
     out TCCR0B, temp1
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
+
+	ldi temp1, (1<<CS30)
+	sts TCCR3B, temp1
+	ldi temp1, (1<<COM3B1) | (1<<WGM30)
+	sts TCCR3A, temp1
 
 //from LCD-example LCD setup
     ser temp1
@@ -408,65 +425,195 @@ End_I:
 //MAIN:
 main:
 
-/*	scan keypad
-		
+// ---------------------------------------- SCANNING THE KEYPAD
 
-	if loaded 0 from requests, do nothing
-	
-    
+	//display current_floor and requested_floor on LCD
+	//requested floor = 0 in Reset (TODO)
 
-
-
-
-*/
-
-read_queue:
 	rcall scan				//reading the queue
 /*	mov arg1, ret1 
 	rcall convert_to_ascii*/ //DEBUGGING
 	mov input_value, ret1
+
+/*	if input_value == *
+		emergency func*/
+
 	rcall insert_request
-	lds temp1, Queue_len	//is the queue empty
-	cpi temp1, 0
-	breq read_queue
+// ---------------------------------------- SCANNING THE KEYPAD
 
-	check_register_bit stopped	//is stopped?
-	brne moving
-	ldi ZL, low(Queue)
-	ldi ZH, high(Queue)
-	ld requested_floor, Z
-	dec temp1
-	sts Queue_len, temp1		//Queue is shorter
+// ---------------------------------------- CHECKING STOPPED
 
-moving:
-	cbr lift_status, stopped
-	lds r24, Seconds		//moving the lift
-	lds r25, Seconds+1
-	cp requested_floor, current_floor	//are we on the right floor
-	breq stop_here
-	cpi r24, 20
-	brlt read_queue
+	check_register_bit stopped		//already stopped
+	brne display
+	rjmp stop_here
 
-stop_here:
-	sbr lift_status, stopped
-	rcall LED_flash
-	lds XL, Wait_duration
-	lds XH, Wait_duration
+// ---------------------------------------- CHECKING STOPPED
 
-
+// ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR
+display:
 
 	rcall show_floor
+// ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR
 
-	rjmp read_queue
-end_main:
+// ---------------------------------------- READING THE QUEUE 		
+	lds temp1, Queue_len		//is the queue empty?
+	cpi temp1, 0
+	breq main
+
+
+	lds requested_floor, Queue
+	cp current_floor, requested_floor	//on correct floor?
+	brne check_direction
+				
+	sbr lift_status, stopped			//first detection of requested_floor
+	sbr lift_status, opening
+	rjmp stop_here
+// ---------------------------------------- READING THE QUEUE 
+
+// ---------------------------------------- MOVING BETWEEN FLOORS 	
+check_direction:
+	brlt direction_up
+	brge direction_down
+	
+direction_up:
+	sbr lift_status, goingUp
+	rjmp moving
+direction_down:
+	cbr lift_status, goingUp
+	rjmp moving
+
+moving:
+	lds r24, Seconds		//2 Seconds passed?
+	lds r25, Seconds+1
+	cpi r24, 20
+	brlt main
+
+	clear Seconds
+	check_register_bit goingUp
+	breq moving_up
+	rjmp moving_down
+
+
+moving_up:
+	ldi temp1, 10				//don't increment past 10
+	cpse current_floor, temp1
+	inc current_floor			//move up a floor
+	rjmp main
+
+moving_down:
+	ldi temp1, 1
+	cpse current_floor, temp1
+	dec current_floor
+	rjmp main
+// ---------------------------------------- MOVING BETWEEN FLOORS 
+
+
+// ---------------------------------------- STOPPING AT THE FLOOR
+stop_here:
+	check_register_bit opening
+	breq opening_sequence
+	check_register_bit doorsOpen
+	breq doors_open_sequence
+	check_register_bit closing
+	breq closing_sequence
 	rjmp end_main
 
+opening_sequence:
+	rcall show_floor
+	set_motor_speed 0x2A
+	lds r24, Seconds		//1 Second passed?
+	lds r25, Seconds+1
+	cpi r24, 10
+	brge opening_done
+	rjmp main
+opening_done:
+	clear Seconds
+	cbr lift_status, opening
+	sbr lift_status, doorsOpen
+	rjmp main
+
+doors_open_sequence:	
+	set_motor_speed 0
+	lds r24, Seconds		//3 seconds passed?
+	lds r25, Seconds+1
+	mov arg1, r24			//LED_flash needs the time as an argument
+	rcall LED_flash
+	cpi r24, 30
+	brge doors_open_done
+	rjmp main
+doors_open_done:
+	clear Seconds
+	cbr lift_status, doorsOpen
+	sbr lift_status, closing	
+	rjmp main
+
+closing_sequence:
+	rcall show_floor
+	set_motor_speed 0x8A
+	lds r24, Seconds		//1 Second passed?
+	lds r25, Seconds+1
+	cpi r24, 10				
+	brge closing_done
+	rjmp main
+closing_done:
+	clear Seconds
+	cbr lift_status, closing
+	cbr lift_status, stopped
+	lds temp1, Queue_len
+	dec temp1
+	sts Queue_len, temp1
+	rjmp main
+// ---------------------------------------- STOPPING AT THE FLOOR
+
+// ---------------------------------------- ERROR HANDLING
+end_main:
+	ldi temp1, 0b11001100
+	out PORTC, temp1
+	rjmp end_main
+// ---------------------------------------- ERROR HANDLING
+
+// ---------------------------------------- EMERGENCY FUNCTION
 
 
 
 
+emergency_func:
 
-//LCD_FUNCTIONS
+	push temp1
+	push r14
+	push current_floor
+
+	clear_disp
+	write 'E'
+	write 'm'
+	write 'e'
+	write 'r'
+	write 'g'
+	write 'e'
+	write 'n'
+	write 'c'
+	write 'y'
+	change_line 2, 0
+	write 'C'
+	write 'a'
+	write 'l'
+	write 'l'
+	write ' '
+	write '0'
+	write '0'
+	write '0'
+
+	lcd_set 2
+
+drop_floor_loop:
+	
+	
+	
+
+// ---------------------------------------- EMERGENCY FUNCTION
+
+
+// ---------------------------------------- LCD_FUNCTIONS
 lcd_command:
     out PORTF, temp1
     rcall sleep_1ms
@@ -532,10 +679,10 @@ sleep_5ms:
     rcall sleep_1ms
     rcall sleep_1ms
     ret
+// ---------------------------------------- LCD_FUNCTIONS
 
+// ---------------------------------------- FUNCTIONS
 
-//FUNCTIONS
-//these are some functions
 
 //INSERT_REQUEST
 
@@ -697,9 +844,6 @@ end_insert_loop:
 
 
 //SHOW_FLOOR:
-
-
-
 show_floor:
 ;prologue
 ;    push YL
@@ -871,26 +1015,29 @@ pop temp1
 ret*/
 
 
-LED_flash:	//Reads in the seconds value in X
-    push temp1
+LED_flash:	//Reads in the seconds value in arg1
+	push temp1
+	in temp1, SREG
+	push temp1
 	push current_floor
-    push XL
-    mov temp1, XL
-    ror temp1		//rotates the time into the carry
+    push arg1
+	ror arg1 //rotates the time into the carry
     brcs LED_up	//if old LSB was 1, i.e. odd turn strobe on
     brcc LED_down	//if old LSB was 0, i.e even turn strobe off
 
 LED_up:
     rcall show_floor		//set PORTA bit to 1
-	rjmp strobe_end
+	rjmp LED_end
 LED_down:
     dec current_floor
 	rcall show_floor
-	rjmp strobe_end
-Strobe_end:
-    pop XL
+	rjmp LED_end
+LED_end:
+	pop temp1
+	out SREG, temp1
+	pop temp1
+    pop arg1
 	pop current_floor
-    pop temp1
 	ret
 
 
@@ -899,10 +1046,11 @@ Strobe_end:
 
 //STROBE_FLASH
 Strobe_flash:	//Reads in the seconds value in X
-    push temp1
-    push XL
-    mov temp1, XL
-    ror temp1		//rotates the time into the carry
+	push temp1
+	in temp1, SREG
+	push temp1
+	push arg1
+    ror arg1		//rotates the time into the carry
     brcs strobe_on	//if old LSB was 1, i.e. odd turn strobe on
     brcc strobe_off	//if old LSB was 0, i.e even turn strobe off
 
@@ -913,8 +1061,10 @@ strobe_off:
     lcd_clr 1
 	rjmp strobe_end
 Strobe_end:
-    pop XL
-    pop temp1
+    pop arg1
+	pop temp1
+	out SREG, temp1
+	pop temp1
 	ret
 	
 //SCAN				//return value in arg1
