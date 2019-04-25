@@ -148,8 +148,9 @@ jmp EXT_INT2
 
 .org OVF0addr
     jmp Timer0OVF
-
-
+.org OVF1addr
+	jmp Timer1OVF
+.org 0x30
 
 RESET:
     ldi temp1, low(RAMEND)    ; Init stack frame
@@ -206,8 +207,11 @@ RESET:
 
 
 
-	clr debounce1
-	clr debounce2
+/*	clr debounce1
+	clr debounce2*/
+	ser temp1
+	mov debounce1, temp1
+	mov debounce2, temp1
 	
 
 
@@ -225,6 +229,13 @@ RESET:
     out TCCR0B, temp1
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
+    
+	ldi temp1, 0b00000000
+    sts TCCR1A, temp1
+    ldi temp1, 0b00000010 //8 prescaler
+    sts TCCR1B, temp1
+    ldi temp1, 1<<TOIE1|1<<ICIE1
+    sts TIMSK1, temp1
 
 	ldi motorSpeed, 0X2A
 	set_motor_speed_reg motorSpeed
@@ -263,7 +274,9 @@ RESET:
     jmp main
 
 EXT_INT0:
-	push XL
+	clr debounce1
+	reti
+/*	push XL
 	push XH
 	push temp1
 	push temp2
@@ -303,10 +316,12 @@ INT0_END:
 	pop temp1
 	pop XH
 	pop XL
-    reti
+    reti*/
 
 EXT_INT1:
-	push XL
+	clr debounce2
+	reti
+/*	push XL
 	push XH
 	push temp1
 	push temp2
@@ -347,7 +362,7 @@ INT1_END:
 	pop temp1
 	pop XH
 	pop XL
-    reti
+    reti*/
 
 EXT_INT2:
 	push XL
@@ -412,13 +427,13 @@ Timer0OVF:
     sts Seconds, r24
     sts Seconds+1, r25
     clear Count
-    rjmp End_I
+    rjmp End_Timer0
 
 Not_second:
     sts Count, r24
     sts Count+1, r25
 
-End_I:
+End_Timer0:
 ; Epilogue
 	pop YH
 	pop YL
@@ -428,6 +443,87 @@ End_I:
     pop temp1
     out SREG, temp1
     reti
+
+Timer1OVF:
+	push temp1
+	in temp1, SREG
+	push temp1
+	push XL
+	push XH
+
+	ser temp1
+	cp debounce1, temp1
+	breq DB2
+	ldi temp1, 3
+	cp debounce1, temp1
+	brge action1
+	inc debounce1
+	rjmp  DB2
+action1:
+	//write '('
+
+	lds XL, Target
+	lds XH, Target+1
+	adiw X, 20
+	//write ')'
+	ldi temp1, low(100)
+	cp temp1, XL
+	ldi temp1, high(100)
+	cpc temp1, XH
+	brge over_limit
+	sbiw X, 20
+	ldi temp1, 2
+	out PORTG, temp1
+	
+over_limit:
+	sts Target, XL
+	sts Target+1, XH 
+
+	ser temp1
+	mov debounce1, temp1
+
+DB2:
+	ser temp1
+	cp debounce2, temp1
+	breq End_timer1
+	ldi temp1, 3
+	cp debounce2, temp1
+	brge action2
+	inc debounce2
+	rjmp End_Timer1
+action2:
+	//write ')'
+
+	lds XL, Target
+	lds XH, Target+1
+	sbiw X, 20
+	//write '('
+	ldi temp1, low(0)
+	cp XL, temp1
+	ldi temp1, high(0)
+	cpc XH, temp1
+	brge under_limit
+	adiw X, 20
+	ldi temp1, 1
+	out PORTG, temp1
+	
+under_limit:
+	sts Target, XL
+	sts Target+1, XH  
+
+
+	ser temp1
+	mov debounce2, temp1
+	
+
+End_Timer1:
+	pop XH
+	pop XL
+	pop temp1
+	out SREG, temp1
+	pop temp1
+	reti
+
 
 divisors:
 	 .dw 10000, 1000, 100, 10, 1
@@ -490,9 +586,6 @@ continue:
 	change_line 2, 8
 	write 'M'
 	write 'S'
-
-
-
 	change_line 2, 11
 	mov arg1, motorSpeed
 	ldi arg2, 0
