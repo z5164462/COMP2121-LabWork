@@ -460,11 +460,11 @@ End_I:
 
 //MAIN:
 main:
-/*	lds r24, Seconds   		 ; increment seconds every 1/10 of second
+	lds r24, Seconds   		 ; increment seconds every 1/10 of second
     lds r25, Seconds+1		 ;FOR DEBUGGING ONLY
     adiw r25:r24, 5
     sts Seconds, r24
-    sts Seconds+1, r25*/
+    sts Seconds+1, r25
 // ---------------------------------------- SCANNING THE KEYPAD \/
 
 	change_line 1, 14
@@ -615,9 +615,7 @@ closing_done:
 	cbr lift_status, closing
 	cbr lift_status, stopped
 	set_motor_speed 0
-	lds temp1, Queue_len
-	dec temp1
-	sts Queue_len, temp1
+	rcall shuffle_queue
 	rjmp main
 // ---------------------------------------- STOPPING AT THE FLOOR /\
 
@@ -751,8 +749,8 @@ sleep_1ms:
     ldi r24, low(DELAY_1MS)
 
 delayloop_1ms:
-    sbiw r25:r24, 1	 //DEBUGGING
-    brne delayloop_1ms
+    ;sbiw r25:r24, 1	 //DEBUGGING
+    ;brne delayloop_1ms
     pop r25
     pop r24
     ret
@@ -975,7 +973,7 @@ end_x:
 
 ;epilogue
 end_show_floor:
-    //out PORTG, XH
+    out PORTG, XH
     out PORTC, XL
 
 pop XH
@@ -1255,10 +1253,10 @@ end_show:
 
 
 scan_end:
-/*	ldi temp1, 3		//ONLY FOR DEBUGGING
-	mov ret1, temp1*/
-	cpse ret1, zero
-	out PORTG, one
+	ldi temp1, 3		//ONLY FOR DEBUGGING
+	mov ret1, temp1
+/*	cpse ret1, zero
+	out PORTG, one*/
 	pop arg2
 	pop arg1
 	pop temp2
@@ -1270,4 +1268,56 @@ scan_end:
 
 	ret
 
+//FUNCTION shuffle_queue
+
+shuffle_queue:
+	push ZL
+	push ZH
+	push temp1
+	push temp2
+	push arg1
+	push arg2
+	push counter
+	
+	ldi ZL, low(Queue)
+	ldi ZH, high(Queue)
+
+	lds temp1, Queue_len
+	add ZL, temp1
+	adc ZH, zero
+
+	sbiw Z, 1
+	clr counter
+	clr arg1
+shuffle_loop:
+	//Z points to the end of the queue
+	lds temp1, Queue_len
+	cp counter, temp1
+	breq shuffle_loop_end
+	ld arg2, Z
+	st Z, arg1
+	mov arg1, arg2
+	inc counter
+	sbiw Z, 1
+	rjmp shuffle_loop:
+shuffle_loop_end:
+	lds temp1, Queue_len
+	dec temp1
+	sts Queue_len, temp1
+
+
+	pop counter
+	pop arg2
+	pop arg1
+	pop temp2
+	pop temp1
+	pop ZH	
+ 	pop ZL
+
+	ret
+
+
+
+
+	
 
