@@ -104,9 +104,11 @@ b7 = Halted?
 //Flag checking register  usage check_register_bit stopped
 //   							 breq action
 .macro check_register_bit
+	push temp1
     mov temp1, lift_status
     andi temp1, @0
     cpi temp1, @0
+	pop temp1
 .endmacro
 
 //Clear word macro
@@ -209,7 +211,7 @@ end_cl:
 /*requests:
    	 .db 3,2,6*/
 divisors:
-	 .dw 10000, 1000, 100, 10, 1
+	 .dw  10, 1
 
 RESET:
     ldi temp1, low(RAMEND)    ; Init stack frame
@@ -259,7 +261,7 @@ RESET:
 	ldi temp1, 0b00010000
 	out DDRE, temp1
 
-    ldi temp1,  0b00001010    ;falling edges for interrupts 1 and 0
+    ldi temp1, 0b00101010    ;falling edges for interrupts 2, 1 and 0
     sts EICRA, temp1   	 
 
 
@@ -281,16 +283,21 @@ RESET:
 	sts TCCR3B, temp1
 	ldi temp1, (1<<COM3B1) | (1<<WGM30)
 	sts TCCR3A, temp1
-
+	
 //from LCD-example LCD setup
     ser temp1
+
     out DDRF, temp1
     out DDRA, temp1
+
     clr temp1
     out PORTF, temp1
     out PORTA, temp1
 
+	
+out PORTC, one
     do_lcd_command 0b00111000 ; 2x5x7
+
     rcall sleep_5ms
     do_lcd_command 0b00111000 ; 2x5x7
 	rcall sleep_1ms
@@ -301,16 +308,35 @@ RESET:
     do_lcd_command 0b00000110 ; increment, no display shift
     do_lcd_command 0b00001110 ; Cursor on, bar, no blink
 
-	ldi temp2, 'H'
-	write_reg temp2
-	ldi temp2,'e'
-	write_reg temp2
-	ldi temp2, 'l'
-	write_reg temp2
-	write_reg temp2
-	ldi temp2, 'o'
-	write_reg temp2
 	clear_disp
+	write 'C'
+	write 'u'
+	write 'r'
+	write 'r'
+	write 'e'
+	write 'n'
+	write 't'
+	write ' '
+	write 'f'
+	write 'l'
+	write 'o'
+	write 'o'
+	write 'r'
+
+	change_line 2, 0
+	
+	write 'N'
+	write 'e'
+	write 'x'
+	write 't'
+	write ' '
+	write 's'
+	write 't'
+	write 'o'
+	write 'p'
+
+	change_line 2, 13
+	write 'Q'
 
 	rcall show_floor
     sei
@@ -380,6 +406,7 @@ INT1_END:
     reti
 
 Timer0OVF:
+	push temp1
     in temp1, SREG   	 ; stack frame for timer interrupt handler
     push temp1
     push r25
@@ -397,13 +424,13 @@ Timer0OVF:
     lds r25, Seconds+1
 
 
-    lds temp1, Debounce1   	 ; decrement Debounce counter for INT0
+/*    lds temp1, Debounce1   	 ; decrement Debounce counter for INT0
     dec temp1
     sts Debounce1, temp1
 
     lds temp1, Debounce2   	 ; decrement Debounce counter for INT1
     dec temp1
-    sts Debounce2, temp1
+    sts Debounce2, temp1*/
 
     adiw r25:r24, 1
     sts Seconds, r24
@@ -421,6 +448,7 @@ End_I:
     pop r24
     pop temp1
     out SREG, temp1
+	pop temp1
     reti
 
 // Function to insert input floor into list
@@ -432,9 +460,22 @@ End_I:
 
 //MAIN:
 main:
-
+/*	lds r24, Seconds   		 ; increment seconds every 1/10 of second
+    lds r25, Seconds+1		 ;FOR DEBUGGING ONLY
+    adiw r25:r24, 5
+    sts Seconds, r24
+    sts Seconds+1, r25*/
 // ---------------------------------------- SCANNING THE KEYPAD \/
 
+	change_line 1, 14
+	mov arg1, current_floor
+	rcall convert_to_ascii
+	change_line 2, 10
+	mov arg1, requested_floor
+	rcall convert_to_ascii
+	change_line 2, 15
+	lds arg1, Queue_len
+	rcall convert_to_ascii
 	//display current_floor and requested_floor on LCD
 	//requested floor = 0 in Reset (TODO)
 
@@ -447,6 +488,7 @@ main:
 		emergency func*/
 
 	rcall insert_request
+	
 // ---------------------------------------- SCANNING THE KEYPAD	/\
 
 // ---------------------------------------- CHECKING STOPPED \/
@@ -463,10 +505,11 @@ read_queue:
 	
 // ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR /\
 
-// ---------------------------------------- READING THE QUEUE \/	
+// ---------------------------------------- READING THE QUEUE \/
+	ldi requested_floor, 0		//assume queue empty	
 	lds temp1, Queue_len		//is the queue empty?
 	cpi temp1, 0
-	breq main
+	breq to_main
 
 
 	lds requested_floor, Queue
@@ -477,7 +520,8 @@ read_queue:
 	sbr lift_status, opening
 	rjmp stop_here
 // ---------------------------------------- READING THE QUEUE /\
-
+to_main:
+	jmp main
 // ---------------------------------------- MOVING BETWEEN FLOORS \/
 check_direction:
 	brlt direction_up
@@ -494,7 +538,7 @@ moving:
 	lds r24, Seconds		//2 Seconds passed?
 	lds r25, Seconds+1
 	cpi r24, 20
-	brlt main
+	brlt to_main
 
 	clear Seconds
 	check_register_bit goingUp
@@ -542,7 +586,8 @@ opening_done:
 	sbr lift_status, doorsOpen
 	rjmp main
 
-doors_open_sequence:	
+doors_open_sequence:
+		
 	set_motor_speed 0
 	lds r24, Seconds		//3 seconds passed?
 	lds r25, Seconds+1
@@ -569,6 +614,7 @@ closing_done:
 	clear Seconds
 	cbr lift_status, closing
 	cbr lift_status, stopped
+	set_motor_speed 0
 	lds temp1, Queue_len
 	dec temp1
 	sts Queue_len, temp1
@@ -587,7 +633,7 @@ end_main:
 
 
 
-emergency_func:
+/*emergency_func:
 
 	push temp1
 	
@@ -640,6 +686,12 @@ drop_floor_loop:
 	brlt drop_floor_loop
 	dec current_floor
 	clear Seconds
+	rjmp drop_floor_loop
+drop_floor_end:
+
+emergency_open:*/
+
+
 	
 	
 
@@ -688,7 +740,7 @@ lcd_wait_loop:
     pop r16
     ret
 
-.equ F_CPU = 16000000
+.equ F_CPU = 12000000
 .equ DELAY_1MS = F_CPU / 4 / 1000 - 4
 ; 4 cycles per iteration - setup/call-return overhead
 
@@ -699,7 +751,7 @@ sleep_1ms:
     ldi r24, low(DELAY_1MS)
 
 delayloop_1ms:
-    sbiw r25:r24, 1
+    sbiw r25:r24, 1	 //DEBUGGING
     brne delayloop_1ms
     pop r25
     pop r24
@@ -712,6 +764,20 @@ sleep_5ms:
     rcall sleep_1ms
     rcall sleep_1ms
     ret
+
+pause:
+	rcall sleep_5ms
+	rcall sleep_5ms
+	rcall sleep_5ms
+	rcall sleep_5ms
+	rcall sleep_5ms
+	rcall sleep_5ms
+	rcall sleep_5ms
+	rcall sleep_5ms
+	rcall sleep_5ms
+	rcall sleep_5ms
+	reti
+
 // ---------------------------------------- LCD_FUNCTIONS
 
 // ---------------------------------------- FUNCTIONS
@@ -747,6 +813,7 @@ ldi XL, low(Queue)
 ldi XH, high(Queue)
 lds r22, Queue_len
 
+clr ret1
 
 cpi input_value, 11
 brlt under_11
@@ -763,6 +830,7 @@ cp current_floor, input_value //if the current floor is the input floor, break t
 brne input_continue
 jmp end_insert_loop
 input_continue:
+mov ret1, input_value
 
 
 
@@ -907,7 +975,7 @@ end_x:
 
 ;epilogue
 end_show_floor:
-    out PORTG, XH
+    //out PORTG, XH
     out PORTC, XL
 
 pop XH
@@ -949,7 +1017,7 @@ start:
 	clr r8
 	clr r9
 convert_loop:
-	ldi temp2, 5
+	ldi temp2, 2
 	cp r9, temp2
 	breq end_convert
 	rjmp divide
@@ -979,7 +1047,7 @@ end_divide:
 	movw arg2:arg1, r19:r18 //the remainder moves to the dividend to be divided again
 	inc r9
 	cpi r24, 0
-	breq check_zero
+	//breq check_zero
 	mov r7, r20	//r7 holds ASCII val for '0'
 	add r7, r24 //r7 holds ASCII val for '0' + remainder
 
@@ -1066,11 +1134,11 @@ LED_down:
 	rcall show_floor
 	rjmp LED_end
 LED_end:
+    pop arg1
+	pop current_floor
 	pop temp1
 	out SREG, temp1
 	pop temp1
-    pop arg1
-	pop current_floor
 	ret
 
 
@@ -1152,7 +1220,7 @@ nextcol:   					 ; jump to next column when row scan over
     jmp colloop
 
 show:
-	write 'H'
+	
     cpi r17, 3   			; if column = 3, a key in column 3 is pressed, which is a 									letter key
     breq scan_end   				 ; we dont need to deal with this for this lab, so go to n_a
 
@@ -1187,6 +1255,10 @@ end_show:
 
 
 scan_end:
+/*	ldi temp1, 3		//ONLY FOR DEBUGGING
+	mov ret1, temp1*/
+	cpse ret1, zero
+	out PORTG, one
 	pop arg2
 	pop arg1
 	pop temp2
@@ -1195,6 +1267,7 @@ scan_end:
 	pop r18
 	pop r17
 	pop r16
+
 	ret
 
 
