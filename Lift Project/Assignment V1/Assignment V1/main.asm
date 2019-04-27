@@ -26,14 +26,10 @@ Count:
     .byte 2
 Seconds:
     .byte 2
-Debounce1:
-    .byte 1
-Debounce2:
-    .byte 1
 Wait_duration:
     .byte 2
-Flash_wait:
-    .byte 2
+/*Flash_wait:
+    .byte 2*/
 
 /*
 input_array?
@@ -48,7 +44,8 @@ floor_array?
 .def one = r4
 .def counter = r7
 .def ret1 = r10
-.def ret2 = r11
+.def debounce1 = r11
+.def debounce2 = r12
 .def current_floor = r16
 .def requested_floor = r17
 .def input_value = r18
@@ -204,6 +201,9 @@ end_cl:
 
 .org OVF0addr
     jmp Timer0OVF
+.org OVF1addr
+	jmp Timer1OVF
+.org 0x30
 
 
 //CSEG MEMORY STORAGE
@@ -236,7 +236,6 @@ RESET:
     clr one   				 
     inc one   				 ; one
 	clr ret1
-	clr ret2
 
 	sts Queue_len, zero
 
@@ -278,6 +277,14 @@ RESET:
     out TCCR0B, temp1
     ldi temp1, 1<<TOIE0
     sts TIMSK0, temp1
+
+	ldi temp1, 0b00000000
+    sts TCCR1A, temp1
+    ldi temp1, 0b00000010 //8 prescaler
+    sts TCCR1B, temp1
+    ldi temp1, 1<<TOIE1|1<<ICIE1
+    sts TIMSK1, temp1
+
 
 	ldi temp1, (1<<CS30)
 	sts TCCR3B, temp1
@@ -348,7 +355,7 @@ out PORTC, one
 EXT_INT0:
 
     
-    check_register_bit stopped  //if not stopped, ignore close door
+/*    check_register_bit stopped  //if not stopped, ignore close door
     brne INT0_END
 
     check_register_bit opening //if doors opening, ignore close door
@@ -375,13 +382,13 @@ EXT_INT0:
 INT0_END:
     pop temp2
     out SREG, temp2
-    pop temp2
+    pop temp2*/
     reti
 
 
 
 EXT_INT1:
-    push temp2
+/*    push temp2
     in temp2, SREG
     push temp2
     
@@ -402,7 +409,7 @@ EXT_INT1:
 INT1_END:
     pop temp2
     out SREG, temp2
-    pop temp2
+    pop temp2*/
     reti
 
 Timer0OVF:
@@ -450,6 +457,87 @@ End_I:
     out SREG, temp1
 	pop temp1
     reti
+
+
+Timer1OVF:
+	push temp1
+	in temp1, SREG
+	push temp1
+	push XL
+	push XH
+
+	ser temp1
+	cp debounce1, temp1
+	breq DB2
+	ldi temp1, 3
+	cp debounce1, temp1
+	brge action1
+	inc debounce1
+	rjmp  DB2
+action1:
+/*	//write '('
+
+	lds XL, Target
+	lds XH, Target+1
+	adiw X, 20
+	//write ')'
+	ldi temp1, low(100)
+	cp temp1, XL
+	ldi temp1, high(100)
+	cpc temp1, XH
+	brge over_limit
+	sbiw X, 20
+	ldi temp1, 2
+	out PORTG, temp1
+	
+over_limit:
+	sts Target, XL
+	sts Target+1, XH */
+END_DB1:
+	ser temp1
+	mov debounce1, temp1
+
+DB2:
+	ser temp1
+	cp debounce2, temp1
+	breq End_timer1
+	ldi temp1, 3
+	cp debounce2, temp1
+	brge action2
+	inc debounce2
+	rjmp End_Timer1
+action2:
+/*	//write ')'
+
+	lds XL, Target
+	lds XH, Target+1
+	sbiw X, 20
+	//write '('
+	ldi temp1, low(0)
+	cp XL, temp1
+	ldi temp1, high(0)
+	cpc XH, temp1
+	brge under_limit
+	adiw X, 20
+	ldi temp1, 1
+	out PORTG, temp1
+	
+under_limit:
+	sts Target, XL
+	sts Target+1, XH*/  
+
+END_DB2:
+	ser temp1
+	mov debounce2, temp1
+	
+
+End_Timer1:
+	pop XH
+	pop XL
+	pop temp1
+	out SREG, temp1
+	pop temp1
+	reti
 
 // Function to insert input floor into list
 // parameters Address of queue (X), input_floor (arg1), current_floor (global), direction (b1 of r20, global)
@@ -573,7 +661,7 @@ stop_here:
 	rjmp end_main
 
 opening_sequence:
-	rcall show_floor
+	rcall LED_flash
 	set_motor_speed 0x2A
 	lds r24, Seconds		//1 Second passed?
 	lds r25, Seconds+1
@@ -591,7 +679,7 @@ doors_open_sequence:
 	set_motor_speed 0
 	lds r24, Seconds		//3 seconds passed?
 	lds r25, Seconds+1
-	mov arg1, r24			//LED_flash needs the time as an argument
+	//mov arg1, r24			//LED_flash needs the time as an argument
 	rcall LED_flash
 	cpi r24, 30
 	brge doors_open_done
@@ -603,7 +691,7 @@ doors_open_done:
 	rjmp main
 
 closing_sequence:
-	rcall show_floor
+	rcall LED_flash
 	set_motor_speed 0x8A
 	lds r24, Seconds		//1 Second passed?
 	lds r25, Seconds+1
@@ -612,6 +700,7 @@ closing_sequence:
 	rjmp main
 closing_done:
 	clear Seconds
+	rcall show_floor
 	cbr lift_status, closing
 	cbr lift_status, stopped
 	set_motor_speed 0
