@@ -388,28 +388,10 @@ INT0_END:
 
 
 EXT_INT1:
-/*    push temp2
-    in temp2, SREG
-    push temp2
-    
-    check_register_bit stopped
-    brne INT1_END
-
-    lds temp2, Debounce2
-    cpi temp2, 0
-    brne INT1_END
-
-    ldi temp2, 100
-    sts Debounce2, temp2
-
-    adiw wait_durationH:wait_durationL, 30 //not as simple as this, if closing, stopp closing, if held while waiting, extend until not pressed.
-    sts Wait_duration, wait_durationL
-    sts Wait_duration+1, wait_durationH
-
+	check_register_bit closing
+	brne INT1_END
+	clr debounce2
 INT1_END:
-    pop temp2
-    out SREG, temp2
-    pop temp2*/
     reti
 
 Timer0OVF:
@@ -470,7 +452,7 @@ Timer1OVF:
 	ser temp1
 	cp debounce1, temp1
 	breq DB2
-	ldi temp1, 1
+	ldi temp1, 3
 	cp debounce1, temp1
 	brge action1
 	inc debounce1
@@ -499,8 +481,11 @@ DB2:
 	inc debounce2
 	rjmp End_Timer1
 action2:
- 
-
+	check_register_bit closing
+	brne END_DB2
+	clear_register_bit closing
+	set_register_bit opening
+	clear Seconds
 END_DB2:
 	ser temp1
 	mov debounce2, temp1
