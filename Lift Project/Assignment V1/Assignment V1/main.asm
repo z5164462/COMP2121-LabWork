@@ -42,14 +42,16 @@ floor_array?
 
 .def zero = r3
 .def one = r4
+.def flip_flash = r5
 .def counter = r7
 .def ret1 = r10
 .def debounce1 = r11
 .def debounce2 = r12
+.def lift_status = r13 
 .def current_floor = r16
 .def requested_floor = r17
 .def input_value = r18
-.def lift_status = r19
+
 .def temp1 = r20
 .def temp2 = r21 //NOTE: temp1 and temp2 will not reliably hold the data given to them
 .def arg1 = r22
@@ -107,6 +109,23 @@ b7 = Halted?
     cpi temp1, @0
 	pop temp1
 .endmacro
+
+.macro clear_register_bit
+	push temp1
+    mov temp1, lift_status
+	cbr temp1, @0
+	mov lift_status, temp1
+	pop temp1
+.endmacro
+
+.macro set_register_bit
+	push temp1
+    mov temp1, lift_status
+	sbr temp1, @0
+	mov lift_status, temp1
+	pop temp1
+.endmacro
+
 
 //Clear word macro
 .macro clear
@@ -220,14 +239,14 @@ RESET:
     out SPH, temp1
 
 
-	cbr lift_status, stopped	;0
-	sbr lift_status, goingUp	;1
-	cbr lift_status, doorsOpen	;0
-	cbr lift_status, opening	;0
-	cbr lift_status, closing	;0
-	cbr lift_status, flashing	;0
-	cbr lift_status, emergency	;0
-	cbr lift_status, halted		;0
+	clear_register_bit stopped	;0
+	set_register_bit goingUp	;1
+	clear_register_bit doorsOpen	;0
+	clear_register_bit opening	;0
+	clear_register_bit closing	;0
+	clear_register_bit flashing	;0
+	clear_register_bit emergency	;0
+	clear_register_bit halted		;0
 
 	ldi current_floor, 1
 	
@@ -235,7 +254,12 @@ RESET:
     clr zero   			 ; zero
     clr one   				 
     inc one   				 ; one
+	clr flip_flash
 	clr ret1
+
+ 	ser temp1
+	mov debounce1, temp1
+	mov debounce2, temp1
 
 	sts Queue_len, zero
 
@@ -302,7 +326,7 @@ RESET:
     out PORTA, temp1
 
 	
-out PORTC, one
+
     do_lcd_command 0b00111000 ; 2x5x7
 
     rcall sleep_5ms
@@ -342,8 +366,8 @@ out PORTC, one
 	write 'o'
 	write 'p'
 
-	change_line 2, 13
-	write 'Q'
+/*	change_line 2, 13
+	write 'Q'*/
 
 	rcall show_floor
     sei
@@ -354,35 +378,11 @@ out PORTC, one
 
 EXT_INT0:
 
-    
-/*    check_register_bit stopped  //if not stopped, ignore close door
-    brne INT0_END
-
-    check_register_bit opening //if doors opening, ignore close door
-    breq INT0_END
-
-//in theory, we should be able to test: check_register_bit, doorsOpen / brne INT0_END
-
-    lds temp2, Debounce1
-    cpi temp2, 0
-    brne INT0_END
-
-    ldi temp2, 100   		 //set debounce counter to 100
-    sts Debounce1, temp2
-    
-    
-    clr wait_durationL   				 //set the wait duration to 0
-    clr wait_durationH
-    sts Wait_duration, wait_durationL
-    sts Wait_duration+1, wait_durationH
-
-
-
+	check_register_bit doorsOpen
+	brne INT0_END
+	clr debounce1
 
 INT0_END:
-    pop temp2
-    out SREG, temp2
-    pop temp2*/
     reti
 
 
@@ -466,33 +466,25 @@ Timer1OVF:
 	push XL
 	push XH
 
+	//out PORTC, debounce1
 	ser temp1
 	cp debounce1, temp1
 	breq DB2
-	ldi temp1, 3
+	ldi temp1, 1
 	cp debounce1, temp1
 	brge action1
 	inc debounce1
+	//lcd_set 1	
 	rjmp  DB2
 action1:
-/*	//write '('
+	//lcd_clr 1
+	check_register_bit doorsOpen
+	brne END_DB1
+	clear_register_bit doorsOpen
+	set_register_bit closing
+	clear Seconds
+	//out PORTG, one
 
-	lds XL, Target
-	lds XH, Target+1
-	adiw X, 20
-	//write ')'
-	ldi temp1, low(100)
-	cp temp1, XL
-	ldi temp1, high(100)
-	cpc temp1, XH
-	brge over_limit
-	sbiw X, 20
-	ldi temp1, 2
-	out PORTG, temp1
-	
-over_limit:
-	sts Target, XL
-	sts Target+1, XH */
 END_DB1:
 	ser temp1
 	mov debounce1, temp1
@@ -507,24 +499,7 @@ DB2:
 	inc debounce2
 	rjmp End_Timer1
 action2:
-/*	//write ')'
-
-	lds XL, Target
-	lds XH, Target+1
-	sbiw X, 20
-	//write '('
-	ldi temp1, low(0)
-	cp XL, temp1
-	ldi temp1, high(0)
-	cpc XH, temp1
-	brge under_limit
-	adiw X, 20
-	ldi temp1, 1
-	out PORTG, temp1
-	
-under_limit:
-	sts Target, XL
-	sts Target+1, XH*/  
+ 
 
 END_DB2:
 	ser temp1
@@ -562,7 +537,10 @@ main:
 	mov arg1, requested_floor
 	rcall convert_to_ascii
 	change_line 2, 14
-	lds arg1, Queue_len
+	lds arg1, Seconds
+	lsr arg1
+	lsr arg1
+	lsr arg1
 	rcall convert_to_ascii
 	//display current_floor and requested_floor on LCD
 	//requested floor = 0 in Reset (TODO)
@@ -589,7 +567,9 @@ main:
 
 // ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR \/
 read_queue:
-
+	rcall show_floor
+/*	ldi temp1, 0
+	out PORTG, temp1*/
 	
 // ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR /\
 
@@ -604,8 +584,8 @@ read_queue:
 	cp current_floor, requested_floor	//on correct floor?
 	brne check_direction
 				
-	sbr lift_status, stopped			//first detection of requested_floor
-	sbr lift_status, opening
+	set_register_bit stopped			//first detection of requested_floor
+	set_register_bit opening
 	rjmp stop_here
 // ---------------------------------------- READING THE QUEUE /\
 to_main:
@@ -616,10 +596,10 @@ check_direction:
 	brge direction_down
 	
 direction_up:
-	sbr lift_status, goingUp
+	set_register_bit goingUp
 	rjmp moving
 direction_down:
-	cbr lift_status, goingUp
+	clear_register_bit goingUp
 	rjmp moving
 
 moving:
@@ -661,6 +641,8 @@ stop_here:
 	rjmp end_main
 
 opening_sequence:
+/*	ldi temp1, 1
+	out PORTG, temp1*/
 	rcall LED_flash
 	set_motor_speed 0x2A
 	lds r24, Seconds		//1 Second passed?
@@ -670,27 +652,30 @@ opening_sequence:
 	rjmp main
 opening_done:
 	clear Seconds
-	cbr lift_status, opening
-	sbr lift_status, doorsOpen
+	clear_register_bit opening
+	set_register_bit doorsOpen
 	rjmp main
 
 doors_open_sequence:
-		
+/*	ldi temp1, 2
+	out PORTG, temp1*/	
 	set_motor_speed 0
 	lds r24, Seconds		//3 seconds passed?
 	lds r25, Seconds+1
 	//mov arg1, r24			//LED_flash needs the time as an argument
 	rcall LED_flash
-	cpi r24, 30
+	cpi r24, 50
 	brge doors_open_done
 	rjmp main
 doors_open_done:
 	clear Seconds
-	cbr lift_status, doorsOpen
-	sbr lift_status, closing	
+	clear_register_bit doorsOpen
+	set_register_bit closing	
 	rjmp main
 
 closing_sequence:
+/*	ldi temp1, 3
+	out PORTG, temp1*/
 	rcall LED_flash
 	set_motor_speed 0x8A
 	lds r24, Seconds		//1 Second passed?
@@ -700,9 +685,10 @@ closing_sequence:
 	rjmp main
 closing_done:
 	clear Seconds
-	rcall show_floor
-	cbr lift_status, closing
-	cbr lift_status, stopped
+	//out PORTG, zero //bug testing board
+
+	clear_register_bit closing
+	clear_register_bit stopped
 	set_motor_speed 0
 	rcall shuffle_queue
 	rjmp main
@@ -827,7 +813,7 @@ lcd_wait_loop:
     pop r16
     ret
 
-.equ F_CPU = 120000		//edited from 16000000
+.equ F_CPU = 160000		//edited from 16000000
 .equ DELAY_1MS = F_CPU / 4 / 1000 - 4
 ; 4 cycles per iteration - setup/call-return overhead
 
@@ -1188,14 +1174,14 @@ rjmp flashFalse
 
 flashTrue:
     rcall show_floor
-    cbr lift_status, flashing
+    clear_register_bit flashing
     rjmp end_flash_LED
 flashFalse:
     push current_floor
     dec current_floor
     rcall show_floor
     pop current_floor
-    sbr lift_status, flashing
+    set_register_bit flashing
 
 end_flash_LED:
 pop temp2
@@ -1240,12 +1226,12 @@ LED_flash:
 
 LED_up:
 	rcall show_floor
-	cbr lift_status, flashing
+	clear_register_bit flashing
 	rjmp LED_END
 LED_down:
 	dec current_floor
 	rcall show_floor
-	sbr lift_status, flashing
+	set_register_bit flashing
 
 LED_end:
 	pop current_floor
