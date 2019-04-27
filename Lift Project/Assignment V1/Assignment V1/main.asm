@@ -49,7 +49,8 @@ floor_array?
 .def ret1 = r10
 .def debounce1 = r11
 .def debounce2 = r12
-.def lift_status = r13 
+.def lift_status = r13
+.def old_floor = r14 
 .def current_floor = r16
 .def requested_floor = r17
 .def input_value = r18
@@ -98,8 +99,7 @@ b7 = Held?
 .equ wait_speed = 1
 
 
-.def wait_durationL = r28    ;YL
-.def wait_durationH = r29    ;YH
+
 
 
 //Flag checking register  usage check_register_bit stopped
@@ -587,7 +587,10 @@ main:
 
 /*	if input_value == *
 		emergency func*/
-
+	cpi input_value, '*'
+	brne add_to_queue
+	rcall emergency_func
+add_to_queue:
 	rcall insert_request
 	
 // ---------------------------------------- SCANNING THE KEYPAD	/\
@@ -748,21 +751,29 @@ end_main:
 
 
 
-/*emergency_func:
+emergency_func:
 
 	push temp1
 	
 	in temp1, SREG
 	push temp1
 	
+	lds temp1, Count
+	push temp1
+	
+	lds temp1, Count+1
+	push temp1
+
 	lds temp1, Seconds
 	push temp1
 	
 	lds temp1, Seconds+1
 	push temp1
 	
-	push r14
+	push old_floor
 	push current_floor
+	push r24
+	push r25	
 
 	clear_disp
 	clear Seconds
@@ -785,18 +796,17 @@ end_main:
 	write '0'
 	write '0'
 
-	lcd_set 2
 
-	mov r14, current_floor	   // for restoring original floor
+	mov old_floor, current_floor	   // for restoring original floor
 
 drop_floor_loop:
+	rcall Strobe_flash
 	rcall show_floor
 	cpi current_floor, 1
 	breq drop_floor_end
 	lds r24, Seconds
 	lds r25, Seconds+1
 	mov arg1, r24
-	rcall Strobe_flash
 	cpi r24, 20
 	brlt drop_floor_loop
 	dec current_floor
@@ -804,11 +814,162 @@ drop_floor_loop:
 	rjmp drop_floor_loop
 drop_floor_end:
 
-emergency_open:*/
+emergency_opening:
+	rcall strobe_flash
+	rcall LED_flash
+	rcall scan
+	ldi temp1, '*'
+	cp ret1, temp1
+	brne continue_e_opening
+	clear_register_bit emergency //emergency cancelled
+continue_e_opening:
+
+	set_motor_speed 0x2A
+	lds r24, Seconds		//1 Second passed?
+	lds r25, Seconds+1
+	cpi r24, 10
+	brge emergency_opening_done
+	rjmp emergency_opening
+emergency_opening_done:
+	clear Seconds
+
+
+emergency_doors_open:
+	rcall strobe_flash
+	rcall LED_flash
+	rcall scan
+	ldi temp1, '*'
+	cp ret1, temp1
+	brne continue_e_doors_open
+	clear_register_bit emergency
+	clear Seconds
+	rjmp emergency_closing
+continue_e_doors_open:
+	set_motor_speed 0
+	lds r24, Seconds		//3 seconds passed?
+	lds r25, Seconds+1
+	cpi r24, 30
+	brge emergency_doors_open_done
+	rjmp emergency_doors_open
+emergency_doors_open_done:
+	clear Seconds
+
+emergency_closing:
+	rcall strobe_flash
+	rcall LED_flash
+	rcall scan
+	ldi temp1, '*'
+	cp ret1, temp1
+	brne continue_e_closing
+	clear_register_bit emergency
+continue_e_closing:
+	set_motor_speed 0x8A
+	lds r24, Seconds		//1 Second passed?
+	lds r25, Seconds+1
+	cpi r24, 10				
+	brge emergency_closing_done
+	rjmp emergency_closing
+emergency_closing_done:
+	clear Seconds
+
+emergency_halt_loop:
+	rcall strobe_flash
+	rcall show_floor
+	rcall scan
+	ldi temp1, '*'
+	cp ret1, temp1	
+	brne continue_e_halt
+	clear_register_bit emergency
+continue_e_halt:	
+	check_register_bit emergency
+	breq emergency_halt_loop
+	clear Seconds
+
+restore_floor:
+	rcall show_floor
+	cp current_floor, old_floor
+	breq restore_floor_end
+	lds r24, Seconds
+	lds r25, Seconds+1
+	cpi r24, 20
+	brlt restore_floor
+	inc current_floor
+	clear Seconds
+	rjmp restore_floor
+
+restore_floor_end:
+	clear_disp
+	write 'C'
+	write 'u'
+	write 'r'
+	write 'r'
+	write 'e'
+	write 'n'
+	write 't'
+	write ' '
+	write 'f'
+	write 'l'
+	write 'o'
+	write 'o'
+	write 'r'
+	lcd_clr 1
+
+	change_line 2, 0
+	
+	write 'N'
+	write 'e'
+	write 'x'
+	write 't'
+	write ' '
+	write 's'
+	write 't'
+	write 'o'
+	write 'p'
+
+	change_line 2, 13
+	write 'S'
+	
+	pop r25
+	pop r24
+	pop current_floor
+	pop old_floor
+
+	pop temp1
+	sts Seconds+1, temp1
+
+	pop temp1
+	sts Seconds, temp1
+	
+	pop temp1
+	sts Count+1, temp1
+ 	
+	pop temp1
+	sts Count, temp1
+
+	pop temp1
+	out SREG, temp1
+
+	pop temp1
+	
+	ret
+
+	
 
 
 	
+
+
+
+
 	
+
+
+	
+
+
+	
+
+
 
 // ---------------------------------------- EMERGENCY FUNCTION /\
 
@@ -1289,16 +1450,17 @@ Strobe_flash:	//Reads in the seconds value in X
 	push temp1
 	in temp1, SREG
 	push temp1
-	push arg1
-    ror arg1		//rotates the time into the carry
-    brcs strobe_on	//if old LSB was 1, i.e. odd turn strobe on
-    brcc strobe_off	//if old LSB was 0, i.e even turn strobe off
+	cp flip_flash, one
+	breq strobe_on	
+	rjmp strobe_off
 
 strobe_on:
     lcd_set 1		//set PORTA bit to 1
+	dec flip_flash
 	rjmp strobe_end
 strobe_off:
     lcd_clr 1
+	inc flip_flash
 	rjmp strobe_end
 Strobe_end:
     pop arg1
@@ -1384,8 +1546,7 @@ check_bottom_row:
 	jmp scan_end
 
 asterisk:
-	;rcall emergency_func
-	rjmp scan_end
+	ldi arg1, '*'
 
 	
 end_show:
