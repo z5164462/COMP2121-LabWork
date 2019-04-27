@@ -374,6 +374,9 @@ RESET:
 
 	rcall show_floor
     sei
+	
+
+
     jmp main
 
 
@@ -795,10 +798,10 @@ emergency_func:
 	write '0'
 	write '0'
 	write '0'
-
+	lcd_set 1
 
 	mov old_floor, current_floor	   // for restoring original floor
-
+	
 drop_floor_loop:
 	rcall Strobe_flash
 	rcall show_floor
@@ -863,7 +866,7 @@ emergency_closing:
 	brne continue_e_closing
 	clear_register_bit emergency
 continue_e_closing:
-	set_motor_speed 0x8A
+	set_motor_speed 0x4A
 	lds r24, Seconds		//1 Second passed?
 	lds r25, Seconds+1
 	cpi r24, 10				
@@ -871,6 +874,7 @@ continue_e_closing:
 	rjmp emergency_closing
 emergency_closing_done:
 	clear Seconds
+	set_motor_speed 0
 
 emergency_halt_loop:
 	rcall strobe_flash
@@ -1459,11 +1463,10 @@ strobe_on:
 	dec flip_flash
 	rjmp strobe_end
 strobe_off:
-    lcd_clr 1
+    lcd_clr 0
 	inc flip_flash
 	rjmp strobe_end
 Strobe_end:
-    pop arg1
 	pop temp1
 	out SREG, temp1
 	pop temp1
