@@ -9,6 +9,8 @@
 
 The Emergency call cannot be cancelled until the lift reaches the first floor
 and has completed the opening and closing routinues
+
+Any button press length is counted as a hold for the hold open doors duration
 */
 
 
@@ -67,16 +69,16 @@ b3 = Doors Opening?
 b4 = Doors Closing?
 b5 = Flash on?
 b6 = Emergency?
-b7 = Halted?
+b7 = Held?
 */
-.equ stopped =   		0b00000001    // is floor stopped?
+.equ stopped =   		0b00000001    // is lift stopped?
 .equ goingUp =   		0b00000010    // is lift going up?
 .equ doorsOpen =		0b00000100    // are the doors open?
 .equ opening =   		0b00001000    // are the doors opening?
 .equ closing =   		0b00010000    // are the doors closing? if no to open, opening and closing, they closed
 .equ flashing =   		0b00100000  // is the LED bar flashing
 .equ emergency =		0b01000000    // is there an emergency
-.equ halted =   		0b10000000    // is the lift stopped
+.equ held =   			0b10000000    // is the lift held
 
 //LCD interface constants
 .equ PORTLDIR = 0xF0   		 ; 0xF0 = 0b11110000 -> Setting PORTA 7:4 as output and 3:0 as input
@@ -246,7 +248,7 @@ RESET:
 	clear_register_bit closing	;0
 	clear_register_bit flashing	;0
 	clear_register_bit emergency	;0
-	clear_register_bit halted		;0
+	clear_register_bit held		;0
 
 	ldi current_floor, 1
 	
@@ -338,7 +340,7 @@ RESET:
     do_lcd_command 0b00000001 ; clear display
     do_lcd_command 0b00000110 ; increment, no display shift
     do_lcd_command 0b00001110 ; Cursor on, bar, no blink
-
+	lcd_set 1
 	clear_disp
 	write 'C'
 	write 'u'
@@ -353,6 +355,7 @@ RESET:
 	write 'o'
 	write 'o'
 	write 'r'
+	lcd_clr 1
 
 	change_line 2, 0
 	
@@ -366,8 +369,8 @@ RESET:
 	write 'o'
 	write 'p'
 
-/*	change_line 2, 13
-	write 'Q'*/
+	change_line 2, 13
+	write 'S'
 
 	rcall show_floor
     sei
@@ -388,10 +391,28 @@ INT0_END:
 
 
 EXT_INT1:
+	
 	check_register_bit closing
-	brne INT1_END
+	breq RE_OPEN
+	check_register_bit doorsOpen
+	breq HELD_OPEN
+	check_register_bit held
+	breq LET_CLOSE
+	rjmp INT1_END
+RE_OPEN:
+
 	clr debounce2
+	rjmp INT1_END
+HELD_OPEN:
+
+	clr debounce2
+	rjmp INT1_END
+LET_CLOSE:
+
+	clr debounce2
+	rjmp INT1_END
 INT1_END:
+
     reti
 
 Timer0OVF:
@@ -474,7 +495,9 @@ END_DB1:
 DB2:
 	ser temp1
 	cp debounce2, temp1
-	breq End_timer1
+	brne valid_interrupt2
+	rjmp End_timer1
+valid_interrupt2:
 	ldi temp1, 3
 	cp debounce2, temp1
 	brge action2
@@ -482,11 +505,36 @@ DB2:
 	rjmp End_Timer1
 action2:
 	check_register_bit closing
-	brne END_DB2
+	breq RE_OPEN_ACTION
+	check_register_bit held
+	breq LET_CLOSE_ACTION
+	check_register_bit doorsOpen
+	breq HELD_OPEN_ACTION
+	rjmp END_DB2
+RE_OPEN_ACTION:
 	clear_register_bit closing
 	set_register_bit opening
 	clear Seconds
+	rjmp END_DB2
+HELD_OPEN_ACTION:
+	//lcd_set 1
+	//out PORTG, one
+	set_register_bit held
+	ldi temp1, 0b00101110    ;falling edges for interrupts 2 and 0  RISING edge for interrupt 1
+    sts EICRA, temp1
+	rjmp END_DB2 	
+LET_CLOSE_ACTION:
+	//lcd_set 1
+	clear_register_bit held
+	clear_register_bit doorsOpen
+	out PORTG, one
+	set_register_bit closing
+    ldi temp1, 0b00101010    ;falling edges for interrupts 2, 1 and 0
+    sts EICRA, temp1 
+	clear Seconds
+
 END_DB2:
+	lcd_clr 1
 	ser temp1
 	mov debounce2, temp1
 	
@@ -527,6 +575,8 @@ main:
 	lsr arg1
 	lsr arg1
 	rcall convert_to_ascii
+/*	lds arg1, Queue_len
+	rcall convert_to_ascii*/
 	//display current_floor and requested_floor on LCD
 	//requested floor = 0 in Reset (TODO)
 
@@ -622,7 +672,7 @@ stop_here:
 	check_register_bit doorsOpen
 	breq doors_open_sequence
 	check_register_bit closing
-	breq closing_sequence
+	breq to_closing_sequence
 	rjmp end_main
 
 opening_sequence:
@@ -641,6 +691,11 @@ opening_done:
 	set_register_bit doorsOpen
 	rjmp main
 
+to_closing_sequence:
+	jmp closing_sequence
+to_main2:
+	jmp main
+
 doors_open_sequence:
 /*	ldi temp1, 2
 	out PORTG, temp1*/	
@@ -649,7 +704,9 @@ doors_open_sequence:
 	lds r25, Seconds+1
 	//mov arg1, r24			//LED_flash needs the time as an argument
 	rcall LED_flash
-	cpi r24, 50
+	check_register_bit held
+	breq to_main2
+	cpi r24, 30
 	brge doors_open_done
 	rjmp main
 doors_open_done:
