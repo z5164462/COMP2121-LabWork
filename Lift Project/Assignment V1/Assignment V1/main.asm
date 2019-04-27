@@ -460,11 +460,11 @@ End_I:
 
 //MAIN:
 main:
-	lds r24, Seconds   		 ; increment seconds every 1/10 of second
+/*	lds r24, Seconds   		 ; increment seconds every 1/10 of second
     lds r25, Seconds+1		 ;FOR DEBUGGING ONLY
     adiw r25:r24, 5
     sts Seconds, r24
-    sts Seconds+1, r25
+    sts Seconds+1, r25*/
 // ---------------------------------------- SCANNING THE KEYPAD \/
 
 	change_line 1, 14
@@ -749,8 +749,8 @@ sleep_1ms:
     ldi r24, low(DELAY_1MS)
 
 delayloop_1ms:
-    ;sbiw r25:r24, 1	 //DEBUGGING
-    ;brne delayloop_1ms
+    sbiw r25:r24, 1	 //DEBUGGING
+    brne delayloop_1ms
     pop r25
     pop r24
     ret
@@ -1253,8 +1253,8 @@ end_show:
 
 
 scan_end:
-	ldi temp1, 3		//ONLY FOR DEBUGGING
-	mov ret1, temp1
+/*	ldi temp1, 3		//ONLY FOR DEBUGGING
+	mov ret1, temp1*/
 /*	cpse ret1, zero
 	out PORTG, one*/
 	pop arg2
@@ -1267,7 +1267,7 @@ scan_end:
 	pop r16
 
 	ret
-
+																		
 //FUNCTION shuffle_queue
 
 shuffle_queue:
@@ -1299,7 +1299,7 @@ shuffle_loop:
 	mov arg1, arg2
 	inc counter
 	sbiw Z, 1
-	rjmp shuffle_loop:
+	rjmp shuffle_loop
 shuffle_loop_end:
 	lds temp1, Queue_len
 	dec temp1
