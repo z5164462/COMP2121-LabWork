@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Sat Apr 27 11:00:17 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Sat Apr 27 11:37:00 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1429,7 +1429,7 @@ CSEG line_two@change_line@4464 000001a7
 CSEG end_cl@change_line@4464 000001ac
 CSEG line_two@change_line@4495 000001bc
 CSEG end_cl@change_line@4495 000001c1
-CSEG scan         00000396
+CSEG scan         00000399
 CSEG insert_request 0000029f
 CSEG read_queue   000001d0
 CSEG stop_here    000001ff
@@ -1448,10 +1448,10 @@ CSEG opening_done 00000222
 CSEG LED_flash    00000373
 CSEG doors_open_done 0000023a
 CSEG closing_done 00000251
-CSEG shuffle_queue 000003d9
+CSEG shuffle_queue 000003dc
 CSEG lcd_wait_loop 00000279
-EQU  F_CPU        00b71b00
-EQU  DELAY_1MS    00000bb4
+EQU  F_CPU        0001d4c0
+EQU  DELAY_1MS    0000001a
 CSEG delayloop_1ms 00000289
 CSEG pause        00000294
 CSEG under_11     000002b6
@@ -1480,21 +1480,21 @@ CSEG loop_start   00000346
 CSEG end_divide   00000350
 CSEG end_loop     0000034f
 CSEG check_zero   0000035c
-CSEG LED_up       0000037b
-CSEG LED_down     0000037d
-CSEG LED_end      00000380
-CSEG Strobe_flash 00000386
-CSEG strobe_on    0000038d
-CSEG strobe_off   0000038f
-CSEG strobe_end   00000391
-CSEG colloop      000003a1
-CSEG scan_end     000003d0
-CSEG delay        000003a6
-CSEG nextcol      000003b8
-CSEG rowloop      000003af
-CSEG show         000003bc
-CSEG check_bottom_row 000003c7
-CSEG end_show     000003cf
-CSEG asterisk     000003ce
-CSEG shuffle_loop 000003e9
-CSEG shuffle_loop_end 000003f3
+CSEG LED_up       0000037e
+CSEG LED_down     00000381
+CSEG LED_END      00000384
+CSEG Strobe_flash 00000389
+CSEG strobe_on    00000390
+CSEG strobe_off   00000392
+CSEG strobe_end   00000394
+CSEG colloop      000003a4
+CSEG scan_end     000003d3
+CSEG delay        000003a9
+CSEG nextcol      000003bb
+CSEG rowloop      000003b2
+CSEG show         000003bf
+CSEG check_bottom_row 000003ca
+CSEG end_show     000003d2
+CSEG asterisk     000003d1
+CSEG shuffle_loop 000003ec
+CSEG shuffle_loop_end 000003f6

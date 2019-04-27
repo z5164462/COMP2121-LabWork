@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Sat Apr 27 11:00:17 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Sat Apr 27 11:37:00 2019
 
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm(18): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
@@ -2561,24 +2561,24 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
 0001b3 3042
 0001b4 f039
 0001b5 e850
-0001b6 605f
+0001b6 605e
 0001b7 2f45
 0001b8 d0ab
 0001b9 d0ba
 0001ba 940c 01c1
 0001bc ec50
-0001bd 605f
+0001bd 605e
 0001be 2f45
 0001bf d0a4
 0001c0 d0b3
 0001c1 915f
-0001c2 914f                      	change_line 2, 15
+0001c2 914f                      	change_line 2, 14
 0001c3 9160 0200                 	lds arg1, Queue_len
 0001c5 d164                      	rcall convert_to_ascii
                                  	//display current_floor and requested_floor on LCD
                                  	//requested floor = 0 in Reset (TODO)
                                  
-0001c6 d1cf                      	rcall scan				//reading the queue
+0001c6 d1d2                      	rcall scan				//reading the queue
                                  /*	mov arg1, ret1 
                                  	rcall convert_to_ascii*/ //DEBUGGING
 0001c7 2d2a                      	mov input_value, ret1
@@ -2758,7 +2758,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
 00025b 2744
 00025c 9340 009b
 00025e 914f                      	set_motor_speed 0
-00025f d179                      	rcall shuffle_queue
+00025f d17c                      	rcall shuffle_queue
 000260 cf25                      	rjmp main
                                  // ---------------------------------------- STOPPING AT THE FLOOR /\
                                  
@@ -2881,15 +2881,15 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
 000283 910f                          pop r16
 000284 9508                          ret
                                  
-                                 .equ F_CPU = 12000000
+                                 .equ F_CPU = 120000
                                  .equ DELAY_1MS = F_CPU / 4 / 1000 - 4
                                  ; 4 cycles per iteration - setup/call-return overhead
                                  
                                  sleep_1ms:
 000285 938f                          push r24
 000286 939f                          push r25
-000287 e09b                          ldi r25, high(DELAY_1MS)
-000288 eb84                          ldi r24, low(DELAY_1MS)
+000287 e090                          ldi r25, high(DELAY_1MS)
+000288 e18a                          ldi r24, low(DELAY_1MS)
                                  
                                  delayloop_1ms:
 000289 9701                          sbiw r25:r24, 1	 //DEBUGGING
@@ -3269,142 +3269,170 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  ret*/
                                  
                                  
-                                 LED_flash:	//Reads in the seconds value in arg1
+                                 /*LED_flash:	//Reads in the seconds value in arg1
+                                 	push temp1
+                                 	in temp1, SREG
+                                 	push temp1
+                                 	push current_floor
+                                     push arg1
+                                 	ror arg1 //rotates the time into the carry
+                                     brcs LED_up	//if old LSB was 1, i.e. odd turn strobe on
+                                     brcc LED_down	//if old LSB was 0, i.e even turn strobe off
+                                 
+                                 LED_up:
+                                     rcall show_floor		//set PORTA bit to 1
+                                 	rjmp LED_end
+                                 LED_down:
+                                     dec current_floor
+                                 	rcall show_floor
+                                 	rjmp LED_end
+                                 LED_end:
+                                     pop arg1
+                                 	pop current_floor
+                                 	pop temp1
+                                 	out SREG, temp1
+                                 	pop temp1
+                                 	ret*/
+                                 
+                                 LED_flash:
 000373 934f                      	push temp1
 000374 b74f                      	in temp1, SREG
 000375 934f                      	push temp1
 000376 930f                      	push current_floor
-000377 936f                          push arg1
-000378 9567                      	ror arg1 //rotates the time into the carry
-000379 f008                          brcs LED_up	//if old LSB was 1, i.e. odd turn strobe on
-00037a f410                          brcc LED_down	//if old LSB was 0, i.e even turn strobe off
+                                 	
+000377 934f
+000378 2f43
+000379 7240
+00037a 3240
+00037b 914f                      	check_register_bit flashing
+00037c f009                      	breq LED_up
+00037d c003                      	rjmp LED_down
                                  
                                  LED_up:
-00037b df96                          rcall show_floor		//set PORTA bit to 1
-00037c c003                      	rjmp LED_end
-                                 LED_down:
-00037d 950a                          dec current_floor
 00037e df93                      	rcall show_floor
-00037f c000                      	rjmp LED_end
+00037f 7d3f                      	cbr lift_status, flashing
+000380 c003                      	rjmp LED_END
+                                 LED_down:
+000381 950a                      	dec current_floor
+000382 df8f                      	rcall show_floor
+000383 6230                      	sbr lift_status, flashing
+                                 
                                  LED_end:
-000380 916f                          pop arg1
-000381 910f                      	pop current_floor
-000382 914f                      	pop temp1
-000383 bf4f                      	out SREG, temp1
-000384 914f                      	pop temp1
-000385 9508                      	ret
-                                 
-                                 
+000384 910f                      	pop current_floor
+000385 914f                      	pop temp1
+000386 bf4f                      	out SREG, temp1
+000387 914f                      	pop temp1
+000388 9508                      	ret
                                  
                                  
                                  
                                  //STROBE_FLASH
                                  Strobe_flash:	//Reads in the seconds value in X
-000386 934f                      	push temp1
-000387 b74f                      	in temp1, SREG
-000388 934f                      	push temp1
-000389 936f                      	push arg1
-00038a 9567                          ror arg1		//rotates the time into the carry
-00038b f008                          brcs strobe_on	//if old LSB was 1, i.e. odd turn strobe on
-00038c f410                          brcc strobe_off	//if old LSB was 0, i.e even turn strobe off
+000389 934f                      	push temp1
+00038a b74f                      	in temp1, SREG
+00038b 934f                      	push temp1
+00038c 936f                      	push arg1
+00038d 9567                          ror arg1		//rotates the time into the carry
+00038e f008                          brcs strobe_on	//if old LSB was 1, i.e. odd turn strobe on
+00038f f410                          brcc strobe_off	//if old LSB was 0, i.e even turn strobe off
                                  
                                  strobe_on:
-00038d 9a11                          lcd_set 1		//set PORTA bit to 1
-00038e c002                      	rjmp strobe_end
+000390 9a11                          lcd_set 1		//set PORTA bit to 1
+000391 c002                      	rjmp strobe_end
                                  strobe_off:
-00038f 9811                          lcd_clr 1
-000390 c000                      	rjmp strobe_end
+000392 9811                          lcd_clr 1
+000393 c000                      	rjmp strobe_end
                                  Strobe_end:
-000391 916f                          pop arg1
-000392 914f                      	pop temp1
-000393 bf4f                      	out SREG, temp1
-000394 914f                      	pop temp1
-000395 9508                      	ret
+000394 916f                          pop arg1
+000395 914f                      	pop temp1
+000396 bf4f                      	out SREG, temp1
+000397 914f                      	pop temp1
+000398 9508                      	ret
                                  	
                                  //SCAN				//return value in arg1
                                  scan:
-000396 930f                          push r16 // row
-000397 931f                          push r17 // col
-000398 932f                          push r18 // rmask // r18 will be used to return the input_value
-000399 933f                          push r19 // cmask
-00039a 934f                          push temp1
-00039b 935f                          push temp2 
-00039c 936f                          push arg1 // floor
-00039d 937f                          push arg2 // floor2
-00039e ee3f                          ldi r19, INITCOLMASK   	 ; load column mask to scan a column
-00039f 2711                          clr r17
+000399 930f                          push r16 // row
+00039a 931f                          push r17 // col
+00039b 932f                          push r18 // rmask // r18 will be used to return the input_value
+00039c 933f                          push r19 // cmask
+00039d 934f                          push temp1
+00039e 935f                          push temp2 
+00039f 936f                          push arg1 // floor
+0003a0 937f                          push arg2 // floor2
+0003a1 ee3f                          ldi r19, INITCOLMASK   	 ; load column mask to scan a column
+0003a2 2711                          clr r17
                                  
                                  
-0003a0 24aa                      	clr ret1
+0003a3 24aa                      	clr ret1
                                  colloop:
-0003a1 3014                          cpi r17, 4   				 ; check if all columns scanned
-0003a2 f169                          breq scan_end   		 ; restart scan if all cols scanned
-0003a3 9330 010b                     sts PORTL, r19   		 ; scan a column (sts used instead of out since PORTL is in extended I/O space)
-0003a5 ef4f                          ldi temp1, 0xFF   			 ; slow down scan operation (???? WHY ????)
+0003a4 3014                          cpi r17, 4   				 ; check if all columns scanned
+0003a5 f169                          breq scan_end   		 ; restart scan if all cols scanned
+0003a6 9330 010b                     sts PORTL, r19   		 ; scan a column (sts used instead of out since PORTL is in extended I/O space)
+0003a8 ef4f                          ldi temp1, 0xFF   			 ; slow down scan operation (???? WHY ????)
                                  
                                  delay:
-0003a6 954a                          dec temp1
-0003a7 f7f1                          brne delay
+0003a9 954a                          dec temp1
+0003aa f7f1                          brne delay
                                  
-0003a8 9160 0109                     lds arg1, PINL   		;load current status of PORTL pins(lds must be used instead of in)
-0003aa 706f                          andi arg1, ROWMASK   		 ; and the PINL register with row mask
-0003ab 306f                          cpi arg1, 0xF   			 ; check if any row low
-0003ac f059                          breq nextcol   			 ; if temp is all 1s (i.e 0xF), then there are now lows
+0003ab 9160 0109                     lds arg1, PINL   		;load current status of PORTL pins(lds must be used instead of in)
+0003ad 706f                          andi arg1, ROWMASK   		 ; and the PINL register with row mask
+0003ae 306f                          cpi arg1, 0xF   			 ; check if any row low
+0003af f059                          breq nextcol   			 ; if temp is all 1s (i.e 0xF), then there are now lows
                                     							 ; if there is a low, find which row it is
-0003ad e021                          ldi r18, INITROWMASK   	 ; load Row mask
-0003ae 2700                          clr r16
+0003b0 e021                          ldi r18, INITROWMASK   	 ; load Row mask
+0003b1 2700                          clr r16
                                  
                                  rowloop:
-0003af 3004                          cpi r16, 4   			; if all rows scanned, jump to next column
-0003b0 f039                          breq nextcol
-0003b1 2f56                          mov temp2, arg1  			 
-0003b2 2352                          and temp2, r18   		 ; mask the input with row mask
-0003b3 f041                          breq show   				; if the bit is clear, a key has been pressed
+0003b2 3004                          cpi r16, 4   			; if all rows scanned, jump to next column
+0003b3 f039                          breq nextcol
+0003b4 2f56                          mov temp2, arg1  			 
+0003b5 2352                          and temp2, r18   		 ; mask the input with row mask
+0003b6 f041                          breq show   				; if the bit is clear, a key has been pressed
                                     							 ; eg if a key in row 1 is pressed, temp2 = XXXX1101
                                     							 ; rmask should equal 00000010
                                     							 ; when AND is used, result is 00000000 -> button pressed
-0003b4 9503                          inc r16   				 ; move to next row
-0003b5 0f22                          lsl r18   				 ; left shift mask to check next row
-0003b6 940c 03af                     jmp rowloop
+0003b7 9503                          inc r16   				 ; move to next row
+0003b8 0f22                          lsl r18   				 ; left shift mask to check next row
+0003b9 940c 03b2                     jmp rowloop
                                  
                                  nextcol:   					 ; jump to next column when row scan over
-0003b8 0f33                          lsl r19   				 ; left shift mask to check next col
-0003b9 9513                          inc r17
-0003ba 940c 03a1                     jmp colloop
+0003bb 0f33                          lsl r19   				 ; left shift mask to check next col
+0003bc 9513                          inc r17
+0003bd 940c 03a4                     jmp colloop
                                  
                                  show:
                                  	
-0003bc 3013                          cpi r17, 3   			; if column = 3, a key in column 3 is pressed, which is a 									letter key
-0003bd f091                          breq scan_end   				 ; we dont need to deal with this for this lab, so go to n_a
+0003bf 3013                          cpi r17, 3   			; if column = 3, a key in column 3 is pressed, which is a 									letter key
+0003c0 f091                          breq scan_end   				 ; we dont need to deal with this for this lab, so go to n_a
                                  
-0003be 3003                          cpi r16, 3   				 ; if row = 3, a key in row 3 has been pressed, which is any 								special character or 0
-0003bf f039                          breq check_bottom_row				 ; zero is the only key we are worried about, so go to check_zero
+0003c1 3003                          cpi r16, 3   				 ; if row = 3, a key in row 3 has been pressed, which is any 								special character or 0
+0003c2 f039                          breq check_bottom_row				 ; zero is the only key we are worried about, so go to check_zero
                                  	
-0003c0 2f60                      	mov arg1, r16				; move row to floor
-0003c1 0f66                      	lsl arg1					; multiply by 2
-0003c2 0f60                      	add arg1, r16				; add row again, to multiply row by 3
-0003c3 0f61                      	add arg1, r17				; add col
-0003c4 5f6f                      	subi arg1, -1				; add 1
-0003c5 940c 03cf                 	jmp end_show
+0003c3 2f60                      	mov arg1, r16				; move row to floor
+0003c4 0f66                      	lsl arg1					; multiply by 2
+0003c5 0f60                      	add arg1, r16				; add row again, to multiply row by 3
+0003c6 0f61                      	add arg1, r17				; add col
+0003c7 5f6f                      	subi arg1, -1				; add 1
+0003c8 940c 03d2                 	jmp end_show
                                  
                                  check_bottom_row:
-0003c7 3010                      	cpi r17, 0
-0003c8 f029                      	breq asterisk
+0003ca 3010                      	cpi r17, 0
+0003cb f029                      	breq asterisk
                                  
-0003c9 3011                      	cpi r17, 1
-0003ca e06a                      	ldi arg1, 10
-0003cb f019                      	breq end_show
+0003cc 3011                      	cpi r17, 1
+0003cd e06a                      	ldi arg1, 10
+0003ce f019                      	breq end_show
                                  
-0003cc 940c 03d0                 	jmp scan_end
+0003cf 940c 03d3                 	jmp scan_end
                                  
                                  asterisk:
                                  	;rcall emergency_func
-0003ce c001                      	rjmp scan_end
+0003d1 c001                      	rjmp scan_end
                                  
                                  	
                                  end_show:
                                  
-0003cf 2ea6                      	mov ret1, arg1
+0003d2 2ea6                      	mov ret1, arg1
                                  
                                  
                                  scan_end:
@@ -3412,64 +3440,64 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  	mov ret1, temp1*/
                                  /*	cpse ret1, zero
                                  	out PORTG, one*/
-0003d0 917f                      	pop arg2
-0003d1 916f                      	pop arg1
-0003d2 915f                      	pop temp2
-0003d3 914f                      	pop temp1
-0003d4 913f                      	pop r19
-0003d5 912f                      	pop r18
-0003d6 911f                      	pop r17
-0003d7 910f                      	pop r16
+0003d3 917f                      	pop arg2
+0003d4 916f                      	pop arg1
+0003d5 915f                      	pop temp2
+0003d6 914f                      	pop temp1
+0003d7 913f                      	pop r19
+0003d8 912f                      	pop r18
+0003d9 911f                      	pop r17
+0003da 910f                      	pop r16
                                  
-0003d8 9508                      	ret
+0003db 9508                      	ret
                                  																		
                                  //FUNCTION shuffle_queue
                                  
                                  shuffle_queue:
-0003d9 93ef                      	push ZL
-0003da 93ff                      	push ZH
-0003db 934f                      	push temp1
-0003dc 935f                      	push temp2
-0003dd 936f                      	push arg1
-0003de 937f                      	push arg2
-0003df 927f                      	push counter
+0003dc 93ef                      	push ZL
+0003dd 93ff                      	push ZH
+0003de 934f                      	push temp1
+0003df 935f                      	push temp2
+0003e0 936f                      	push arg1
+0003e1 937f                      	push arg2
+0003e2 927f                      	push counter
                                  	
-0003e0 e0e1                      	ldi ZL, low(Queue)
-0003e1 e0f2                      	ldi ZH, high(Queue)
+0003e3 e0e1                      	ldi ZL, low(Queue)
+0003e4 e0f2                      	ldi ZH, high(Queue)
                                  
-0003e2 9140 0200                 	lds temp1, Queue_len
-0003e4 0fe4                      	add ZL, temp1
-0003e5 1df3                      	adc ZH, zero
+0003e5 9140 0200                 	lds temp1, Queue_len
+0003e7 0fe4                      	add ZL, temp1
+0003e8 1df3                      	adc ZH, zero
                                  
-0003e6 9731                      	sbiw Z, 1
-0003e7 2477                      	clr counter
-0003e8 2766                      	clr arg1
+0003e9 9731                      	sbiw Z, 1
+0003ea 2477                      	clr counter
+0003eb 2766                      	clr arg1
                                  shuffle_loop:
                                  	//Z points to the end of the queue
-0003e9 9140 0200                 	lds temp1, Queue_len
-0003eb 1674                      	cp counter, temp1
-0003ec f031                      	breq shuffle_loop_end
-0003ed 8170                      	ld arg2, Z
-0003ee 8360                      	st Z, arg1
-0003ef 2f67                      	mov arg1, arg2
-0003f0 9473                      	inc counter
-0003f1 9731                      	sbiw Z, 1
-0003f2 cff6                      	rjmp shuffle_loop
+0003ec 9140 0200                 	lds temp1, Queue_len
+0003ee 1674                      	cp counter, temp1
+0003ef f031                      	breq shuffle_loop_end
+0003f0 8170                      	ld arg2, Z
+0003f1 8360                      	st Z, arg1
+0003f2 2f67                      	mov arg1, arg2
+0003f3 9473                      	inc counter
+0003f4 9731                      	sbiw Z, 1
+0003f5 cff6                      	rjmp shuffle_loop
                                  shuffle_loop_end:
-0003f3 9140 0200                 	lds temp1, Queue_len
-0003f5 954a                      	dec temp1
-0003f6 9340 0200                 	sts Queue_len, temp1
+0003f6 9140 0200                 	lds temp1, Queue_len
+0003f8 954a                      	dec temp1
+0003f9 9340 0200                 	sts Queue_len, temp1
                                  
                                  
-0003f8 907f                      	pop counter
-0003f9 917f                      	pop arg2
-0003fa 916f                      	pop arg1
-0003fb 915f                      	pop temp2
-0003fc 914f                      	pop temp1
-0003fd 91ff                      	pop ZH	
-0003fe 91ef                       	pop ZL
+0003fb 907f                      	pop counter
+0003fc 917f                      	pop arg2
+0003fd 916f                      	pop arg1
+0003fe 915f                      	pop temp2
+0003ff 914f                      	pop temp1
+000400 91ff                      	pop ZH	
+000401 91ef                       	pop ZL
                                  
-0003ff 9508                      	ret
+000402 9508                      	ret
                                  
                                  
                                  
@@ -3495,28 +3523,28 @@ counted separately from r26..r31 here.
 "ATmega2560" register use summary:
 x  :  10 y  :   0 z  :   6 r0 :   0 r1 :   0 r2 :   0 r3 :  14 r4 :   3 
 r5 :   0 r6 :   0 r7 :  28 r8 :   5 r9 :   5 r10:   6 r11:   1 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  45 r17:  20 r18:  24 r19:  38 r20: 283 
-r21:  72 r22:  47 r23:  15 r24:  28 r25:  21 r26:   9 r27:   9 r28:   4 
+r13:   0 r14:   0 r15:   0 r16:  45 r17:  20 r18:  24 r19:  41 r20: 288 
+r21:  72 r22:  44 r23:  15 r24:  28 r25:  21 r26:   9 r27:   9 r28:   4 
 r29:   4 r30:   7 r31:   7 
 Registers used: 25 out of 35 (71.4%)
 
 "ATmega2560" instruction use summary:
 .lds  :   0 .sts  :   0 adc   :   1 add   :   4 adiw  :   8 and   :   1 
-andi  :  10 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
-brcc  :   2 brcs  :   3 break :   0 breq  :  34 brge  :   5 brhc  :   0 
+andi  :  11 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
+brcc  :   1 brcs  :   2 break :   0 breq  :  35 brge  :   5 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   7 brlt  :   5 brmi  :   0 
 brne  :  10 brpl  :   0 brsh  :   0 brtc  :   0 brts  :   0 brvc  :   0 
-brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   6 cbr   :  12 
+brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   6 cbr   :  13 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :  26 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :  22 cpc   :   2 
-cpi   :  33 cpse  :   2 dec   :   4 eicall:   0 eijmp :   0 elpm  :   0 
+cpi   :  34 cpse  :   2 dec   :   4 eicall:   0 eijmp :   0 elpm  :   0 
 eor   :   0 fmul  :   0 fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 
 in    :   7 inc   :  16 jmp   :  18 ld    :   6 ldd   :   0 ldi   :  87 
-lds   :  23 lpm   :   2 lsl   :   5 lsr   :   0 mov   :  31 movw  :   2 
+lds   :  23 lpm   :   2 lsl   :   5 lsr   :   0 mov   :  32 movw  :   2 
 mul   :   0 muls  :   0 mulsu :   0 neg   :   0 nop   :   1 or    :   0 
 ori   :  13 out   :  28 pop   : 112 push  : 110 rcall : 127 ret   :  12 
-reti  :   4 rjmp  :  37 rol   :   0 ror   :   2 sbc   :   1 sbci  :   0 
-sbi   :   6 sbic  :   0 sbis  :   0 sbiw  :   3 sbr   :   6 sbrc  :   1 
+reti  :   4 rjmp  :  37 rol   :   0 ror   :   1 sbc   :   1 sbci  :   0 
+sbi   :   6 sbic  :   0 sbis  :   0 sbiw  :   3 sbr   :   7 sbrc  :   1 
 sbrs  :   0 sec   :   0 seh   :   0 sei   :   1 sen   :   0 ser   :   3 
 ses   :   0 set   :   0 sev   :   0 sez   :   0 sleep :   0 spm   :   0 
 st    :   2 std   :   0 sts   :  38 sub   :   1 subi  :   1 swap  :   0 
@@ -3526,7 +3554,7 @@ Instructions used: 51 out of 116 (44.0%)
 "ATmega2560" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000800   1964      4   1968  262144   0.8%
+[.cseg] 0x000000 0x000806   1970      4   1974  262144   0.8%
 [.dseg] 0x000200 0x000215      0     21     21    8192   0.3%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 

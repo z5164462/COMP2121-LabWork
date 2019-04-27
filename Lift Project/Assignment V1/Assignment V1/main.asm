@@ -473,7 +473,7 @@ main:
 	change_line 2, 10
 	mov arg1, requested_floor
 	rcall convert_to_ascii
-	change_line 2, 15
+	change_line 2, 14
 	lds arg1, Queue_len
 	rcall convert_to_ascii
 	//display current_floor and requested_floor on LCD
@@ -738,7 +738,7 @@ lcd_wait_loop:
     pop r16
     ret
 
-.equ F_CPU = 12000000
+.equ F_CPU = 120000		//edited from 16000000
 .equ DELAY_1MS = F_CPU / 4 / 1000 - 4
 ; 4 cycles per iteration - setup/call-return overhead
 
@@ -1114,7 +1114,7 @@ pop temp1
 ret*/
 
 
-LED_flash:	//Reads in the seconds value in arg1
+/*LED_flash:	//Reads in the seconds value in arg1
 	push temp1
 	in temp1, SREG
 	push temp1
@@ -1137,9 +1137,33 @@ LED_end:
 	pop temp1
 	out SREG, temp1
 	pop temp1
+	ret*/
+
+LED_flash:
+	push temp1
+	in temp1, SREG
+	push temp1
+	push current_floor
+	
+	check_register_bit flashing
+	breq LED_up
+	rjmp LED_down
+
+LED_up:
+	rcall show_floor
+	cbr lift_status, flashing
+	rjmp LED_END
+LED_down:
+	dec current_floor
+	rcall show_floor
+	sbr lift_status, flashing
+
+LED_end:
+	pop current_floor
+	pop temp1
+	out SREG, temp1
+	pop temp1
 	ret
-
-
 
 
 
