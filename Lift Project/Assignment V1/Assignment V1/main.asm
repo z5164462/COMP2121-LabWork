@@ -372,6 +372,9 @@ RESET:
 	change_line 2, 13
 	write 'S'
 
+
+/*	set_register_bit emergency	 //DEBUGGING
+	rcall emergency_func*/
 	rcall show_floor
     sei
 	
@@ -472,6 +475,16 @@ Timer1OVF:
 	push XL
 	push XH
 
+	clr temp1
+	cp temp1, flip_flash
+	breq flash_down
+	rjmp flash_up
+flash_down:
+	inc flip_flash
+	rjmp flash_continue
+flash_up:
+	dec flip_flash	
+flash_continue:
 	//out PORTC, debounce1
 	ser temp1
 	cp debounce1, temp1
@@ -592,6 +605,7 @@ main:
 		emergency func*/
 	cpi input_value, '*'
 	brne add_to_queue
+	set_register_bit emergency
 	rcall emergency_func
 add_to_queue:
 	rcall insert_request
@@ -647,6 +661,7 @@ moving:
 	lds r24, Seconds		//2 Seconds passed?
 	lds r25, Seconds+1
 	cpi r24, 20
+	cpc r25, zero
 	brlt to_main
 
 	clear Seconds
@@ -689,6 +704,7 @@ opening_sequence:
 	lds r24, Seconds		//1 Second passed?
 	lds r25, Seconds+1
 	cpi r24, 10
+	cpc r25, zero
 	brge opening_done
 	rjmp main
 opening_done:
@@ -713,6 +729,7 @@ doors_open_sequence:
 	check_register_bit held
 	breq to_main2
 	cpi r24, 30
+	cpc r25, zero
 	brge doors_open_done
 	rjmp main
 doors_open_done:
@@ -728,7 +745,8 @@ closing_sequence:
 	set_motor_speed 0x8A
 	lds r24, Seconds		//1 Second passed?
 	lds r25, Seconds+1
-	cpi r24, 10				
+	cpi r24, 10
+	cpc r25, zero				
 	brge closing_done
 	rjmp main
 closing_done:
@@ -824,6 +842,7 @@ emergency_opening:
 	ldi temp1, '*'
 	cp ret1, temp1
 	brne continue_e_opening
+
 	clear_register_bit emergency //emergency cancelled
 continue_e_opening:
 
@@ -844,6 +863,7 @@ emergency_doors_open:
 	ldi temp1, '*'
 	cp ret1, temp1
 	brne continue_e_doors_open
+	out PORTG, one
 	clear_register_bit emergency
 	clear Seconds
 	rjmp emergency_closing
@@ -851,7 +871,7 @@ continue_e_doors_open:
 	set_motor_speed 0
 	lds r24, Seconds		//3 seconds passed?
 	lds r25, Seconds+1
-	cpi r24, 30
+	cpi r24, 70
 	brge emergency_doors_open_done
 	rjmp emergency_doors_open
 emergency_doors_open_done:
@@ -864,9 +884,10 @@ emergency_closing:
 	ldi temp1, '*'
 	cp ret1, temp1
 	brne continue_e_closing
+	out PORTG, one
 	clear_register_bit emergency
 continue_e_closing:
-	set_motor_speed 0x4A
+	set_motor_speed 0x8A
 	lds r24, Seconds		//1 Second passed?
 	lds r25, Seconds+1
 	cpi r24, 10				
@@ -876,32 +897,68 @@ emergency_closing_done:
 	clear Seconds
 	set_motor_speed 0
 
+check_register_bit emergency
+breq test_skip
+	inc one
+	out PORTG, one	
+	dec one
+test_skip:
+
+
 emergency_halt_loop:
 	rcall strobe_flash
 	rcall show_floor
 	rcall scan
 	ldi temp1, '*'
-	cp ret1, temp1	
+	cp ret1, temp1
 	brne continue_e_halt
 	clear_register_bit emergency
 continue_e_halt:	
 	check_register_bit emergency
-	breq emergency_halt_loop
-	clear Seconds
+	brne restore_floor
+
+	rjmp emergency_halt_loop
 
 restore_floor:
+	clear Seconds
+	clear_disp
+	write 'R'
+	write 'E'
+	write 'T'
+	write 'U'
+	write 'R'
+	write 'N'
+	write 'I'
+	write 'N'
+	write 'G'
+
+	change_line 2,13
+	write 'S'
+
+	lcd_clr 1
+
+restore_floor_loop:
+
+	change_line 2, 14
+	lds arg1, seconds
+	lsr arg1
+	lsr arg1
+	lsr arg1
+	rcall convert_to_ascii
 	rcall show_floor
 	cp current_floor, old_floor
 	breq restore_floor_end
 	lds r24, Seconds
 	lds r25, Seconds+1
 	cpi r24, 20
-	brlt restore_floor
+	brlt restore_floor_loop
 	inc current_floor
 	clear Seconds
-	rjmp restore_floor
+	rjmp restore_floor_loop
 
 restore_floor_end:
+
+
 	clear_disp
 	write 'C'
 	write 'u'
@@ -928,10 +985,7 @@ restore_floor_end:
 	write 's'
 	write 't'
 	write 'o'
-	write 'p'
-
-	change_line 2, 13
-	write 'S'
+	write 'p'	
 	
 	pop r25
 	pop r24
@@ -1460,11 +1514,9 @@ Strobe_flash:	//Reads in the seconds value in X
 
 strobe_on:
     lcd_set 1		//set PORTA bit to 1
-	dec flip_flash
 	rjmp strobe_end
 strobe_off:
-    lcd_clr 0
-	inc flip_flash
+    lcd_clr 1
 	rjmp strobe_end
 Strobe_end:
 	pop temp1
