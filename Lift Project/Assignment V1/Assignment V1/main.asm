@@ -491,22 +491,6 @@ count_flash:
 	inc flip_flash	
 flash_continue:
 
-/*	check_register_bit flashing
-	breq LED_flash_up
-	rjmp LED_flash_down
-LED_flash_up:
-	set_register_bit flashing
-	out PORTG, one	
-	rjmp LED_flash_continue
-LED_flash_down:
-	clear_register_bit flashing
-	inc one
-	out PORTG, one
-	dec one
-LED_flash_continue:*/
-
-
-	//out PORTC, debounce1
 	ser temp1
 	cp debounce1, temp1
 	breq DB2
@@ -554,17 +538,16 @@ RE_OPEN_ACTION:
 	clear Seconds
 	rjmp END_DB2
 HELD_OPEN_ACTION:
-	//lcd_set 1
-	//out PORTG, one
+
 	set_register_bit held
 	ldi temp1, 0b00101110    ;falling edges for interrupts 2 and 0  RISING edge for interrupt 1
     sts EICRA, temp1
 	rjmp END_DB2 	
 LET_CLOSE_ACTION:
-	//lcd_set 1
+
 	clear_register_bit held
 	clear_register_bit doorsOpen
-	//out PORTG, one
+
 	set_register_bit closing
     ldi temp1, 0b00101010    ;falling edges for interrupts 2, 1 and 0
     sts EICRA, temp1 
@@ -593,11 +576,7 @@ End_Timer1:
 
 //MAIN:
 main:
-/*	lds r24, Seconds   		 ; increment seconds every 1/10 of second
-    lds r25, Seconds+1		 ;FOR DEBUGGING ONLY
-    adiw r25:r24, 5
-    sts Seconds, r24
-    sts Seconds+1, r25*/
+
 // ---------------------------------------- SCANNING THE KEYPAD \/
 
 	change_line 1, 14
@@ -606,24 +585,13 @@ main:
 	change_line 2, 10
 	mov arg1, requested_floor
 	rcall convert_to_ascii
-/*	change_line 2, 14
-	lds arg1, Seconds
-	lsr arg1
-	lsr arg1
-	lsr arg1
-	rcall convert_to_ascii*/
-/*	lds arg1, Queue_len
-	rcall convert_to_ascii*/
-	//display current_floor and requested_floor on LCD
-	//requested floor = 0 in Reset (TODO)
+
 
 	rcall scan				//reading the queue
-/*	mov arg1, ret1 
-	rcall convert_to_ascii*/ //DEBUGGING
+
 	mov input_value, ret1
 
-/*	if input_value == *
-		emergency func*/
+
 	cpi input_value, '*'
 	brne add_to_queue
 	set_register_bit emergency
@@ -644,8 +612,7 @@ add_to_queue:
 // ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR \/
 read_queue:
 	rcall show_floor
-/*	ldi temp1, 0
-	out PORTG, temp1*/
+
 	
 // ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR /\
 
@@ -718,8 +685,7 @@ stop_here:
 	rjmp end_main
 
 opening_sequence:
-/*	ldi temp1, 1
-	out PORTG, temp1*/
+
 	rcall LED_flash
 	set_motor_speed 0x2A
 	lds r24, Seconds		//1 Second passed?
@@ -740,8 +706,7 @@ to_main2:
 	jmp main
 
 doors_open_sequence:
-/*	ldi temp1, 2
-	out PORTG, temp1*/	
+	
 	set_motor_speed 0
 	lds r24, Seconds		//3 seconds passed?
 	lds r25, Seconds+1
@@ -760,8 +725,7 @@ doors_open_done:
 	rjmp main
 
 closing_sequence:
-/*	ldi temp1, 3
-	out PORTG, temp1*/
+
 	rcall LED_flash
 	set_motor_speed 0x8A
 	lds r24, Seconds		//1 Second passed?
@@ -772,7 +736,7 @@ closing_sequence:
 	rjmp main
 closing_done:
 	clear Seconds
-	//out PORTG, zero //bug testing board
+
 
 	clear_register_bit closing
 	clear_register_bit stopped
@@ -884,7 +848,7 @@ emergency_doors_open:
 	ldi temp1, '*'
 	cp ret1, temp1
 	brne continue_e_doors_open
-	//out PORTG, one
+
 	clear_register_bit emergency
 	clear Seconds
 	rjmp emergency_closing
@@ -905,7 +869,7 @@ emergency_closing:
 	ldi temp1, '*'
 	cp ret1, temp1
 	brne continue_e_closing
-	//out PORTG, one
+
 	clear_register_bit emergency
 continue_e_closing:
 	set_motor_speed 0x8A
@@ -918,12 +882,7 @@ emergency_closing_done:
 	clear Seconds
 	set_motor_speed 0
 
-check_register_bit emergency
-breq test_skip
-	inc one
-	//out PORTG, one	
-	dec one
-test_skip:
+
 
 
 emergency_halt_loop:
@@ -1266,10 +1225,7 @@ end_search:
 
 insert_start:    
     inc r22    ;len++   		 ;length of list is now longer
-/*	push arg1
-	mov arg1, input_value
-	rcall convert_to_ascii
-	pop arg1*/
+
 
 
 insert_loop:
@@ -1334,7 +1290,7 @@ end_x:
 
 ;epilogue
 end_show_floor:
-    //out PORTG, XH
+    out PORTG, XH
     out PORTC, XL
 
 pop XH
@@ -1368,7 +1324,7 @@ convert_to_ascii:
 
 	clr arg2 ///THIS IS ONLY FOR WHEN NUMBERS LESS THAN 255
 
-	;change_line 2, 14
+
 start:
 	ldi ZL, low(divisors<<1)
 	ldi ZH, high(divisors<<1)
@@ -1410,7 +1366,7 @@ end_divide:
 	mov r7, r20	//r7 holds ASCII val for '0'
 	add r7, r24 //r7 holds ASCII val for '0' + remainder
 
-	//st X+, r7 //store ASCII val in next part of data memory
+
 
 	write_reg r7
 	inc r8
@@ -1445,60 +1401,7 @@ end_convert:
 
 
 //FLASH_LED
-/*//inputs current_floor(global), lift_status(global)
 
-flash_LED:
-push temp1
-push temp2
-lds temp1, Flash_wait   	 //value of second counter when flash is next toggled
-lds temp2, Flash_wait+1
-
-
-check_register_bit flashing
-breq flashTrue
-rjmp flashFalse    
-
-flashTrue:
-    rcall show_floor
-    clear_register_bit flashing
-    rjmp end_flash_LED
-flashFalse:
-    push current_floor
-    dec current_floor
-    rcall show_floor
-    pop current_floor
-    set_register_bit flashing
-
-end_flash_LED:
-pop temp2
-pop temp1
-ret*/
-
-
-/*LED_flash:	//Reads in the seconds value in arg1
-	push temp1
-	in temp1, SREG
-	push temp1
-	push current_floor
-    push arg1
-	ror arg1 //rotates the time into the carry
-    brcs LED_up	//if old LSB was 1, i.e. odd turn strobe on
-    brcc LED_down	//if old LSB was 0, i.e even turn strobe off
-
-LED_up:
-    rcall show_floor		//set PORTA bit to 1
-	rjmp LED_end
-LED_down:
-    dec current_floor
-	rcall show_floor
-	rjmp LED_end
-LED_end:
-    pop arg1
-	pop current_floor
-	pop temp1
-	out SREG, temp1
-	pop temp1
-	ret*/
 
 LED_flash:
 	push temp1
@@ -1531,7 +1434,7 @@ Strobe_flash:	//Reads in the seconds value in X
 	push temp1
 	in temp1, SREG
 	push temp1
-	cp flip_flash, one
+	check_register_bit flashing
 	breq strobe_on	
 	rjmp strobe_off
 
@@ -1633,10 +1536,7 @@ end_show:
 
 
 scan_end:
-/*	ldi temp1, 3		//ONLY FOR DEBUGGING
-	mov ret1, temp1*/
-/*	cpse ret1, zero
-	out PORTG, one*/
+
 	pop arg2
 	pop arg1
 	pop temp2
@@ -1696,8 +1596,4 @@ shuffle_loop_end:
 
 	ret
 
-
-
-
-	
 
