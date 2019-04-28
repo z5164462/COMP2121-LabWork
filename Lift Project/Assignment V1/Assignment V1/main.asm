@@ -32,15 +32,7 @@ Count:
     .byte 2
 Seconds:
     .byte 2
-Wait_duration:
-    .byte 2
-/*Flash_wait:
-    .byte 2*/
 
-/*
-input_array?
-floor_array?
-*/
 
 //REGISTER_DEFINITIONS
 .cseg
@@ -479,16 +471,41 @@ Timer1OVF:
 	push XL
 	push XH
 
-	clr temp1
+	ldi temp1, 5
 	cp temp1, flip_flash
-	breq flash_down
-	rjmp flash_up
-flash_down:
-	inc flip_flash
-	rjmp flash_continue
-flash_up:
-	dec flip_flash	
+	breq invert_flash
+	rjmp count_flash
+	invert_flash:
+		check_register_bit flashing
+		breq flash_to_zero
+		rjmp flash_to_one
+	flash_to_zero:
+		clear_register_bit flashing
+		rjmp invert_end
+	flash_to_one:
+		set_register_bit flashing
+	invert_end:
+		clr flip_flash
+		rjmp flash_continue
+count_flash:
+	inc flip_flash	
 flash_continue:
+
+/*	check_register_bit flashing
+	breq LED_flash_up
+	rjmp LED_flash_down
+LED_flash_up:
+	set_register_bit flashing
+	out PORTG, one	
+	rjmp LED_flash_continue
+LED_flash_down:
+	clear_register_bit flashing
+	inc one
+	out PORTG, one
+	dec one
+LED_flash_continue:*/
+
+
 	//out PORTC, debounce1
 	ser temp1
 	cp debounce1, temp1
@@ -547,7 +564,7 @@ LET_CLOSE_ACTION:
 	//lcd_set 1
 	clear_register_bit held
 	clear_register_bit doorsOpen
-	out PORTG, one
+	//out PORTG, one
 	set_register_bit closing
     ldi temp1, 0b00101010    ;falling edges for interrupts 2, 1 and 0
     sts EICRA, temp1 
@@ -867,7 +884,7 @@ emergency_doors_open:
 	ldi temp1, '*'
 	cp ret1, temp1
 	brne continue_e_doors_open
-	out PORTG, one
+	//out PORTG, one
 	clear_register_bit emergency
 	clear Seconds
 	rjmp emergency_closing
@@ -888,7 +905,7 @@ emergency_closing:
 	ldi temp1, '*'
 	cp ret1, temp1
 	brne continue_e_closing
-	out PORTG, one
+	//out PORTG, one
 	clear_register_bit emergency
 continue_e_closing:
 	set_motor_speed 0x8A
@@ -904,7 +921,7 @@ emergency_closing_done:
 check_register_bit emergency
 breq test_skip
 	inc one
-	out PORTG, one	
+	//out PORTG, one	
 	dec one
 test_skip:
 
@@ -1290,8 +1307,7 @@ end_insert_loop:
 //SHOW_FLOOR:
 show_floor:
 ;prologue
-;    push YL
-;    push YH
+
 
     push current_floor
     push counter
@@ -1318,7 +1334,7 @@ end_x:
 
 ;epilogue
 end_show_floor:
-    out PORTG, XH
+    //out PORTG, XH
     out PORTC, XL
 
 pop XH
@@ -1496,12 +1512,10 @@ LED_flash:
 
 LED_up:
 	rcall show_floor
-	clear_register_bit flashing
 	rjmp LED_END
 LED_down:
 	dec current_floor
 	rcall show_floor
-	set_register_bit flashing
 
 LED_end:
 	pop current_floor
