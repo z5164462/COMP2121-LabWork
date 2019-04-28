@@ -10,6 +10,10 @@
 The Emergency call cannot be cancelled until the lift reaches the first floor
 and has completed the opening and closing routinues
 
+The doors for the emergency will be open for 7 seconds
+If asterisk is pressed during emergency, during opening, doors Open and closing, the lift will cancel the emergency as soon as the doors have closed
+
+
 Any button press length is counted as a hold for the hold open doors duration
 */
 
@@ -369,8 +373,8 @@ RESET:
 	write 'o'
 	write 'p'
 
-	change_line 2, 13
-	write 'S'
+/*	change_line 2, 13
+	write 'S'*/
 
 
 /*	set_register_bit emergency	 //DEBUGGING
@@ -585,12 +589,12 @@ main:
 	change_line 2, 10
 	mov arg1, requested_floor
 	rcall convert_to_ascii
-	change_line 2, 14
+/*	change_line 2, 14
 	lds arg1, Seconds
 	lsr arg1
 	lsr arg1
 	lsr arg1
-	rcall convert_to_ascii
+	rcall convert_to_ascii*/
 /*	lds arg1, Queue_len
 	rcall convert_to_ascii*/
 	//display current_floor and requested_floor on LCD
@@ -932,19 +936,24 @@ restore_floor:
 	write 'N'
 	write 'G'
 
-	change_line 2,13
-	write 'S'
+	change_line 2,0
+	write 'T'
+	write 'O'
+	write ' '
+	write 'F'
+	write 'L'
+	write 'O'
+	write 'O'
+	write 'R'
+	write ' '
+	mov arg1, old_floor
+	rcall convert_to_ascii	
 
 	lcd_clr 1
 
 restore_floor_loop:
 
-	change_line 2, 14
-	lds arg1, seconds
-	lsr arg1
-	lsr arg1
-	lsr arg1
-	rcall convert_to_ascii
+
 	rcall show_floor
 	cp current_floor, old_floor
 	breq restore_floor_end
