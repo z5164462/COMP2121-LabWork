@@ -327,7 +327,7 @@ RESET:
     do_lcd_command 0b00000110	; increment, no display shift
     do_lcd_command 0b00001110	; Cursor on, bar, no blink
 
-	clear_disp
+	clear_disp					; setup initial display
 	write 'C'
 	write 'u'
 	write 'r'
@@ -563,170 +563,170 @@ main:
 
 // ---------------------------------------- SCANNING THE KEYPAD \/
 
-	change_line 1, 14
-	mov arg1, current_floor
+	change_line 1, 14						
+	mov arg1, current_floor					; write current floor on display
 	rcall convert_to_ascii
-	change_line 2, 10
+	change_line 2, 10						; write requested floor on display
 	mov arg1, requested_floor
 	rcall convert_to_ascii
 
 
-	rcall scan				//reading the queue
+	rcall scan								; read keypad 
 
-	mov input_value, ret1
+	mov input_value, ret1					; move the return value from the keypad to input_value
 
 
-	cpi input_value, '*'
-	brne add_to_queue
-	set_register_bit emergency
-	rcall emergency_func
+	cpi input_value, '*'					; check if input value is an asterisk
+	brne add_to_queue						; if its not, its a digit and add to request queue
+	set_register_bit emergency				; if it is, set emergency bit
+	rcall emergency_func					; and call emergency function
 add_to_queue:
-	rcall insert_request
+	rcall insert_request					; for numbers, call insert request to add to queue
 	
 // ---------------------------------------- SCANNING THE KEYPAD	/\
 
 // ---------------------------------------- CHECKING STOPPED \/
 
-	check_register_bit stopped		//already stopped
-	brne read_queue
-	rjmp stop_here
+	check_register_bit stopped				; check if lift is stopped
+	brne read_queue							; if not, read queue and move floors
+	rjmp stop_here							; else stop at floor
 
 // ---------------------------------------- CHECKING STOPPED /\
 
 // ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR \/
 read_queue:
-	rcall show_floor
+	rcall show_floor						; display floor
 
 	
 // ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR /\
 
 // ---------------------------------------- READING THE QUEUE \/
-	ldi requested_floor, 0		//assume queue empty	
-	lds temp1, Queue_len		//is the queue empty?
-	cpi temp1, 0
-	breq to_main
+	ldi requested_floor, 0					; assume queue empty
+	lds temp1, Queue_len					; is the queue empty?
+	cpi temp1, 0							
+	breq to_main							; if queue_len is 0, go to main
 
 
-	lds requested_floor, Queue
-	cp current_floor, requested_floor	//on correct floor?
+	lds requested_floor, Queue				; load first floor from queue to requested floor
+	cp current_floor, requested_floor		; on correct floor?
 	brne check_direction
 				
-	set_register_bit stopped			//first detection of requested_floor
-	set_register_bit opening
+	set_register_bit stopped				; first detection of requested_floor
+	set_register_bit opening				; door is being opened on floor
 	rjmp stop_here
 // ---------------------------------------- READING THE QUEUE /\
 to_main:
 	jmp main
 // ---------------------------------------- MOVING BETWEEN FLOORS \/
 check_direction:
-	brlt direction_up
-	brge direction_down
+	brlt direction_up						; check if lift is moving up
+	brge direction_down						; or down
 	
 direction_up:
-	set_register_bit goingUp
+	set_register_bit goingUp				; if going up, set goingup bit and jump to move
 	rjmp moving
 direction_down:
-	clear_register_bit goingUp
+	clear_register_bit goingUp				; if going down, clear goingup bit and jump to move
 	rjmp moving
 
 moving:
-	lds r24, Seconds		//2 Seconds passed?
+	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
-	cpi r24, 20
+	cpi r24, 20								; if not stopping, wait 2 seconds at each floor before moving 
 	cpc r25, zero
 	brlt to_main
 
 	clear Seconds
-	check_register_bit goingUp
+	check_register_bit goingUp				; check going up bit to decide direction
 	breq moving_up
 	rjmp moving_down
 
 
 moving_up:
-	ldi temp1, 10				//don't increment past 10
+	ldi temp1, 10							; don't increment past 10
 	cpse current_floor, temp1
-	inc current_floor			//move up a floor
-	rcall show_floor
+	inc current_floor						; move up a floor
+	rcall show_floor						; update display
 	rjmp main
 
 moving_down:
-	ldi temp1, 1
+	ldi temp1, 1							; dont decrement below 1
 	cpse current_floor, temp1
-	dec current_floor
-	rcall show_floor
+	dec current_floor						; move down a floor
+	rcall show_floor						; update display
 	rjmp main
 // ---------------------------------------- MOVING BETWEEN FLOORS /\
 
 
 // ---------------------------------------- STOPPING AT THE FLOOR \/
 stop_here:
-	check_register_bit opening
-	breq opening_sequence
-	check_register_bit doorsOpen
-	breq doors_open_sequence
-	check_register_bit closing
-	breq to_closing_sequence
+	check_register_bit opening				; check if door should open 
+	breq opening_sequence					; if it should, start opening sequence
+	check_register_bit doorsOpen			; if door is open, check if door is finished opening
+	breq doors_open_sequence				; if it is, jump to doors open sequence
+	check_register_bit closing				; check if door should close
+	breq to_closing_sequence				; if it should, jump to closing sequence
 	rjmp end_main
 
 opening_sequence:
 
-	rcall LED_flash
-	set_motor_speed 0x2A
-	lds r24, Seconds		//1 Second passed?
+	rcall LED_flash							; flash LED to show doors opening
+	set_motor_speed 0x2A					; set open door motor speed
+	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
-	cpi r24, 10
+	cpi r24, 10								; door takes 1 second to open
 	cpc r25, zero
-	brge opening_done
+	brge opening_done						; when 1 second has passed, go to opening done
 	rjmp main
 opening_done:
 	clear Seconds
-	clear_register_bit opening
-	set_register_bit doorsOpen
+	clear_register_bit opening				; opening is finished
+	set_register_bit doorsOpen				; door is open
 	rjmp main
 
 to_closing_sequence:
-	jmp closing_sequence
+	jmp closing_sequence					; go to closing sequence
 to_main2:
 	jmp main
 
 doors_open_sequence:
 	
-	set_motor_speed 0
-	lds r24, Seconds		//3 seconds passed?
+	set_motor_speed 0						; when door is open, turn off motor
+	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
 	//mov arg1, r24			//LED_flash needs the time as an argument
-	rcall LED_flash
-	check_register_bit held
-	breq to_main2
-	cpi r24, 30
+	rcall LED_flash							; flash LED while door is open
+	check_register_bit held					; check if button is held
+	breq to_main2							; if it is jump to main and restart loop
+	cpi r24, 30								; wait 3 seconds on floor with door open
 	cpc r25, zero
-	brge doors_open_done
+	brge doors_open_done					; after 3 seoncds go to doors open done
 	rjmp main
 doors_open_done:
 	clear Seconds
-	clear_register_bit doorsOpen
-	set_register_bit closing	
+	clear_register_bit doorsOpen			; lift has waited 3 seconds on floor, so clear doorsOpen bit
+	set_register_bit closing				; and set closing bit to close door
 	rjmp main
 
 closing_sequence:
 
-	rcall LED_flash
-	set_motor_speed 0x8A
-	lds r24, Seconds		//1 Second passed?
+	rcall LED_flash							; flash LED while closing
+	set_motor_speed 0x8A					; set door closing speed
+	lds r24, Seconds		 				; load seconds
 	lds r25, Seconds+1
-	cpi r24, 10
+	cpi r24, 10								; door takes 1 second to close
 	cpc r25, zero				
-	brge closing_done
+	brge closing_done						; after 1 second go to closing done
 	rjmp main
 closing_done:
 	clear Seconds
 
 
-	clear_register_bit closing
-	clear_register_bit stopped
-	set_motor_speed 0
-	rcall shuffle_queue
-	rjmp main
+	clear_register_bit closing				; clear closing bit since door has closed
+	clear_register_bit stopped				; clear stopped bit since lift is ready to move again
+	set_motor_speed 0						; turn off motor after door closed
+	rcall shuffle_queue						; call shuffle queue. shuffle queue removes visited floors and reshuffles
+	rjmp main								; queue so that the start of the queue is the next floor
 // ---------------------------------------- STOPPING AT THE FLOOR /\
 
 
@@ -736,9 +736,16 @@ end_main:
 	out PORTC, temp1
 	rjmp end_main
 // ---------------------------------------- ERROR HANDLING /\
-
-
+//
+//		 ____					 ___   _____ _____	 ____			 __
+//	   ||	   ||	|	||\   |	/	\	 |	   |	/	 \	||\   |	/  \
+//	   ||__	   ||	|   || \  | |		 |	   |   |	  | || \  |	\__
+//	   ||	   ||	|   ||  \ | |		 |	   |   |	  | ||  \ |	   \
+//	   ||	   ||___/	||   \|	\___/	 |	 __|__	\____/	||   \|	\__/	
+//		
+//
 // ---------------------------------------- EMERGENCY FUNCTION \/
+
 emergency_func:
 ;prologue
 	push temp1
