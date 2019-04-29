@@ -225,6 +225,9 @@ end_cl:
 divisors:			; used to convert 2 digit numbers to ascii
 	 .dw  10, 1
 
+
+// ---------------------------------------- RESET \/
+
 RESET:
     ldi temp1, low(RAMEND)    ; Init stack frame
     out SPL, temp1
@@ -356,8 +359,10 @@ RESET:
 
     jmp main
 
+// ---------------------------------------- RESET /\
 
 
+// ---------------------------------------- PUSH BUTTON 0 Interrupt Handler \/
 
 EXT_INT0:
 	check_register_bit doorsOpen	; only accept button press if doors are open
@@ -366,6 +371,8 @@ EXT_INT0:
 INT0_END:
     reti
 
+// ---------------------------------------- PUSH BUTTON 0 Interrupt Handler /\
+
 //PROPOSAL TO OPTIMISE EXT_INT1
 /*EXT_INT1:
 	check_register_bit closing|doorsOpen|held	   ; accept button press if doors are closing
@@ -373,6 +380,10 @@ INT0_END:
 	clr debounce2
 INT1_END:
     reti*/
+
+
+
+// ---------------------------------------- PUSH BUTTON 1 Interrupt Handler \/
 
 EXT_INT1:
 	check_register_bit closing		; accept button press if doors are closing
@@ -394,6 +405,9 @@ LET_CLOSE:
 INT1_END:
     reti
 
+// ---------------------------------------- PUSH BUTTON 1 Interrupt Handler /\
+
+// ---------------------------------------- TIMER0 Interrupt Handler \/
 Timer0OVF:
 	push temp1
     in temp1, SREG   				; stack frame for timer interrupt handler
@@ -432,7 +446,10 @@ End_I:
 	pop temp1
     reti
 
+// ---------------------------------------- TIMER0 Interrupt Handler /\
 
+
+// ---------------------------------------- TIMER1 Interrupt Handler \/
 Timer1OVF:
 	push temp1
 	in temp1, SREG
@@ -537,6 +554,7 @@ End_Timer1:
 // parameters Address of queue (X), input_floor (arg1), current_floor (global), direction (b1 of r20, global)
 // will set requested_floor (global), direction (b1 of r20, global)
 
+// ---------------------------------------- TIMER1 Interrupt Handler /\
 
 
 
@@ -711,6 +729,7 @@ closing_done:
 	rjmp main
 // ---------------------------------------- STOPPING AT THE FLOOR /\
 
+
 // ---------------------------------------- ERROR HANDLING \/
 end_main:
 	ldi temp1, 0b11001100
@@ -718,9 +737,8 @@ end_main:
 	rjmp end_main
 // ---------------------------------------- ERROR HANDLING /\
 
+
 // ---------------------------------------- EMERGENCY FUNCTION \/
-
-
 emergency_func:
 ;prologue
 	push temp1
