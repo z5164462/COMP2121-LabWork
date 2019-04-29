@@ -23,6 +23,7 @@ Any button press length is counted as a hold for the hold open doors duration
 ;initial definitions and assignments
 .include "m2560def.inc"
 
+;Data Memory allocations
 .dseg
 Queue_len:
     .byte 1
@@ -34,27 +35,26 @@ Seconds:
     .byte 2
 
 
-//REGISTER_DEFINITIONS
+//Register definitions
 .cseg
 
 
-.def zero = r3
-.def one = r4
-.def flip_flash = r5
-.def counter = r7
-.def ret1 = r10
-.def debounce1 = r11
-.def debounce2 = r12
-.def lift_status = r13
-.def old_floor = r14 
-.def current_floor = r16
-.def requested_floor = r17
-.def input_value = r18
-
-.def temp1 = r20
-.def temp2 = r21 //NOTE: temp1 and temp2 will not reliably hold the data given to them
-.def arg1 = r22
-.def arg2 = r23
+.def zero = r3					;holds the value zero
+.def one = r4					;holds the value one
+.def flip_flash = r5			;used to increment the counter for the LED and strobe flashing
+.def counter = r7				;generic counter
+.def ret1 = r10					;used as the return value for functions
+.def debounce1 = r11			;used as the debounce counter for INT0
+.def debounce2 = r12			;used as the debounce counter for INT1
+.def lift_status = r13			;set of lift status flag, see below
+.def old_floor = r14 			;used to restore the floor from the emergency function
+.def current_floor = r16		;holds the current floor
+.def requested_floor = r17		;holds the requested floor
+.def input_value = r18			;takes the input value from the keypad
+.def temp1 = r20				;temporary register 1
+.def temp2 = r21				;temporary register 2
+.def arg1 = r22					;function argument register 1
+.def arg2 = r23					;function argument register 2
 
 
 /*
@@ -68,20 +68,20 @@ b5 = Flash on?
 b6 = Emergency?
 b7 = Held?
 */
-.equ stopped =   		0b00000001    // is lift stopped?
-.equ goingUp =   		0b00000010    // is lift going up?
-.equ doorsOpen =		0b00000100    // are the doors open?
-.equ opening =   		0b00001000    // are the doors opening?
-.equ closing =   		0b00010000    // are the doors closing? if no to open, opening and closing, they closed
-.equ flashing =   		0b00100000  // is the LED bar flashing
-.equ emergency =		0b01000000    // is there an emergency
-.equ held =   			0b10000000    // is the lift held
+.equ stopped =   		0b00000001		;is lift stopped?
+.equ goingUp =   		0b00000010		;is lift going up?
+.equ doorsOpen =		0b00000100		;are the doors open?
+.equ opening =   		0b00001000		;are the doors opening?
+.equ closing =   		0b00010000		;are the doors closing? if no to open, opening and closing, they closed
+.equ flashing =   		0b00100000		;is the LED bar flashing
+.equ emergency =		0b01000000		;is there an emergency
+.equ held =   			0b10000000		;is the lift held
 
 //LCD interface constants
-.equ PORTLDIR = 0xF0   		 ; 0xF0 = 0b11110000 -> Setting PORTA 7:4 as output and 3:0 as input
-.equ INITCOLMASK = 0XEF   		 ; 0xEF = 0b11101111 -> Mask to decide which column is selected
-.equ INITROWMASK = 0x01   		 ; 0x01 = 0b00000001 -> Mask to check which row is selected
-.equ ROWMASK = 0x0F   			 ; 0x0F = 0b00001111 -> To get keyboard output value using an AND operation
+.equ PORTLDIR = 0xF0   			; 0xF0 = 0b11110000 -> Setting PORTA 7:4 as output and 3:0 as input
+.equ INITCOLMASK = 0XEF   		; 0xEF = 0b11101111 -> Mask to decide which column is selected
+.equ INITROWMASK = 0x01   		; 0x01 = 0b00000001 -> Mask to check which row is selected
+.equ ROWMASK = 0x0F   			; 0x0F = 0b00001111 -> To get keyboard output value using an AND operation
 .equ LCD_RS = 7
 .equ LCD_E = 6
 .equ LCD_RW = 5
@@ -89,17 +89,15 @@ b7 = Held?
 .equ l_one = 0b10000000
 .equ l_two = 0b11000000
 
-//clock and flash constants
 
 .equ clock_speed = 781
-.equ wait_speed = 1
 
 
+// Lift Status Macros
 
-
-
-//Flag checking register  usage check_register_bit stopped
-//   							 breq action
+//Lift Flag checking  
+//usage check_register_bit flagName
+//	breq action
 .macro check_register_bit
 	push temp1
     mov temp1, lift_status
@@ -108,6 +106,8 @@ b7 = Held?
 	pop temp1
 .endmacro
 
+//Lift Flag clearing
+//usage clear_register_bit flagName
 .macro clear_register_bit
 	push temp1
     mov temp1, lift_status
@@ -116,6 +116,8 @@ b7 = Held?
 	pop temp1
 .endmacro
 
+//Lift Flag setting
+//usage set_register_bit flagName
 .macro set_register_bit
 	push temp1
     mov temp1, lift_status
@@ -125,26 +127,26 @@ b7 = Held?
 .endmacro
 
 
-//Clear word macro
+//Clear Word macro
 .macro clear
     sts @0, zero
     sts @0+1, zero
 .endmacro
 
 //LCD MACROS
-.macro do_lcd_command   					 // LCD commands
+.macro do_lcd_command   					 ;LCD commands
     ldi temp1, @0
     rcall lcd_command
     rcall lcd_wait
 .endmacro
 
-.macro do_lcd_command_reg   				 // LCD commands, with registers
+.macro do_lcd_command_reg   				 ;LCD commands, with registers
     mov temp1, @0
     rcall lcd_command
     rcall lcd_wait
 .endmacro
 
-.macro change_line   						 // change line and cursor position on line
+.macro change_line   						 ;change line and cursor position on line
 	push temp1
 	push temp2
     ldi temp1, @0
@@ -163,7 +165,7 @@ end_cl:
 	pop temp1
 .endmacro
 
-.macro write   							 // write immediate data to LCD screen
+.macro write   								;write immediate data to LCD screen
     push temp1
 	ldi temp1, @0
     rcall lcd_data
@@ -171,7 +173,7 @@ end_cl:
 	pop temp1
 .endmacro
 
-.macro write_reg   						 // write register data to LCD screen
+.macro write_reg   							;write register data to LCD screen
     push temp1
 	mov temp1, @0
     rcall lcd_data
@@ -179,16 +181,21 @@ end_cl:
 	pop temp1
 .endmacro
 
-.macro clear_disp   						 // clear the LCD Display
+.macro clear_disp   						 ;clear the LCD Display
     do_lcd_command 0b00000001
 .endmacro
 
-.macro lcd_set   							 // set bit in PORTA
+.macro lcd_set   							 ;set bit in PORTA
     sbi PORTA, @0
 .endmacro
-.macro lcd_clr   							 // clear bit in PORTA
+.macro lcd_clr   							 ;clear bit in PORTA
     cbi PORTA, @0
 .endmacro
+
+//NOTE lcd_set 1 and lcd_clr 1 are also used to control the strobe light as the strobe is connected to Port A Pin 1
+
+
+//Set the PWM trigger level, which controls the motor speed
 .macro set_motor_speed
 	push temp1
 	ldi temp1, @0
@@ -199,35 +206,23 @@ end_cl:
 .endmacro
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-// INTERRUPTS
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\
 
-//-----------------------------
-// |  C3   |  C2   |  C1   |  C0   |  R3   |  R2   |  R1   |  R0   |
-// |  PL0  |  PL1  |  PL2  |  PL3  |  PL4  |  PL5  |  PL6  |  PL7  |
+//Interrupt vectors
 
-
-.org 0x0000 ; reset adress
+.org 0x0000			;reset address
     jmp RESET
-
-.org INT0addr
+.org INT0addr		;interrupt 1 address
     jmp EXT_INT0
-.org INT1addr
+.org INT1addr		;interrupt 2 address
     jmp EXT_INT1
-
-.org OVF0addr
+.org OVF0addr		;timer 0 interrupt
     jmp Timer0OVF
 .org OVF1addr
-	jmp Timer1OVF
+	jmp Timer1OVF	;timer 1 interrupt
 .org 0x30
 
 
-//CSEG MEMORY STORAGE
-
-/*requests:
-   	 .db 3,2,6*/
-divisors:
+divisors:			;used to convert 2 digit numbers to ascii
 	 .dw  10, 1
 
 RESET:
@@ -237,106 +232,98 @@ RESET:
     out SPH, temp1
 
 
-	clear_register_bit stopped	;0
-	set_register_bit goingUp	;1
+	clear_register_bit stopped		;0
+	set_register_bit goingUp		;1
 	clear_register_bit doorsOpen	;0
-	clear_register_bit opening	;0
-	clear_register_bit closing	;0
-	clear_register_bit flashing	;0
+	clear_register_bit opening		;0
+	clear_register_bit closing		;0
+	clear_register_bit flashing		;0
 	clear_register_bit emergency	;0
-	clear_register_bit held		;0
+	clear_register_bit held			;0
 
 	ldi current_floor, 1
 	
 
-    clr zero   			 ; zero
+    clr zero   				;zero
     clr one   				 
-    inc one   				 ; one
-	clr flip_flash
+    inc one   				;one
+	clr flip_flash			
 	clr ret1
 
- 	ser temp1
-	mov debounce1, temp1
+ 	ser temp1				;set debounce1 and debounce2 to max value
+	mov debounce1, temp1	;NOTE the interrupt counter only counts when its not the max value
 	mov debounce2, temp1
 
 	sts Queue_len, zero
 
-    ldi temp1, PORTLDIR   	 ;p7-4 outputs, p3-0 inputs
-	ldi temp2, 0b00001111;send 1 to p3-0 to activate pull up resistors
+    ldi temp1, PORTLDIR   	;p7-4 outputs, p3-0 inputs
+	ldi temp2, 0b00001111	;send 1 to p3-0 to activate pull up resistors
     sts DDRL, temp1
 	sts PORTL, temp1
 
-	nop
  			 
 
 	ser temp1
-    out DDRC, temp1   		 ;LED Lower
-    out DDRG, temp1   		 ;LED Higher
+    out DDRC, temp1   			;LED Lower
+    out DDRG, temp1   			;LED Higher
+	
 	clr temp1
-    out DDRD, temp1   		 ;Buttons?
-/*    ldi temp1, 0b01010101    ;LED testing
-    ldi temp2, 0
-    out PORTC, temp1   	 ;LED lower
-    out PORTG, temp2   	 ;LED higher*/
+    out DDRD, temp1   			;Buttons
 
 	ldi temp1, 0b00010000
-	out DDRE, temp1
+	out DDRE, temp1				;PWM generator
 
-    ldi temp1, 0b00101010    ;falling edges for interrupts 2, 1 and 0
-    sts EICRA, temp1   	 
+    ldi temp1, 0b00101010		;falling edges for interrupts 2, 1 and 0
+    sts EICRA, temp1   										
 
 
 
-    in temp1, EIMSK
+    in temp1, EIMSK				;enable Interrupts 0,1,2
 	ori temp1, (1<<INT0)
 	ori temp1, (1<<INT1)
     ori temp1, (1<<INT2)
     out EIMSK, temp1
     
-    ldi temp1, 0b00000000
+    ldi temp1, 0b00000000				;Normal mode for clock 0
     out TCCR0A, temp1
-    ldi temp1, 0b00000010
+    ldi temp1, 0b00000010				;8 Prescaler
     out TCCR0B, temp1
-    ldi temp1, 1<<TOIE0
+    ldi temp1, 1<<TOIE0					;enable Timer interrupt
     sts TIMSK0, temp1
 
-	ldi temp1, 0b00000000
+	ldi temp1, 0b00000000				;Normal mode for clock 1
     sts TCCR1A, temp1
-    ldi temp1, 0b00000010 //8 prescaler
+    ldi temp1, 0b00000010				;8 prescaler
     sts TCCR1B, temp1
-    ldi temp1, 1<<TOIE1|1<<ICIE1
+    ldi temp1, 1<<TOIE1|1<<ICIE1		;enable Timer interrupt
     sts TIMSK1, temp1
 
-
-	ldi temp1, (1<<CS30)
-	sts TCCR3B, temp1
-	ldi temp1, (1<<COM3B1) | (1<<WGM30)
+	ldi temp1, (1<<COM3B1) | (1<<WGM30)	;toggle OC3B on compare match, PWM Phase and frequency correct
 	sts TCCR3A, temp1
+	ldi temp1, (1<<CS30)				;no prescaling
+	sts TCCR3B, temp1
+
 	
 //from LCD-example LCD setup
     ser temp1
-
-    out DDRF, temp1
+    out DDRF, temp1				;set Port A and Port F as outputs				
     out DDRA, temp1
 
     clr temp1
     out PORTF, temp1
     out PORTA, temp1
 
-	
-
-    do_lcd_command 0b00111000 ; 2x5x7
-
+    do_lcd_command 0b00111000	;2x5x7
     rcall sleep_5ms
-    do_lcd_command 0b00111000 ; 2x5x7
+    do_lcd_command 0b00111000	;2x5x7
 	rcall sleep_1ms
-    do_lcd_command 0b00111000 ; 2x5x7
-    do_lcd_command 0b00111000 ; 2x5x7
-    do_lcd_command 0b00001000 ; display off?
-    do_lcd_command 0b00000001 ; clear display
-    do_lcd_command 0b00000110 ; increment, no display shift
-    do_lcd_command 0b00001110 ; Cursor on, bar, no blink
-	lcd_set 1
+    do_lcd_command 0b00111000	;2x5x7
+    do_lcd_command 0b00111000	;2x5x7
+    do_lcd_command 0b00001000	;display off?
+    do_lcd_command 0b00000001	;clear display
+    do_lcd_command 0b00000110	;increment, no display shift
+    do_lcd_command 0b00001110	;Cursor on, bar, no blink
+
 	clear_disp
 	write 'C'
 	write 'u'
@@ -351,7 +338,6 @@ RESET:
 	write 'o'
 	write 'o'
 	write 'r'
-	lcd_clr 1
 
 	change_line 2, 0
 	
@@ -365,16 +351,8 @@ RESET:
 	write 'o'
 	write 'p'
 
-/*	change_line 2, 13
-	write 'S'*/
-
-
-/*	set_register_bit emergency	 //DEBUGGING
-	rcall emergency_func*/
 	rcall show_floor
     sei
-	
-
 
     jmp main
 
@@ -382,80 +360,71 @@ RESET:
 
 
 EXT_INT0:
-
-	check_register_bit doorsOpen
+	check_register_bit doorsOpen	;only accept button press if doors are open
 	brne INT0_END
-	clr debounce1
-
+	clr debounce1					;clear the debounce counter
 INT0_END:
     reti
 
-
+//PROPOSAL TO OPTIMISE EXT_INT1
+/*EXT_INT1:
+	check_register_bit closing|doorsOpen|held	   ;accept button press if doors are closing
+	brne INT1_END	
+	clr debounce2
+INT1_END:
+    reti*/
 
 EXT_INT1:
-	
-	check_register_bit closing
+	check_register_bit closing		;accept button press if doors are closing
 	breq RE_OPEN
-	check_register_bit doorsOpen
+	check_register_bit doorsOpen	;accept button press if doors are opening
 	breq HELD_OPEN
-	check_register_bit held
+	check_register_bit held			;accept button release if button is held
 	breq LET_CLOSE
 	rjmp INT1_END
 RE_OPEN:
-
-	clr debounce2
+	clr debounce2					;clear debounce counter
 	rjmp INT1_END
 HELD_OPEN:
-
 	clr debounce2
 	rjmp INT1_END
 LET_CLOSE:
-
 	clr debounce2
 	rjmp INT1_END
 INT1_END:
-
     reti
 
 Timer0OVF:
 	push temp1
-    in temp1, SREG   	 ; stack frame for timer interrupt handler
+    in temp1, SREG   				;stack frame for timer interrupt handler
     push temp1
     push r25
     push r24
 
-    lds r24, Count   	 ; increment count
+    lds r24, Count   				;increment count
     lds r25, Count + 1
     adiw r25:r24, 1
     
-    cpi r24, low(clock_speed)    ; compare with clock speed to check if 1/10 of second has passed
+    cpi r24, low(clock_speed)		;compare with clock speed to check if 1/10 of second has passed
     ldi temp1, high(clock_speed)
     cpc r25, temp1
     brne Not_second
-    lds r24, Seconds   		 ; increment seconds every 1/10 of second
+    
+
+	lds r24, Seconds   				;increment seconds every 1/10 of second
     lds r25, Seconds+1
-
-
-/*    lds temp1, Debounce1   	 ; decrement Debounce counter for INT0
-    dec temp1
-    sts Debounce1, temp1
-
-    lds temp1, Debounce2   	 ; decrement Debounce counter for INT1
-    dec temp1
-    sts Debounce2, temp1*/
-
     adiw r25:r24, 1
     sts Seconds, r24
     sts Seconds+1, r25
-    clear Count
+    
+	clear Count						;clear Count
     rjmp End_I
 
-Not_second:
+Not_second:							;increment Count
     sts Count, r24
     sts Count+1, r25
 
 End_I:
-; Epilogue
     pop r25
     pop r24
     pop temp1
@@ -472,12 +441,12 @@ Timer1OVF:
 	push XH
 
 	ldi temp1, 5
-	cp temp1, flip_flash
-	breq invert_flash
+	cp temp1, flip_flash				;check if the flash counter is up to 5
+	breq invert_flash					;if yes then invert flashing
 	rjmp count_flash
-	invert_flash:
-		check_register_bit flashing
-		breq flash_to_zero
+invert_flash:
+		check_register_bit flashing		;if the flashing flag is on turn it off
+		breq flash_to_zero				;if the flashing flag is off turn it on
 		rjmp flash_to_one
 	flash_to_zero:
 		clear_register_bit flashing
@@ -487,27 +456,24 @@ Timer1OVF:
 	invert_end:
 		clr flip_flash
 		rjmp flash_continue
-count_flash:
+count_flash:						   ;else increment flash counter (flip_flash)
 	inc flip_flash	
 flash_continue:
 
-	ser temp1
+	ser temp1						   ;check if debounce1 is set to max, i.e has not been triggered
 	cp debounce1, temp1
 	breq DB2
-	ldi temp1, 3
+	ldi temp1, 3					   ;check if it has been 3 clock cycles with no bouncing
 	cp debounce1, temp1
 	brge action1
 	inc debounce1
-	//lcd_set 1	
 	rjmp  DB2
 action1:
-	//lcd_clr 1
 	check_register_bit doorsOpen
 	brne END_DB1
 	clear_register_bit doorsOpen
 	set_register_bit closing
 	clear Seconds
-	//out PORTG, one
 
 END_DB1:
 	ser temp1
@@ -1449,6 +1415,14 @@ Strobe_end:
 	out SREG, temp1
 	pop temp1
 	ret
+
+
+//-----------------------------
+// |  C3   |  C2   |  C1   |  C0   |  R3   |  R2   |  R1   |  R0   |
+// |  PL0  |  PL1  |  PL2  |  PL3  |  PL4  |  PL5  |  PL6  |  PL7  |
+
+
+
 	
 //SCAN				//return value in arg1
 scan:

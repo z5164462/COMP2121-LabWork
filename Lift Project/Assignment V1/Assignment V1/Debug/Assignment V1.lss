@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Sun Apr 28 14:49:50 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Sun Apr 28 20:14:33 2019
 
 [builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm(24): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
@@ -1911,6 +1911,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  
                                  ; ***** END OF FILE ******************************************************
                                  
+                                 ;Data Memory allocations
                                  .dseg
                                  Queue_len:
 000200                               .byte 1
@@ -1922,7 +1923,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
 00020d                               .byte 2
                                  
                                  
-                                 //REGISTER_DEFINITIONS
+                                 ;Register definitions
                                  .cseg
                                  
                                  
@@ -1938,7 +1939,6 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  .def current_floor = r16
                                  .def requested_floor = r17
                                  .def input_value = r18
-                                 
                                  .def temp1 = r20
                                  .def temp2 = r21 //NOTE: temp1 and temp2 will not reliably hold the data given to them
                                  .def arg1 = r22
@@ -4139,10 +4139,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  
                                  
                                  scan_end:
-                                 /*	ldi temp1, 3		//ONLY FOR DEBUGGING
-                                 	mov ret1, temp1*/
-                                 /*	cpse ret1, zero
-                                 	out PORTG, one*/
+                                 
 0006b8 917f                      	pop arg2
 0006b9 916f                      	pop arg1
 0006ba 915f                      	pop temp2
@@ -4202,10 +4199,6 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
                                  
 0006e7 9508                      	ret
                                  
-                                 
-                                 
-                                 
-                                 	
                                  
 
 
