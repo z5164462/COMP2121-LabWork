@@ -530,9 +530,13 @@ divisors:
 
 ; Replace with your application code
 main:
-
-
-
+	change_line 1, 0
+	write 'T'
+	change_line 2, 0
+	write 'C'
+	change_line 2, 8
+	write 'M'
+	write 'S'
 
 start_loop:
 
@@ -561,6 +565,10 @@ accelerate:
 
 decelerate:
 	subi motorSpeed,4
+	cp zero, motorSpeed		//if decreasing the speed would make the value go below zero, undo
+	brlo valid				//using unsigned, no negative speed, and speed range 
+	subi motorSpeed, -4
+valid:
 	ldi temp1, 15
 	out PORTC, temp1
 	rjmp continue
@@ -569,23 +577,17 @@ continue:
 
 
 
-	clear_disp
 	clear Seconds
-	change_line 1, 0
-	write 'T'
+
 	change_line 1, 2
 	lds arg1, Target
 	lds arg2, Target+1
 	rcall convert_to_ascii
-	change_line 2, 0
-	write 'C'
+
 	change_line 2, 2
 	lds arg1, Revs
 	lds arg2, Revs+1
 	rcall convert_to_ascii
-	change_line 2, 8
-	write 'M'
-	write 'S'
 	change_line 2, 11
 	mov arg1, motorSpeed
 	ldi arg2, 0

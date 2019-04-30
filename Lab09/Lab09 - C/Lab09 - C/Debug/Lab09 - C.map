@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - C\Lab09 - C\main.asm Thu Apr 25 21:24:53 2019
+AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lab09\Lab09 - C\Lab09 - C\main.asm Tue Apr 30 11:49:47 2019
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1389,10 +1389,10 @@ CSEG EXT_INT1     000000ae
 CSEG EXT_INT2     000000b0
 CSEG Timer0OVF    000000be
 CSEG Timer1OVF    000000fa
-CSEG lcd_command  0000021c
-CSEG lcd_wait     0000022c
-CSEG sleep_5ms    00000246
-CSEG sleep_1ms    0000023d
+CSEG lcd_command  0000021a
+CSEG lcd_wait     0000022a
+CSEG sleep_5ms    00000244
+CSEG sleep_1ms    0000023b
 CSEG main         00000140
 CSEG Not_second   000000ee
 CSEG End_Timer0   000000f2
@@ -1403,34 +1403,35 @@ CSEG End_timer1   00000135
 CSEG action2      00000122
 CSEG under_limit  0000012f
 CSEG divisors     0000013b
-CSEG start_loop   00000140
-CSEG accelerate   0000015b
-CSEG decelerate   0000015f
-CSEG continue     00000163
-CSEG line_two@change_line@4349 0000017a
-CSEG end_cl@change_line@4349 00000181
-CSEG lcd_data     00000223
-CSEG line_two@change_line@4390 00000196
-CSEG end_cl@change_line@4390 0000019d
-CSEG convert_to_ascii 0000024c
-CSEG line_two@change_line@4426 000001b2
-CSEG end_cl@change_line@4426 000001b9
-CSEG line_two@change_line@4467 000001ce
-CSEG end_cl@change_line@4467 000001d5
-CSEG line_two@change_line@4503 000001ea
-CSEG end_cl@change_line@4503 000001f1
-CSEG line_two@change_line@4552 0000020b
-CSEG end_cl@change_line@4552 00000212
-CSEG lcd_wait_loop 00000231
+CSEG line_two@change_line@4286 0000014e
+CSEG end_cl@change_line@4286 00000155
+CSEG lcd_data     00000221
+CSEG line_two@change_line@4327 0000016a
+CSEG end_cl@change_line@4327 00000171
+CSEG line_two@change_line@4368 00000186
+CSEG end_cl@change_line@4368 0000018d
+CSEG start_loop   00000199
+CSEG accelerate   000001b4
+CSEG decelerate   000001b8
+CSEG continue     000001bf
+CSEG valid        000001bc
+CSEG line_two@change_line@4471 000001d1
+CSEG end_cl@change_line@4471 000001d8
+CSEG convert_to_ascii 0000024a
+CSEG line_two@change_line@4508 000001ed
+CSEG end_cl@change_line@4508 000001f4
+CSEG line_two@change_line@4544 00000209
+CSEG end_cl@change_line@4544 00000210
+CSEG lcd_wait_loop 0000022f
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 00000241
-CSEG start        0000025a
-CSEG convert_loop 0000025f
-CSEG end_convert  00000288
-CSEG divide       00000263
-CSEG loop_start   00000267
-CSEG end_divide   00000271
-CSEG end_loop     00000270
-CSEG check_zero   0000027d
-CSEG final_number 00000282
+CSEG delayloop_1ms 0000023f
+CSEG start        00000258
+CSEG convert_loop 0000025d
+CSEG end_convert  00000286
+CSEG divide       00000261
+CSEG loop_start   00000265
+CSEG end_divide   0000026f
+CSEG end_loop     0000026e
+CSEG check_zero   0000027b
+CSEG final_number 00000280
