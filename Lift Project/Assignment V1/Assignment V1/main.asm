@@ -373,13 +373,7 @@ INT0_END:
 
 // ---------------------------------------- PUSH BUTTON 0 Interrupt Handler /\
 
-//PROPOSAL TO OPTIMISE EXT_INT1
-/*EXT_INT1:
-	check_register_bit closing|doorsOpen|held	   ; accept button press if doors are closing
-	brne INT1_END	
-	clr debounce2
-INT1_END:
-    reti*/
+
 
 
 
@@ -473,72 +467,71 @@ invert_flash:
 	invert_end:
 		clr flip_flash
 		rjmp flash_continue
-count_flash:						   ; else increment flash counter (flip_flash)
+count_flash:							; else increment flash counter (flip_flash)
 	inc flip_flash	
 flash_continue:
 
-	ser temp1						   ; check if debounce1 is set to max, i.e has not been triggered
+	ser temp1							; check if debounce1 is set to max, i.e has not been triggered
 	cp debounce1, temp1
 	breq DB2
-	ldi temp1, 3					   ; check if it has been 3 clock cycles with no bouncing
+	ldi temp1, 3						; check if it has been 3 clock cycles after the last trigger
 	cp debounce1, temp1
 	brge action1
-	inc debounce1
+	inc debounce1						; if not increment debounce1
 	rjmp  DB2
 action1:
-	check_register_bit doorsOpen
+	check_register_bit doorsOpen		; if doors are open
 	brne END_DB1
-	clear_register_bit doorsOpen
-	set_register_bit closing
+	clear_register_bit doorsOpen		; clear the doorsOpen flag
+	set_register_bit closing			; set the closing flag
 	clear Seconds
 
 END_DB1:
-	ser temp1
+	ser temp1							; set debounce1 back to max, mark as untriggered
 	mov debounce1, temp1
 
-DB2:
-	ser temp1
+DB2:									
+	ser temp1							; check if debounce2 is set to max, i.e has not been triggered
 	cp debounce2, temp1
 	brne valid_interrupt2
 	rjmp End_timer1
 valid_interrupt2:
-	ldi temp1, 3
+	ldi temp1, 3						; check if it has been 3 clock cycles after the last trigger
 	cp debounce2, temp1
 	brge action2
-	inc debounce2
+	inc debounce2						; if not increment debounce2
 	rjmp End_Timer1
 action2:
-	check_register_bit closing
+	check_register_bit closing			; if currently closing, re-open
 	breq RE_OPEN_ACTION
-	check_register_bit held
+	check_register_bit held				; if button is currently held, let close
 	breq LET_CLOSE_ACTION
-	check_register_bit doorsOpen
+	check_register_bit doorsOpen		; if doors are open, hold them open
 	breq HELD_OPEN_ACTION
 	rjmp END_DB2
 RE_OPEN_ACTION:
-	clear_register_bit closing
-	set_register_bit opening
+	clear_register_bit closing			; to re-open, clear the closing flag
+	set_register_bit opening			; and set the opening flag
 	clear Seconds
 	rjmp END_DB2
 HELD_OPEN_ACTION:
-
-	set_register_bit held
-	ldi temp1, 0b00101110    ; falling edges for interrupts 2 and 0  RISING edge for interrupt 1
+										; to start holding the door
+	set_register_bit held				; set the held flag and wait for a rising edge
+	ldi temp1, 0b00101110				; falling edges for interrupts 2 and 0  RISING edge for interrupt 1
     sts EICRA, temp1
 	rjmp END_DB2 	
 LET_CLOSE_ACTION:
-
-	clear_register_bit held
-	clear_register_bit doorsOpen
-
-	set_register_bit closing
-    ldi temp1, 0b00101010    ; falling edges for interrupts 2, 1 and 0
+										; to stop holding the door
+	clear_register_bit held				; clear the held flag
+	clear_register_bit doorsOpen		; clear the doors open flag
+	set_register_bit closing			; set the closing flag
+    ldi temp1, 0b00101010				; falling edges for interrupts 2, 1 and 0
     sts EICRA, temp1 
 	clear Seconds
 
 END_DB2:
 	lcd_clr 1
-	ser temp1
+	ser temp1							; set debounce2 to max, to mark as untriggered
 	mov debounce2, temp1
 	
 
@@ -569,8 +562,9 @@ main:
 	change_line 2, 10						; write requested floor on display
 	mov arg1, requested_floor
 	rcall convert_to_ascii
-
-
+/*	change_line 2, 14
+	lds arg1, Seconds
+	rcall convert_to_ascii*/
 	rcall scan								; read keypad 
 
 	mov input_value, ret1					; move the return value from the keypad to input_value
@@ -601,12 +595,13 @@ read_queue:
 // ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR /\
 
 // ---------------------------------------- READING THE QUEUE \/
+	
 	ldi requested_floor, 0					; assume queue empty
 	lds temp1, Queue_len					; is the queue empty?
 	cpi temp1, 0							
 	breq to_main							; if queue_len is 0, go to main
 
-
+	
 	lds requested_floor, Queue				; load first floor from queue to requested floor
 	cp current_floor, requested_floor		; on correct floor?
 	brne check_direction
@@ -619,11 +614,13 @@ to_main:
 	jmp main
 // ---------------------------------------- MOVING BETWEEN FLOORS \/
 check_direction:
+	
 	brlt direction_up						; check if lift is moving up
 	brge direction_down						; or down
 	
 direction_up:
 	set_register_bit goingUp				; if going up, set goingup bit and jump to move
+
 	rjmp moving
 direction_down:
 	clear_register_bit goingUp				; if going down, clear goingup bit and jump to move
@@ -632,10 +629,12 @@ direction_down:
 moving:
 	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
-	cpi r24, 20								; if not stopping, wait 2 seconds at each floor before moving 
-	cpc r25, zero
-	brlt to_main
+	cpi r24, 20								; if not stopping, wait 2 seconds at each floor before moving
+	ldi temp1, high(20)
+	cpc r25, temp1 
 
+	brlt to_main
+	//out PORTG, one
 	clear Seconds
 	check_register_bit goingUp				; check going up bit to decide direction
 	breq moving_up
@@ -671,11 +670,12 @@ stop_here:
 opening_sequence:
 
 	rcall LED_flash							; flash LED to show doors opening
-	set_motor_speed 0x2A					; set open door motor speed
+	set_motor_speed 0x4A					; set open door motor speed
 	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
 	cpi r24, 10								; door takes 1 second to open
-	cpc r25, zero
+	ldi temp1, high(10)
+	cpc r25, temp1
 	brge opening_done						; when 1 second has passed, go to opening done
 	rjmp main
 opening_done:
@@ -699,7 +699,8 @@ doors_open_sequence:
 	check_register_bit held					; check if button is held
 	breq to_main2							; if it is jump to main and restart loop
 	cpi r24, 30								; wait 3 seconds on floor with door open
-	cpc r25, zero
+	ldi temp1, high(30)
+	cpc r25, temp1
 	brge doors_open_done					; after 3 seoncds go to doors open done
 	rjmp main
 doors_open_done:
@@ -711,11 +712,12 @@ doors_open_done:
 closing_sequence:
 
 	rcall LED_flash							; flash LED while closing
-	set_motor_speed 0x8A					; set door closing speed
+	set_motor_speed 0xAA					; set door closing speed
 	lds r24, Seconds		 				; load seconds
 	lds r25, Seconds+1
 	cpi r24, 10								; door takes 1 second to close
-	cpc r25, zero				
+	ldi temp1, high(10)
+	cpc r25, temp1				
 	brge closing_done						; after 1 second go to closing done
 	rjmp main
 closing_done:
@@ -821,7 +823,7 @@ emergency_opening:						; door opening routine
 	clear_register_bit emergency		; emergency cancelled if '*' pressed
 
 continue_e_opening:
-	set_motor_speed 0x2A				; run motor to simulate door opening
+	set_motor_speed 0x4A				; run motor to simulate door opening
 	lds r24, Seconds					; load seconds
 	lds r25, Seconds+1
 	cpi r24, 10
@@ -865,7 +867,7 @@ emergency_closing:
 	clear_register_bit emergency
 
 continue_e_closing:						
-	set_motor_speed 0x8A				; run motor at different speed to simulate door closing
+	set_motor_speed 0xAA				; run motor at different speed to simulate door closing
 	lds r24, Seconds					; 1 Second passed?
 	lds r25, Seconds+1
 	cpi r24, 10							
