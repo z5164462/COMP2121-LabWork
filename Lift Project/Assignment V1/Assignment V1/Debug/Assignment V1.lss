@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Wed May 01 15:32:21 2019
+AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Wed May 01 15:56:38 2019
 
 [builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
 E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm(27): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
@@ -3640,6 +3640,7 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
                                  
                                  
                                  // ---------------------------------------- LCD_FUNCTIONS \/
+                                 // THE FOLLOWING LCD FUNCTIONS WERE REFERENCED FROM LAB 4 LCD EXAMPLE clear Seconds
                                  lcd_command:
 00058e bb41                          out PORTF, temp1
 00058f d01f                          rcall sleep_1ms
@@ -3681,7 +3682,7 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 0005ad 910f                          pop r16
 0005ae 9508                          ret
                                  
-                                 .equ F_CPU = 160000		; edited from 16000000
+                                 .equ F_CPU = 160000		
                                  .equ DELAY_1MS = F_CPU / 4 / 1000 - 4
                                  ; 4 cycles per iteration - setup/call-return overhead
                                  
@@ -3692,7 +3693,7 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 0005b2 e284                          ldi r24, low(DELAY_1MS)
                                  
                                  delayloop_1ms:
-0005b3 9701                          sbiw r25:r24, 1	 ; DEBUGGING ~~~~~~~~~~~~~~~~~
+0005b3 9701                          sbiw r25:r24, 1	 
 0005b4 f7f1                          brne delayloop_1ms
 0005b5 919f                          pop r25
 0005b6 918f                          pop r24
@@ -3719,12 +3720,10 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 0005c7 dff0                      	rcall sleep_5ms
 0005c8 9518                      	reti
                                  
-                                 // ---------------------------------------- LCD_FUNCTIONS
+                                 // ---------------------------------------- LCD_FUNCTIONS /\
                                  
-                                 // ---------------------------------------- FUNCTIONS
+                                 // ---------------------------------------- INSERT REQUEST \/
                                  
-                                 
-                                 //INSERT_REQUEST
                                  
                                  insert_request:
                                  ;prologue
@@ -3845,7 +3844,7 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 000622 c000                          rjmp insert_start
                                  
                                  insert_start:    
-000623 9563                          inc r22    ;len++   					;length of list is now longer
+000623 9563                          inc r22    								;length of list is now longer
                                  
                                  
                                  
@@ -3862,7 +3861,7 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
                                  
 00062b 9360 0200                     sts Queue_len, r22   					; store new length back in memory
                                  
-                                     ;epilogue
+                                 ;epilogue
 00062d 91bf                          pop XH									; pop registers that were used in the function
 00062e 91af                          pop XL
 00062f 917f                      	pop arg2
@@ -3878,9 +3877,9 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 000639 bf5f                          out SREG, temp2
 00063a 915f                          pop temp2
 00063b 9508                          ret
+                                 // ---------------------------------------- INSERT REQUEST /\
                                  
-                                 
-                                 //SHOW_FLOOR:
+                                 // ---------------------------------------- SHOW FLOOR \/
                                  
                                  show_floor:
                                  ;prologue
@@ -3908,8 +3907,9 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 00064c cff6                          rjmp loop
                                  
                                  
-                                 ; epilogue
+                                 
                                  end_show_floor:
+                                 ;epilogue
 00064d bbb4                          out PORTG, XH				; push the higher part of the LEDs to PORTG (highest two LEDs)
 00064e b9a8                          out PORTC, XL				; push lower part of LEDs to PORTC (bottom 8 LEDs)
                                  								
@@ -3920,10 +3920,12 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
                                  	
 000653 9508                      	ret
                                  
-                                 // CONVERT_TO_ASCII
+                                 // ---------------------------------------- SHOW FLOOR /\
+                                 
+                                 // ---------------------------------------- CONVERT_TO_ASCII \/
                                  
                                  convert_to_ascii:
-                                 	;prologue
+                                 ;prologue
 000654 927f                      	push r7					; register used to write digit
 000655 929f                      	push r9					; counter
 000656 930f                      	push r16				; divisor-low
@@ -4005,11 +4007,12 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 00068f 907f                      	pop r7
 000690 9508                      	ret
                                  
+                                 // ---------------------------------------- CONVERT_TO_ASCII /\
                                  
-                                 
-                                 //FLASH_LED
+                                 // ---------------------------------------- FLASH_LED \/
                                  
                                  LED_flash:
+                                 ;prologue
 000691 934f                      	push temp1						; push registers that are being used in	the function
 000692 b74f                      	in temp1, SREG					; put SREG into temp1 to make sure SREG isnt changed when this function is called
 000693 934f                      	push temp1
@@ -4031,17 +4034,19 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 00069f df9c                      	rcall show_floor
                                  									; this creates the effect that the LED is flashing by alternatively showing the (floor)
                                  									; and the (floor-1), e.g:
-                                 LED_end:							; |*|*|*|*|*|_|_|_|_|_|
+                                 LED_end:
+                                 ;epilogue							; |*|*|*|*|*|_|_|_|_|_|
 0006a0 910f                      	pop current_floor				; |*|*|*|*|_|_|_|_|_|_|
 0006a1 914f                      	pop temp1						; |*|*|*|*|*|_|_|_|_|_|
 0006a2 bf4f                      	out SREG, temp1					; |*|*|*|*|_|_|_|_|_|_|
 0006a3 914f                      	pop temp1						; |*|*|*|*|*|_|_|_|_|_|
 0006a4 9508                      	ret
                                  
+                                 // ---------------------------------------- FLASH_LED /\
                                  
-                                 
-                                 //STROBE_FLASH
-                                 Strobe_flash:	//Reads in the seconds value in X
+                                 // ---------------------------------------- STROBE_FLASH \/
+                                 Strobe_flash:
+                                 ;prologue	
 0006a5 934f                      	push temp1
 0006a6 b74f                      	in temp1, SREG
 0006a7 934f                      	push temp1
@@ -4054,17 +4059,19 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 0006ae c002                      	rjmp strobe_off
                                  
                                  strobe_on:
-0006af 9a11                          lcd_set 1		//set PORTA bit to 1
+0006af 9a11                          lcd_set 1			; set PORTA bit 1 to 1
 0006b0 c002                      	rjmp strobe_end
                                  strobe_off:
-0006b1 9811                          lcd_clr 1
+0006b1 9811                          lcd_clr 1			; set PORTA bit 1 to 0
 0006b2 c000                      	rjmp strobe_end
                                  Strobe_end:
+                                 ;epilogue
 0006b3 914f                      	pop temp1
 0006b4 bf4f                      	out SREG, temp1
 0006b5 914f                      	pop temp1
 0006b6 9508                      	ret
                                  
+                                 // ---------------------------------------- STROBE_FLASH \/\
                                  
                                  //-----------------------------
                                  // |  C3   |  C2   |  C1   |  C0   |  R3   |  R2   |  R1   |  R0   |
@@ -4170,8 +4177,9 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 0006f9 9508                      	ret
                                  																		
                                  //FUNCTION shuffle_queue
-                                 
+                                 //Shuffles the queue in memory forward such that Queue len starts at the correct point in memory 
                                  shuffle_queue:
+                                 ;prologue
 0006fa 93ef                      	push ZL
 0006fb 93ff                      	push ZH
 0006fc 934f                      	push temp1
@@ -4180,33 +4188,34 @@ E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.
 0006ff 937f                      	push arg2
 000700 927f                      	push counter
                                  	
-000701 e0e1                      	ldi ZL, low(Queue)
+000701 e0e1                      	ldi ZL, low(Queue)					;load Queue addr into Z
 000702 e0f2                      	ldi ZH, high(Queue)
                                  
-000703 9140 0200                 	lds temp1, Queue_len
+000703 9140 0200                 	lds temp1, Queue_len				;move Z to end of Queue
 000705 0fe4                      	add ZL, temp1
 000706 1df3                      	adc ZH, zero
                                  
-000707 9731                      	sbiw Z, 1
+000707 9731                      	sbiw Z, 1							;move Z before the last element
 000708 2477                      	clr counter
 000709 2766                      	clr arg1
                                  shuffle_loop:
-                                 	//Z points to the end of the queue
-00070a 9140 0200                 	lds temp1, Queue_len
+                                 
+00070a 9140 0200                 	lds temp1, Queue_len				;while counter < Queue_len
 00070c 1674                      	cp counter, temp1
 00070d f031                      	breq shuffle_loop_end
-00070e 8170                      	ld arg2, Z
-00070f 8360                      	st Z, arg1
-000710 2f67                      	mov arg1, arg2
-000711 9473                      	inc counter
-000712 9731                      	sbiw Z, 1
+00070e 8170                      	ld arg2, Z							;retrieve number from queue
+00070f 8360                      	st Z, arg1							;store previous number
+000710 2f67                      	mov arg1, arg2						;move retrieved number to previous number
+000711 9473                      	inc counter							
+000712 9731                      	sbiw Z, 1							;move 1 step towards the front of the queue
 000713 cff6                      	rjmp shuffle_loop
                                  shuffle_loop_end:
-000714 9140 0200                 	lds temp1, Queue_len
+                                 
+000714 9140 0200                 	lds temp1, Queue_len				;decrease Queue_len by one
 000716 954a                      	dec temp1
 000717 9340 0200                 	sts Queue_len, temp1
                                  
-                                 
+                                 ;epilogue
 000719 907f                      	pop counter
 00071a 917f                      	pop arg2
 00071b 916f                      	pop arg1

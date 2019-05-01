@@ -1022,6 +1022,7 @@ restore_floor_end:
 
 
 // ---------------------------------------- LCD_FUNCTIONS \/
+// THE FOLLOWING LCD FUNCTIONS WERE REFERENCED FROM LAB 4 LCD EXAMPLE clear Seconds
 lcd_command:
     out PORTF, temp1
     rcall sleep_1ms
@@ -1063,7 +1064,7 @@ lcd_wait_loop:
     pop r16
     ret
 
-.equ F_CPU = 160000		; edited from 16000000
+.equ F_CPU = 160000		
 .equ DELAY_1MS = F_CPU / 4 / 1000 - 4
 ; 4 cycles per iteration - setup/call-return overhead
 
@@ -1074,7 +1075,7 @@ sleep_1ms:
     ldi r24, low(DELAY_1MS)
 
 delayloop_1ms:
-    sbiw r25:r24, 1	 ; DEBUGGING ~~~~~~~~~~~~~~~~~
+    sbiw r25:r24, 1	 
     brne delayloop_1ms
     pop r25
     pop r24
@@ -1101,12 +1102,10 @@ pause:
 	rcall sleep_5ms
 	reti
 
-// ---------------------------------------- LCD_FUNCTIONS
+// ---------------------------------------- LCD_FUNCTIONS /\
 
-// ---------------------------------------- FUNCTIONS
+// ---------------------------------------- INSERT REQUEST \/
 
-
-//INSERT_REQUEST
 
 insert_request:
 ;prologue
@@ -1223,7 +1222,7 @@ end_search:
     rjmp insert_start
 
 insert_start:    
-    inc r22    ;len++   					;length of list is now longer
+    inc r22    								;length of list is now longer
 
 
 
@@ -1240,7 +1239,7 @@ end_insert_loop:
 
     sts Queue_len, r22   					; store new length back in memory
 
-    ;epilogue
+;epilogue
     pop XH									; pop registers that were used in the function
     pop XL
 	pop arg2
@@ -1256,9 +1255,9 @@ end_insert_loop:
     out SREG, temp2
     pop temp2
     ret
+// ---------------------------------------- INSERT REQUEST /\
 
-
-//SHOW_FLOOR:
+// ---------------------------------------- SHOW FLOOR \/
 
 show_floor:
 ;prologue
@@ -1286,8 +1285,9 @@ end_x:
     rjmp loop
 
 
-; epilogue
+
 end_show_floor:
+;epilogue
     out PORTG, XH				; push the higher part of the LEDs to PORTG (highest two LEDs)
     out PORTC, XL				; push lower part of LEDs to PORTC (bottom 8 LEDs)
 								
@@ -1298,10 +1298,12 @@ end_show_floor:
 	
 	ret
 
-// CONVERT_TO_ASCII
+// ---------------------------------------- SHOW FLOOR /\
+
+// ---------------------------------------- CONVERT_TO_ASCII \/
 
 convert_to_ascii:
-	;prologue
+;prologue
 	push r7					; register used to write digit
 	push r9					; counter
 	push r16				; divisor-low
@@ -1379,11 +1381,12 @@ end_convert:
 	pop r7
 	ret
 
+// ---------------------------------------- CONVERT_TO_ASCII /\
 
-
-//FLASH_LED
+// ---------------------------------------- FLASH_LED \/
 
 LED_flash:
+;prologue
 	push temp1						; push registers that are being used in	the function
 	in temp1, SREG					; put SREG into temp1 to make sure SREG isnt changed when this function is called
 	push temp1
@@ -1401,17 +1404,19 @@ LED_down:
 	rcall show_floor
 									; this creates the effect that the LED is flashing by alternatively showing the (floor)
 									; and the (floor-1), e.g:
-LED_end:							; |*|*|*|*|*|_|_|_|_|_|
+LED_end:
+;epilogue							; |*|*|*|*|*|_|_|_|_|_|
 	pop current_floor				; |*|*|*|*|_|_|_|_|_|_|
 	pop temp1						; |*|*|*|*|*|_|_|_|_|_|
 	out SREG, temp1					; |*|*|*|*|_|_|_|_|_|_|
 	pop temp1						; |*|*|*|*|*|_|_|_|_|_|
 	ret
 
+// ---------------------------------------- FLASH_LED /\
 
-
-//STROBE_FLASH
-Strobe_flash:	//Reads in the seconds value in X
+// ---------------------------------------- STROBE_FLASH \/
+Strobe_flash:
+;prologue	
 	push temp1
 	in temp1, SREG
 	push temp1
@@ -1420,25 +1425,27 @@ Strobe_flash:	//Reads in the seconds value in X
 	rjmp strobe_off
 
 strobe_on:
-    lcd_set 1		//set PORTA bit to 1
+    lcd_set 1			; set PORTA bit 1 to 1
 	rjmp strobe_end
 strobe_off:
-    lcd_clr 1
+    lcd_clr 1			; set PORTA bit 1 to 0
 	rjmp strobe_end
 Strobe_end:
+;epilogue
 	pop temp1
 	out SREG, temp1
 	pop temp1
 	ret
 
+// ---------------------------------------- STROBE_FLASH /\
 
-//-----------------------------
 // |  C3   |  C2   |  C1   |  C0   |  R3   |  R2   |  R1   |  R0   |
 // |  PL0  |  PL1  |  PL2  |  PL3  |  PL4  |  PL5  |  PL6  |  PL7  |
 
+// ---------------------------------------- SCAN \/
 
-//SCAN						; return value in arg1
-scan:
+					
+scan:						; return value in arg1
 ;prologue
     push r16				; row
     push r17				; col
@@ -1534,10 +1541,12 @@ scan_end:
 	pop r16
 
 	ret
+// ---------------------------------------- SCAN /\
 																		
-//FUNCTION shuffle_queue
-
+// ---------------------------------------- SHUFFLE QUEUE \/
+//Shuffles the queue in memory forward such that Queue len starts at the correct point in memory 
 shuffle_queue:
+;prologue
 	push ZL
 	push ZH
 	push temp1
@@ -1546,33 +1555,34 @@ shuffle_queue:
 	push arg2
 	push counter
 	
-	ldi ZL, low(Queue)
+	ldi ZL, low(Queue)					;load Queue addr into Z
 	ldi ZH, high(Queue)
 
-	lds temp1, Queue_len
+	lds temp1, Queue_len				;move Z to end of Queue
 	add ZL, temp1
 	adc ZH, zero
 
-	sbiw Z, 1
+	sbiw Z, 1							;move Z before the last element
 	clr counter
 	clr arg1
 shuffle_loop:
-	//Z points to the end of the queue
-	lds temp1, Queue_len
+
+	lds temp1, Queue_len				;while counter < Queue_len
 	cp counter, temp1
 	breq shuffle_loop_end
-	ld arg2, Z
-	st Z, arg1
-	mov arg1, arg2
-	inc counter
-	sbiw Z, 1
+	ld arg2, Z							;retrieve number from queue
+	st Z, arg1							;store previous number
+	mov arg1, arg2						;move retrieved number to previous number
+	inc counter							
+	sbiw Z, 1							;move 1 step towards the front of the queue
 	rjmp shuffle_loop
 shuffle_loop_end:
-	lds temp1, Queue_len
+
+	lds temp1, Queue_len				;decrease Queue_len by one
 	dec temp1
 	sts Queue_len, temp1
 
-
+;epilogue
 	pop counter
 	pop arg2
 	pop arg1
@@ -1582,5 +1592,5 @@ shuffle_loop_end:
  	pop ZL
 
 	ret
-
+// ---------------------------------------- SHUFFLE QUEUE /\
 
