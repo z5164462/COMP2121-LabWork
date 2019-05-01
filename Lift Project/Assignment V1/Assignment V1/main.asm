@@ -377,9 +377,6 @@ INT0_END:
 // ---------------------------------------- PUSH BUTTON 0 Interrupt Handler /\
 
 
-
-
-
 // ---------------------------------------- PUSH BUTTON 1 Interrupt Handler \/
 
 EXT_INT1:
@@ -751,7 +748,7 @@ end_main:
 //		
 //
 // ---------------------------------------- EMERGENCY FUNCTION \/
-
+// Performs emergency routine
 emergency_func:
 ;prologue
 	push temp1
@@ -1089,36 +1086,24 @@ sleep_5ms:
     rcall sleep_1ms
     ret
 
-pause:
-	rcall sleep_5ms
-	rcall sleep_5ms
-	rcall sleep_5ms
-	rcall sleep_5ms
-	rcall sleep_5ms
-	rcall sleep_5ms
-	rcall sleep_5ms
-	rcall sleep_5ms
-	rcall sleep_5ms
-	rcall sleep_5ms
-	reti
+
 
 // ---------------------------------------- LCD_FUNCTIONS /\
 
 // ---------------------------------------- INSERT REQUEST \/
-
-
+//Inserts a floor request into queue in the correct position based on current floor and direction
 insert_request:
 ;prologue
 	push temp2
-	in temp2 , SREG		; push SREG so as to not change it in the function
+	in temp2 , SREG							; push SREG so as to not change it in the function
 	push temp2
 
 	push counter
-	push r16	; r16 current_floor global
-	push r17	; r17 requested_floor return value
-	push r18    ; parameter input_value
-	push r19	; r19 lift_status global
-	push r20    ; temp1
+	push r16								; r16 current_floor global
+	push r17								; r17 requested_floor return value
+	push r18								; parameter input_value
+	push r19								; r19 lift_status global
+	push r20								; temp1
 	push r22
 	push arg1
 	push arg2
@@ -1126,38 +1111,38 @@ insert_request:
 	push XL
 	push XH
 
-	ldi XL, low(Queue)							; load queue
+	ldi XL, low(Queue)						; load queue
 	ldi XH, high(Queue)
 	lds r22, Queue_len
 
 	clr ret1
 
-	cpi input_value, 11							; used just in case a number greater than 10 is in input_value somehow
+	cpi input_value, 11						; used just in case a number greater than 10 is in input_value somehow
 	brlt under_11
-	jmp end_insert_loop							; if its greater than 11, jump to end_insert
+	jmp end_insert_loop						; if its greater than 11, jump to end_insert
 
 under_11:
-	cpi input_value, 1							; if the input value is greater than or equal to 0,
-	brge valid_insert							; then it is a valid_insert
-	jmp end_insert_loop							; else jump to end
+	cpi input_value, 1						; if the input value is greater than or equal to 0,
+	brge valid_insert						; then it is a valid_insert
+	jmp end_insert_loop						; else jump to end
 
 valid_insert:
-	clr counter									; counter = 0
-	lds r22, Queue_len							; load queue length
-	cp current_floor, input_value				; if the current floor is the input floor, break to end
-	brne input_continue							; else continue
+	clr counter								; counter = 0
+	lds r22, Queue_len						; load queue length
+	cp current_floor, input_value			; if the current floor is the input floor, break to end
+	brne input_continue						; else continue
 	jmp end_insert_loop
 
 input_continue:
-	mov ret1, input_value						; move the input value into the return register
+	mov ret1, input_value					; move the input value into the return register
 
-	check_register_bit goingUp					; check the goingUp bit
-	breq up_search								; if 1, sort up
-	rjmp down_search 							; else sort down
+	check_register_bit goingUp				; check the goingUp bit
+	breq up_search							; if 1, sort up
+	rjmp down_search 						; else sort down
 
 
 
-// r7 counter // r22 len
+											; r7 counter r22 len
 
 up_search:
     cp input_value, current_floor   		; if input floor < current floor, jump to up_descending_loop, else up_ascending_loop
@@ -1258,10 +1243,10 @@ end_insert_loop:
 // ---------------------------------------- INSERT REQUEST /\
 
 // ---------------------------------------- SHOW FLOOR \/
-
+//Displays floor through Light Emitting Diode bar
 show_floor:
 ;prologue
-    push current_floor			; push registers being used
+    push current_floor						; push registers being used
     push counter
 	push XL		
 	push XH
@@ -1271,27 +1256,27 @@ show_floor:
     clr XH
 
 loop:
-    cp counter, current_floor	; check if counter is equal to current floor
+    cp counter, current_floor				; check if counter is equal to current floor
     breq end_show_floor
-    lsl XL						; left shift XL and then increment to show floor
-    inc XL						; |_|_|_|_|_|_|_|_| -> lsl, inc -> |_|_|_|_|_|_|_|*|
-    brcs grtr8					; |_|_|_|_|_|_|_|*| -> lsl -> |_|_|_|_|_|_|*|_| -> inc -> |_|_|_|_|_|_|*|*| etc.
-    rjmp end_x					; if there is a carry, that means all 8 bits of XL are filled, meaning number is bigger than 8
+    lsl XL									; left shift XL and then increment to show floor
+    inc XL									; |_|_|_|_|_|_|_|_| -> lsl, inc -> |_|_|_|_|_|_|_|*|
+    brcs grtr8								; |_|_|_|_|_|_|_|*| -> lsl -> |_|_|_|_|_|_|*|_| -> inc -> |_|_|_|_|_|_|*|*| etc.
+    rjmp end_x								; if there is a carry, that means all 8 bits of XL are filled, meaning number is bigger than 8
 grtr8:
-    lsl XH						; lsl XH for higher bit of LED to show numbers bigger than 8
-    inc XH						; |_|_|_|_|_|_|_|*| - |*|*|*|*|*|*|*|*| (9)
+    lsl XH									; lsl XH for higher bit of LED to show numbers bigger than 8
+    inc XH									; |_|_|_|_|_|_|_|*| - |*|*|*|*|*|*|*|*| (9)
 end_x:    
-    inc counter					; increment counter
+    inc counter								; increment counter
     rjmp loop
 
 
 
 end_show_floor:
 ;epilogue
-    out PORTG, XH				; push the higher part of the LEDs to PORTG (highest two LEDs)
-    out PORTC, XL				; push lower part of LEDs to PORTC (bottom 8 LEDs)
+    out PORTG, XH							; push the higher part of the LEDs to PORTG (highest two LEDs)
+    out PORTC, XL							; push lower part of LEDs to PORTC (bottom 8 LEDs)
 								
-	pop XH						; pop registers that have been used
+	pop XH									; pop registers that have been used
 	pop XL
 	pop counter
 	pop current_floor
@@ -1301,29 +1286,29 @@ end_show_floor:
 // ---------------------------------------- SHOW FLOOR /\
 
 // ---------------------------------------- CONVERT_TO_ASCII \/
-
+//Converts number in arg1 to its ascii values and writes to LCD
 convert_to_ascii:
 ;prologue
-	push r7					; register used to write digit
-	push r9					; counter
-	push r16				; divisor-low
-	push r17				; divisor-high
-	push r18				; dividend-low
-	push r19				; dividend-high
-	push r20				; used to store ascii value of zero
-	push arg1				; arg1 and arg2 store the value
-	push arg2				; that is being converted to ascii
-	push r24				; quotient-low
-	push r25				; quotient-high
-	push ZL					; Word Z is used to load
-	push ZH					; the divisors from memory
+	push r7									; register used to write digit
+	push r9									; counter
+	push r16								; divisor-low
+	push r17								; divisor-high
+	push r18								; dividend-low
+	push r19								; dividend-high
+	push r20								; used to store ascii value of zero
+	push arg1								; arg1 and arg2 store the value
+	push arg2								; that is being converted to ascii
+	push r24								; quotient-low
+	push r25								; quotient-high
+	push ZL									; Word Z is used to load
+	push ZH									; the divisors from memory
 
-	clr arg2 ; THIS IS ONLY FOR WHEN NUMBERS LESS THAN 255
+	clr arg2								; THIS IS ONLY FOR WHEN NUMBERS LESS THAN 255
 
 start:
 	ldi ZL, low(divisors<<1)
 	ldi ZH, high(divisors<<1)
-	ldi r20, 0x30			; ascii value for zero
+	ldi r20, 0x30							; ascii value for zero
 	clr r8
 	clr r9
 convert_loop:
@@ -1332,32 +1317,32 @@ convert_loop:
 	breq end_convert
 	rjmp divide
 
-	; r19:r18 hold the dividend (numerator)
+											; r19:r18 hold the dividend (numerator)
 divide:
-    lpm r16, Z+				; divisor (denominator)
-	lpm r17, Z+				; ^^^
-	ldi r24, 0				; quotient
-	ldi r25, 0				; ^^^
+    lpm r16, Z+								; divisor (denominator)
+	lpm r17, Z+								; ^^^
+	ldi r24, 0								; quotient
+	ldi r25, 0								; ^^^
 loop_start:
-	cpi r16, 0				; not dividing by zero
+	cpi r16, 0								; not dividing by zero
 	breq end_divide
-	cp arg1, r16			; check dividend !< divisor i.e. you can still minus
+	cp arg1, r16							; check dividend !< divisor i.e. you can still minus
 	cpc arg2, r17
 	brlo end_loop 
-	sub arg1, r16			; dividend = dividend - divisor 
+	sub arg1, r16							; dividend = dividend - divisor 
 	sbc arg2, r17
-	adiw r25:r24, 1			; quotient++	
+	adiw r25:r24, 1							; quotient++	
     rjmp loop_start
 end_loop:
 	movw r19:r18, arg2:arg1
 end_divide:
-							; r23:r22 holds the remainder, r25:r24 holds the quotient
-	movw arg2:arg1, r19:r18 ; the remainder moves to the dividend to be divided again
+											; r23:r22 holds the remainder, r25:r24 holds the quotient
+	movw arg2:arg1, r19:r18					; the remainder moves to the dividend to be divided again
 	inc r9
-	mov r7, r20				; r7 holds ASCII val for '0'
-	add r7, r24				; r7 holds ASCII val for '0' + remainder
+	mov r7, r20								; r7 holds ASCII val for '0'
+	add r7, r24								; r7 holds ASCII val for '0' + remainder
 
-	write_reg r7			; write r7 to LCD
+	write_reg r7							; write r7 to LCD
 
 	rjmp convert_loop
 
@@ -1366,7 +1351,7 @@ end_divide:
 
 end_convert:
 ;epilogue
-	pop ZH		; pop registers used in function
+	pop ZH									; pop registers used in function
 	pop ZL
 	pop r25
 	pop r24
@@ -1384,37 +1369,38 @@ end_convert:
 // ---------------------------------------- CONVERT_TO_ASCII /\
 
 // ---------------------------------------- FLASH_LED \/
-
+//Flashes Light Emitting Diodes or LEDs for short
 LED_flash:
 ;prologue
-	push temp1						; push registers that are being used in	the function
-	in temp1, SREG					; put SREG into temp1 to make sure SREG isnt changed when this function is called
+	push temp1								; push registers that are being used in	the function
+	in temp1, SREG							; put SREG into temp1 to make sure SREG isnt changed when this function is called
 	push temp1
 	push current_floor	
 	
-	check_register_bit flashing		; check the flashing bit
-	breq LED_up						; if the bit is 1, then go to LED_up
-	rjmp LED_down					; if the bit is 0, then go to LED_down
+	check_register_bit flashing				; check the flashing bit
+	breq LED_up								; if the bit is 1, then go to LED_up
+	rjmp LED_down							; if the bit is 0, then go to LED_down
 
 LED_up:
-	rcall show_floor				; show floor as is if bit is 1
+	rcall show_floor						; show floor as is if bit is 1
 	rjmp LED_END
 LED_down:
-	dec current_floor				; decrement the current floor if bit is 0, THEN call show floor
+	dec current_floor						; decrement the current floor if bit is 0, THEN call show floor
 	rcall show_floor
-									; this creates the effect that the LED is flashing by alternatively showing the (floor)
-									; and the (floor-1), e.g:
+											; this creates the effect that the LED is flashing by alternatively showing the (floor)
+											; and the (floor-1), e.g:
 LED_end:
-;epilogue							; |*|*|*|*|*|_|_|_|_|_|
-	pop current_floor				; |*|*|*|*|_|_|_|_|_|_|
-	pop temp1						; |*|*|*|*|*|_|_|_|_|_|
-	out SREG, temp1					; |*|*|*|*|_|_|_|_|_|_|
-	pop temp1						; |*|*|*|*|*|_|_|_|_|_|
+;epilogue									; |*|*|*|*|*|_|_|_|_|_|
+	pop current_floor						; |*|*|*|*|_|_|_|_|_|_|
+	pop temp1								; |*|*|*|*|*|_|_|_|_|_|
+	out SREG, temp1							; |*|*|*|*|_|_|_|_|_|_|
+	pop temp1								; |*|*|*|*|*|_|_|_|_|_|
 	ret
 
 // ---------------------------------------- FLASH_LED /\
 
 // ---------------------------------------- STROBE_FLASH \/
+//Flashes Strobe light
 Strobe_flash:
 ;prologue	
 	push temp1
@@ -1425,10 +1411,10 @@ Strobe_flash:
 	rjmp strobe_off
 
 strobe_on:
-    lcd_set 1			; set PORTA bit 1 to 1
+    lcd_set 1								; set PORTA bit 1 to 1
 	rjmp strobe_end
 strobe_off:
-    lcd_clr 1			; set PORTA bit 1 to 0
+    lcd_clr 1								; set PORTA bit 1 to 0
 	rjmp strobe_end
 Strobe_end:
 ;epilogue
@@ -1444,94 +1430,94 @@ Strobe_end:
 
 // ---------------------------------------- SCAN \/
 
-					
-scan:						; return value in arg1
+//Gets input from keypad				
+scan:										; return value in ret1
 ;prologue
-    push r16				; row
-    push r17				; col
-    push r18				; rmask --- r18 will be used to return the input_value
-    push r19				; cmask
+    push r16								; row
+    push r17								; col
+    push r18								; rmask 
+    push r19								; cmask
     push temp1
     push temp2 
-    push arg1				; floor
-    push arg2				; floor2
-    ldi r19, INITCOLMASK   	; load column mask to scan a column
+    push arg1								; floor
+    push arg2								; floor2
+    ldi r19, INITCOLMASK   					; load column mask to scan a column
     clr r17
 
 	clr ret1
 colloop:
-    cpi r17, 4   			; check if all columns scanned
-    breq scan_end   		; restart scan if all cols scanned
-    sts PORTL, r19   		; scan a column (sts used instead of out since PORTL is in extended I/O space)
-    ldi temp1, 0xFF   		; slow down scan operation 
+    cpi r17, 4   							; check if all columns scanned
+    breq scan_end   						; restart scan if all cols scanned
+    sts PORTL, r19   						; scan a column (sts used instead of out since PORTL is in extended I/O space)
+    ldi temp1, 0xFF   						; slow down scan operation 
 
 delay:
     dec temp1
     brne delay
 
-    lds arg1, PINL   		; load current status of PORTL pins(lds must be used instead of in)
-    andi arg1, ROWMASK   	; and the PINL register with row mask
-    cpi arg1, 0xF   		; check if any row low
-    breq nextcol   			; if temp is all 1s (i.e 0xF), then there are now lows
-   							; if there is a low, find which row it is
-    ldi r18, INITROWMASK   	; load Row mask
+    lds arg1, PINL   						; load current status of PORTL pins(lds must be used instead of in)
+    andi arg1, ROWMASK   					; and the PINL register with row mask
+    cpi arg1, 0xF   						; check if any row low
+    breq nextcol   							; if temp is all 1s (i.e 0xF), then there are now lows
+   											; if there is a low, find which row it is
+    ldi r18, INITROWMASK   					; load Row mask
     clr r16
 
 rowloop:
-    cpi r16, 4   			; if all rows scanned, jump to next column
+    cpi r16, 4   							; if all rows scanned, jump to next column
     breq nextcol
     mov temp2, arg1  			 
-    and temp2, r18   		; mask the input with row mask
-    breq show   			; if the bit is clear, a key has been pressed
-   							; eg if a key in row 1 is pressed, temp2 = XXXX1101
-   							; rmask should equal 00000010
-   							; when AND is used, result is 00000000 -> button pressed
-    inc r16   				; move to next row
-    lsl r18   				; left shift mask to check next row
+    and temp2, r18   						; mask the input with row mask
+    breq show   							; if the bit is clear, a key has been pressed
+   											; eg if a key in row 1 is pressed, temp2 = XXXX1101
+   											; rmask should equal 00000010
+   											; when AND is used, result is 00000000 -> button pressed
+    inc r16   								; move to next row
+    lsl r18   								; left shift mask to check next row
     jmp rowloop
 
-nextcol:   					; jump to next column when row scan over
-    lsl r19   				; left shift mask to check next col
+nextcol:   									; jump to next column when row scan over
+    lsl r19   								; left shift mask to check next col
     inc r17
     jmp colloop
 
 show:
 	
-    cpi r17, 3   			; if column = 3, a key in column 3 is pressed, which is a letter key
-    breq scan_end   		; we dont need to deal with this for this lab, so go to n_a
+    cpi r17, 3   							; if column = 3, a key in column 3 is pressed, which is a letter key
+    breq scan_end   						; we dont need to deal with this for this lab, so go to n_a
 
-    cpi r16, 3   			; if row = 3, a key in row 3 has been pressed, which is any special character or 0
-    breq check_bottom_row	; zero is the only key we are worried about, so go to check_zero
+    cpi r16, 3   							; if row = 3, a key in row 3 has been pressed, which is any special character or 0
+    breq check_bottom_row					; zero is the only key we are worried about, so go to check_zero
 	
-	mov arg1, r16			; move row to floor
-	lsl arg1				; multiply by 2
-	add arg1, r16			; add row again, to multiply row by 3
-	add arg1, r17			; add col
-	subi arg1, -1			; add 1
+	mov arg1, r16							; move row to floor
+	lsl arg1								; multiply by 2
+	add arg1, r16							; add row again, to multiply row by 3
+	add arg1, r17							; add col
+	subi arg1, -1							; add 1
 	jmp end_show
 
 check_bottom_row:
-	cpi r17, 0				; if column = 0, asterisk is pressed
+	cpi r17, 0								; if column = 0, asterisk is pressed
 	breq asterisk
 
-	cpi r17, 1				; if column = 1, 0 is pressed
-	ldi arg1, 10			; therefore floor 10 has been selected
+	cpi r17, 1								; if column = 1, 0 is pressed
+	ldi arg1, 10							; therefore floor 10 has been selected
 	breq end_show			
 
 	jmp scan_end
 
 asterisk:
-	ldi arg1, '*'			; move asterisk into arg1 to be returned to main
+	ldi arg1, '*'							; move asterisk into arg1 to be returned to main
 
 	
 end_show:
 
-	mov ret1, arg1			; move arg1 into ret1 to be returned
+	mov ret1, arg1							; move arg1 into ret1 to be returned
 
 
 scan_end:
 ;epilogue
-	pop arg2				; pop used registers
+	pop arg2								; pop used registers
 	pop arg1
 	pop temp2
 	pop temp1
@@ -1555,30 +1541,30 @@ shuffle_queue:
 	push arg2
 	push counter
 	
-	ldi ZL, low(Queue)					;load Queue addr into Z
+	ldi ZL, low(Queue)						;load Queue addr into Z
 	ldi ZH, high(Queue)
 
-	lds temp1, Queue_len				;move Z to end of Queue
+	lds temp1, Queue_len					;move Z to end of Queue
 	add ZL, temp1
 	adc ZH, zero
 
-	sbiw Z, 1							;move Z before the last element
+	sbiw Z, 1								;move Z before the last element
 	clr counter
 	clr arg1
 shuffle_loop:
 
-	lds temp1, Queue_len				;while counter < Queue_len
+	lds temp1, Queue_len					;while counter < Queue_len
 	cp counter, temp1
 	breq shuffle_loop_end
-	ld arg2, Z							;retrieve number from queue
-	st Z, arg1							;store previous number
-	mov arg1, arg2						;move retrieved number to previous number
+	ld arg2, Z								;retrieve number from queue
+	st Z, arg1								;store previous number
+	mov arg1, arg2							;move retrieved number to previous number
 	inc counter							
-	sbiw Z, 1							;move 1 step towards the front of the queue
+	sbiw Z, 1								;move 1 step towards the front of the queue
 	rjmp shuffle_loop
 shuffle_loop_end:
 
-	lds temp1, Queue_len				;decrease Queue_len by one
+	lds temp1, Queue_len					;decrease Queue_len by one
 	dec temp1
 	sts Queue_len, temp1
 
