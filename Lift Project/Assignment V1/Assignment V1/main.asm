@@ -614,14 +614,13 @@ to_main:
 	jmp main
 // ---------------------------------------- MOVING BETWEEN FLOORS \/
 check_direction:
-	
 	brlt direction_up						; check if lift is moving up
 	brge direction_down						; or down
 	
 direction_up:
 	set_register_bit goingUp				; if going up, set goingup bit and jump to move
-
 	rjmp moving
+
 direction_down:
 	clear_register_bit goingUp				; if going down, clear goingup bit and jump to move
 	rjmp moving
@@ -668,7 +667,6 @@ stop_here:
 	rjmp end_main
 
 opening_sequence:
-
 	rcall LED_flash							; flash LED to show doors opening
 	set_motor_speed 0x4A					; set open door motor speed
 	lds r24, Seconds						; load seconds
@@ -678,6 +676,7 @@ opening_sequence:
 	cpc r25, temp1
 	brge opening_done						; when 1 second has passed, go to opening done
 	rjmp main
+
 opening_done:
 	clear Seconds
 	clear_register_bit opening				; opening is finished
@@ -699,8 +698,8 @@ doors_open_sequence:
 	check_register_bit held					; check if button is held
 	breq to_main2							; if it is jump to main and restart loop
 	cpi r24, 30								; wait 3 seconds on floor with door open
-	ldi temp1, high(0)
-	cpc r25, temp1
+//	ldi temp1, high(0)
+//	cpc r25, temp1
 	brge doors_open_done					; after 3 seoncds go to doors open done
 	rjmp main
 doors_open_done:
@@ -794,8 +793,26 @@ emergency_func:
 	write '0'
 	lcd_set 1
 
-	mov old_floor, current_floor	   ; for restoring original floor
-	
+	mov old_floor, current_floor		; for restoring original floor
+
+	check_register_bit opening			; check if doors are opening
+	breq initial_e_close				;
+	check_register_bit doorsOpen		; or if doors are opened when emergency called
+	breq initial_e_close
+	rjmp drop_floor_loop
+
+initial_e_close:						; close door if opened when emergency called
+	rcall LED_flash						; LED flash to show door closing
+	set_motor_speed 0xAA				; door closing speed
+	lds r24, Seconds
+	lds r25, Seconds+1
+	cpi r24, low(10)					; wait 1 second before closing
+	brge initial_e_close_done
+	rjmp initial_e_close
+
+initial_e_close_done:
+	set_motor_speed 0					; turn motor off when door closed
+
 drop_floor_loop:						; start emergency routine
 	rcall Strobe_flash					; make strobe light flash
 	rcall show_floor					; show current floor
