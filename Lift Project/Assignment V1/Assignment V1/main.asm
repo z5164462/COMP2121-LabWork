@@ -8,13 +8,16 @@
 /*Assumptions !!!!
 
 The Emergency call cannot be cancelled until the lift reaches the first floor
-and has completed the opening and closing routinues
+and has completed the opening routines
 
 The doors for the emergency will be open for 7 seconds
 If asterisk is pressed during emergency, during opening, doors Open and closing, the lift will cancel the emergency as soon as the doors have closed
 
+Assume doors cannot be opened once a floor is serviced
 
 Any button press length is counted as a hold for the hold open doors duration
+
+Assume floor servicing restarts when emergency is cancelled
 */
 
 
@@ -68,7 +71,6 @@ b5 = Flash on?
 b6 = Emergency?
 b7 = Held?
 */
-
 
 .equ stopped =   		0b00000001		; is lift stopped?
 .equ goingUp =   		0b00000010		; is lift going up?
@@ -148,19 +150,19 @@ b7 = Held?
     rcall lcd_wait
 .endmacro
 
-.macro change_line   						 ; change line and cursor position on line
+.macro change_line   						; change line and cursor position on line
 	push temp1
 	push temp2
-    ldi temp1, @0
-    cpi temp1, 2
+    ldi temp1, @0							; load first number
+    cpi temp1, 2							; if first number is 2, change to line 2
     breq line_two
-    ldi temp2, l_one
-    ori temp2, @1
+    ldi temp2, l_one						; else write on line 1
+    ori temp2, @1							; OR the line mask with the position eg. change_line 2, 1 = 0b11000000 || 0b00000001 = 0b110000001
     do_lcd_command_reg temp2
     jmp end_cl
 line_two:
     ldi temp2, l_two
-    ori temp2, @1
+    ori temp2, @1							; OR the line mask with the position
     do_lcd_command_reg temp2
 end_cl:
 	pop temp2
@@ -190,6 +192,7 @@ end_cl:
 .macro lcd_set   							 ; set bit in PORTA
     sbi PORTA, @0
 .endmacro
+
 .macro lcd_clr   							 ; clear bit in PORTA
     cbi PORTA, @0
 .endmacro
@@ -325,7 +328,7 @@ RESET:
     do_lcd_command 0b00001000	; display off?
     do_lcd_command 0b00000001	; clear display
     do_lcd_command 0b00000110	; increment, no display shift
-    do_lcd_command 0b00001110	; Cursor on, bar, no blink
+    do_lcd_command 0b00001100	; Cursor on, bar, no blink
 
 	clear_disp					; setup initial display
 	write 'C'
@@ -387,15 +390,19 @@ EXT_INT1:
 	check_register_bit held			; accept button release if button is held
 	breq LET_CLOSE
 	rjmp INT1_END
+
 RE_OPEN:
 	clr debounce2					; clear debounce counter
 	rjmp INT1_END
+
 HELD_OPEN:
 	clr debounce2
 	rjmp INT1_END
+
 LET_CLOSE:
 	clr debounce2
 	rjmp INT1_END
+
 INT1_END:
     reti
 
@@ -455,6 +462,7 @@ Timer1OVF:
 	cp temp1, flip_flash				; check if the flash counter is up to 5
 	breq invert_flash					; if yes then invert flashing
 	rjmp count_flash
+
 invert_flash:
 		check_register_bit flashing		; if the flashing flag is on turn it off
 		breq flash_to_zero				; if the flashing flag is off turn it on
@@ -467,10 +475,11 @@ invert_flash:
 	invert_end:
 		clr flip_flash
 		rjmp flash_continue
-count_flash:							; else increment flash counter (flip_flash)
-	inc flip_flash	
-flash_continue:
 
+count_flash:							; else increment flash counter (flip_flash)
+	inc flip_flash
+		
+flash_continue:
 	ser temp1							; check if debounce1 is set to max, i.e has not been triggered
 	cp debounce1, temp1
 	breq DB2
@@ -479,6 +488,7 @@ flash_continue:
 	brge action1
 	inc debounce1						; if not increment debounce1
 	rjmp  DB2
+
 action1:
 	check_register_bit doorsOpen		; if doors are open
 	brne END_DB1
@@ -495,12 +505,14 @@ DB2:
 	cp debounce2, temp1
 	brne valid_interrupt2
 	rjmp End_timer1
+
 valid_interrupt2:
 	ldi temp1, 3						; check if it has been 3 clock cycles after the last trigger
 	cp debounce2, temp1
 	brge action2
 	inc debounce2						; if not increment debounce2
 	rjmp End_Timer1
+
 action2:
 	check_register_bit closing			; if currently closing, re-open
 	breq RE_OPEN_ACTION
@@ -509,17 +521,20 @@ action2:
 	check_register_bit doorsOpen		; if doors are open, hold them open
 	breq HELD_OPEN_ACTION
 	rjmp END_DB2
+
 RE_OPEN_ACTION:
 	clear_register_bit closing			; to re-open, clear the closing flag
 	set_register_bit opening			; and set the opening flag
 	clear Seconds
 	rjmp END_DB2
+
 HELD_OPEN_ACTION:
 										; to start holding the door
 	set_register_bit held				; set the held flag and wait for a rising edge
 	ldi temp1, 0b00101110				; falling edges for interrupts 2 and 0  RISING edge for interrupt 1
     sts EICRA, temp1
 	rjmp END_DB2 	
+
 LET_CLOSE_ACTION:
 										; to stop holding the door
 	clear_register_bit held				; clear the held flag
@@ -534,7 +549,6 @@ END_DB2:
 	ser temp1							; set debounce2 to max, to mark as untriggered
 	mov debounce2, temp1
 	
-
 End_Timer1:
 	pop XH
 	pop XL
@@ -550,35 +564,30 @@ End_Timer1:
 // ---------------------------------------- TIMER1 Interrupt Handler /\
 
 
-
 //MAIN:
 main:
-
 // ---------------------------------------- SCANNING THE KEYPAD \/
-
 	change_line 1, 14						
 	mov arg1, current_floor					; write current floor on display
 	rcall convert_to_ascii
 	change_line 2, 10						; write requested floor on display
 	mov arg1, requested_floor
 	rcall convert_to_ascii
-/*	change_line 2, 14
-	lds arg1, Seconds
-	rcall convert_to_ascii*/
 	rcall scan								; read keypad 
 
 	mov input_value, ret1					; move the return value from the keypad to input_value
-
 
 	cpi input_value, '*'					; check if input value is an asterisk
 	brne add_to_queue						; if its not, its a digit and add to request queue
 	set_register_bit emergency				; if it is, set emergency bit
 	rcall emergency_func					; and call emergency function
+
 add_to_queue:
 	lds temp1, Queue_len					; is the queue empty?
 	cpi temp1, 0
 	brne insert	
 	clear Seconds							; clear seconds to ensure 2 second travel time between floors
+
 insert:
 	rcall insert_request					; for numbers, call insert request to add to queue
 	
@@ -595,7 +604,6 @@ insert:
 // ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR \/
 read_queue:
 	rcall show_floor						; display floor
-
 	
 // ---------------------------------------- DISPLAYING THE CURRENT FLOOR AND REQUESTED FLOOR /\
 
@@ -618,6 +626,7 @@ read_queue:
 to_main:
 	jmp main
 // ---------------------------------------- MOVING BETWEEN FLOORS \/
+
 check_direction:
 	brlt direction_up						; check if lift is moving up
 	brge direction_down						; or down
@@ -634,11 +643,8 @@ moving:
 	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
 	cpi r24, 20								; if not stopping, wait 2 seconds at each floor before moving
-	;ldi temp1, high(0)
-	;cpc r25, temp1 
 
 	brlt to_main
-	//out PORTG, one
 	clear Seconds
 	check_register_bit goingUp				; check going up bit to decide direction
 	breq moving_up
@@ -677,8 +683,6 @@ opening_sequence:
 	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
 	cpi r24, 10								; door takes 1 second to open
-	;ldi temp1, high(0)
-	;cpc r25, temp1
 	brge opening_done						; when 1 second has passed, go to opening done
 	rjmp main
 
@@ -690,23 +694,22 @@ opening_done:
 
 to_closing_sequence:
 	jmp closing_sequence					; go to closing sequence
+
 to_main2:
 	jmp main
 
 doors_open_sequence:
-	
+
 	set_motor_speed 0						; when door is open, turn off motor
 	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
-	//mov arg1, r24			//LED_flash needs the time as an argument
 	rcall LED_flash							; flash LED while door is open
 	check_register_bit held					; check if button is held
 	breq to_main2							; if it is jump to main and restart loop
 	cpi r24, 30								; wait 3 seconds on floor with door open
-	;ldi temp1, high(0)
-	;cpc r25, temp1
 	brge doors_open_done					; after 3 seoncds go to doors open done
 	rjmp main
+
 doors_open_done:
 	clear Seconds
 	clear_register_bit doorsOpen			; lift has waited 3 seconds on floor, so clear doorsOpen bit
@@ -714,19 +717,16 @@ doors_open_done:
 	rjmp main
 
 closing_sequence:
-
 	rcall LED_flash							; flash LED while closing
 	set_motor_speed 0xAA					; set door closing speed
 	lds r24, Seconds		 				; load seconds
 	lds r25, Seconds+1
-	cpi r24, 10								; door takes 1 second to close
-	;ldi temp1, high(0)
-	;cpc r25, temp1				
+	cpi r24, 10								; door takes 1 second to close			
 	brge closing_done						; after 1 second go to closing done
 	rjmp main
+
 closing_done:
 	clear Seconds
-
 
 	clear_register_bit closing				; clear closing bit since door has closed
 	clear_register_bit stopped				; clear stopped bit since lift is ready to move again
@@ -738,7 +738,7 @@ closing_done:
 
 // ---------------------------------------- ERROR HANDLING \/
 end_main:
-	ldi temp1, 0b11001100
+	ldi temp1, 0b11001100					; this should never happen if everything works
 	out PORTC, temp1
 	rjmp end_main
 // ---------------------------------------- ERROR HANDLING /\
@@ -759,7 +759,7 @@ emergency_func:
 	in temp1, SREG							; push SREG so that it isnt changed after the function
 	push temp1
 	
-/*	lds temp1, Count						; load Count and Seconds
+	lds temp1, Count						; load Count and Seconds
 	push temp1
 	
 	lds temp1, Count+1
@@ -769,7 +769,7 @@ emergency_func:
 	push temp1
 	
 	lds temp1, Seconds+1
-	push temp1*/
+	push temp1
 	
 	push old_floor							; push old_floor, to be restored after emergency is over
 	push current_floor
@@ -833,7 +833,7 @@ drop_floor_loop:						; start emergency routine
 	rjmp drop_floor_loop				; go back to top of the loop
 
 drop_floor_end:
-;~~~~~~~~~~~~~
+
 emergency_opening:						; door opening routine
 	rcall strobe_flash					; make strobe light flash
 	rcall LED_flash						; flash LED to show door opening
@@ -877,7 +877,7 @@ continue_e_doors_open:
 
 emergency_doors_open_done:
 	clear Seconds
-
+	
 emergency_closing:
 	rcall strobe_flash					; make strobe lights flash
 	rcall LED_flash						; make LED flash to show door closing
@@ -990,23 +990,31 @@ restore_floor_end:
 	pop current_floor
 	pop old_floor
 
-/*	pop temp1
+	pop temp1
+	clear Seconds+1
 	sts Seconds+1, temp1
 
 	pop temp1
+	clear Seconds
 	sts Seconds, temp1
 	
 	pop temp1
+	clear Count+1
 	sts Count+1, temp1
  	
 	pop temp1
-	sts Count, temp1*/
+	clear Count
+	sts Count, temp1
 
 	pop temp1
 	out SREG, temp1
 
 	pop temp1
 	
+	clear_register_bit doorsOpen
+	clear_register_bit closing
+	set_register_bit opening
+
 	ret
 
 	
@@ -1055,7 +1063,7 @@ lcd_wait_loop:
     pop r16
     ret
 
-.equ F_CPU = 160000		;edited from 16000000
+.equ F_CPU = 160000		; edited from 16000000
 .equ DELAY_1MS = F_CPU / 4 / 1000 - 4
 ; 4 cycles per iteration - setup/call-return overhead
 
@@ -1102,55 +1110,55 @@ pause:
 
 insert_request:
 ;prologue
-push temp2
-in temp2 , SREG		; push SREG so as to not change it in the function
-push temp2
+	push temp2
+	in temp2 , SREG		; push SREG so as to not change it in the function
+	push temp2
 
-push counter
-push r16	; r16 current_floor global
-push r17	; r17 requested_floor return value
-push r18    ; parameter input_value
-push r19	; r19 lift_status global
-push r20    ; temp1
-push r22
-push arg1
-push arg2
+	push counter
+	push r16	; r16 current_floor global
+	push r17	; r17 requested_floor return value
+	push r18    ; parameter input_value
+	push r19	; r19 lift_status global
+	push r20    ; temp1
+	push r22
+	push arg1
+	push arg2
 
-push XL
-push XH
+	push XL
+	push XH
 
-ldi XL, low(Queue)							; load queue
-ldi XH, high(Queue)
-lds r22, Queue_len
+	ldi XL, low(Queue)							; load queue
+	ldi XH, high(Queue)
+	lds r22, Queue_len
 
-clr ret1
+	clr ret1
 
-cpi input_value, 11							; used just in case a number greater than 10 is in input_value somehow
-brlt under_11
-jmp end_insert_loop							; if its greater than 11, jump to end_insert
+	cpi input_value, 11							; used just in case a number greater than 10 is in input_value somehow
+	brlt under_11
+	jmp end_insert_loop							; if its greater than 11, jump to end_insert
 
 under_11:
-cpi input_value, 1							; if the input value is greater than or equal to 0,
-brge valid_insert							; then it is a valid_insert
-jmp end_insert_loop							; else jump to end
+	cpi input_value, 1							; if the input value is greater than or equal to 0,
+	brge valid_insert							; then it is a valid_insert
+	jmp end_insert_loop							; else jump to end
 
 valid_insert:
-clr counter									; counter = 0
-lds r22, Queue_len							; load queue length
-cp current_floor, input_value				; if the current floor is the input floor, break to end
-brne input_continue							; else continue
-jmp end_insert_loop
+	clr counter									; counter = 0
+	lds r22, Queue_len							; load queue length
+	cp current_floor, input_value				; if the current floor is the input floor, break to end
+	brne input_continue							; else continue
+	jmp end_insert_loop
 
 input_continue:
-mov ret1, input_value						; move the input value into the return register
+	mov ret1, input_value						; move the input value into the return register
 
-check_register_bit goingUp					; check the goingUp bit
-breq up_search								; if 1, sort up
-rjmp down_search 							; else sort down
+	check_register_bit goingUp					; check the goingUp bit
+	breq up_search								; if 1, sort up
+	rjmp down_search 							; else sort down
 
 
 
-; r7 counter // r22 len
+// r7 counter // r22 len
 
 up_search:
     cp input_value, current_floor   		; if input floor < current floor, jump to up_descending_loop, else up_ascending_loop
@@ -1293,10 +1301,9 @@ end_show_floor:
 // CONVERT_TO_ASCII
 
 convert_to_ascii:
-	; prologue
+	;prologue
 	push r7					; register used to write digit
-	push r8					; ???
-	push r9					; ???
+	push r9					; counter
 	push r16				; divisor-low
 	push r17				; divisor-high
 	push r18				; dividend-low
@@ -1342,27 +1349,16 @@ loop_start:
 end_loop:
 	movw r19:r18, arg2:arg1
 end_divide:
-	
-	; r23:r22 holds the remainder, r25:r24 holds the quotient
-
+							; r23:r22 holds the remainder, r25:r24 holds the quotient
 	movw arg2:arg1, r19:r18 ; the remainder moves to the dividend to be divided again
 	inc r9
-	cpi r24, 0
-	; breq check_zero
 	mov r7, r20				; r7 holds ASCII val for '0'
 	add r7, r24				; r7 holds ASCII val for '0' + remainder
 
-
-
 	write_reg r7			; write r7 to LCD
-	inc r8
-	rjmp convert_loop
-check_zero:
-	cp r8, zero				; if r8 = 0, then nothing has been written to LCD yet
-	breq convert_loop		; if it has been written, then write 0, eg for "10"
-	write '0'
 
 	rjmp convert_loop
+
 
 
 
@@ -1380,7 +1376,6 @@ end_convert:
 	pop r17
 	pop r16
 	pop r9
-	pop r8
 	pop r7
 	ret
 
@@ -1461,7 +1456,7 @@ colloop:
     cpi r17, 4   			; check if all columns scanned
     breq scan_end   		; restart scan if all cols scanned
     sts PORTL, r19   		; scan a column (sts used instead of out since PORTL is in extended I/O space)
-    ldi temp1, 0xFF   		; slow down scan operation (???? WHY ????)
+    ldi temp1, 0xFF   		; slow down scan operation 
 
 delay:
     dec temp1
