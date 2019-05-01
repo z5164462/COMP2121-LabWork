@@ -1,10 +1,10 @@
 
-AVRASM ver. 2.2.7  C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Tue Apr 30 14:26:06 2019
+AVRASM ver. 2.2.7  E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm Wed May 01 11:59:07 2019
 
-[builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
-C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm(24): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
-[builtin](2): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
-C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm(24): Including file 'D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+[builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm(24): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+[builtin](2): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
+E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm(24): Including file 'F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc'
                                  
                                  ;
                                  
@@ -2812,7 +2812,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
 000274 9180 020d                 	lds r24, Seconds						; load seconds
 000276 9190 020e                 	lds r25, Seconds+1
 000278 3184                      	cpi r24, 20								; if not stopping, wait 2 seconds at each floor before moving
-000279 e040                      	ldi temp1, high(20)
+000279 e040                      	ldi temp1, high(0)
 00027a 0794                      	cpc r25, temp1 
                                  
 00027b f344                      	brlt to_main
@@ -2878,7 +2878,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
 0002ad 9180 020d                 	lds r24, Seconds						; load seconds
 0002af 9190 020e                 	lds r25, Seconds+1
 0002b1 308a                      	cpi r24, 10								; door takes 1 second to open
-0002b2 e040                      	ldi temp1, high(10)
+0002b2 e040                      	ldi temp1, high(0)
 0002b3 0794                      	cpc r25, temp1
 0002b4 f40c                      	brge opening_done						; when 1 second has passed, go to opening done
 0002b5 cf5d                      	rjmp main
@@ -2921,7 +2921,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
 0002da 914f                      	check_register_bit held					; check if button is held
 0002db f359                      	breq to_main2							; if it is jump to main and restart loop
 0002dc 318e                      	cpi r24, 30								; wait 3 seconds on floor with door open
-0002dd e040                      	ldi temp1, high(30)
+0002dd e040                      	ldi temp1, high(0)
 0002de 0794                      	cpc r25, temp1
 0002df f40c                      	brge doors_open_done					; after 3 seoncds go to doors open done
 0002e0 cf32                      	rjmp main
@@ -2952,7 +2952,7 @@ C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lif
 0002f9 9180 020d                 	lds r24, Seconds		 				; load seconds
 0002fb 9190 020e                 	lds r25, Seconds+1
 0002fd 308a                      	cpi r24, 10								; door takes 1 second to close
-0002fe e040                      	ldi temp1, high(10)
+0002fe e040                      	ldi temp1, high(0)
 0002ff 0794                      	cpc r25, temp1				
 000300 f40c                      	brge closing_done						; after 1 second go to closing done
 000301 cf11                      	rjmp main

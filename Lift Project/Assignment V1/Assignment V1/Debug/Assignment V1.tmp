@@ -1,18 +1,18 @@
 <ASSEMBLER_INFO>
  <VERSION>2.2.7</VERSION>
  <DEVICE>"ATmega2560"</DEVICE>
- <WORKING_DIR>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\Debug</WORKING_DIR>
+ <WORKING_DIR>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\Debug</WORKING_DIR>
  <INCLUDE_PATH>
-  <DIR>D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
-  <DIR>D:\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR>F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc</DIR>
+  <DIR>F:\Atmel\7.0\toolchain\avr8\avrassembler\Include</DIR>
   <DIR></DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</SOURCE_FILE>
+ <SOURCE_FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</SOURCE_FILE>
  <INCLUDED_FILES>
-  <FILE>D:/Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc</FILE>
+  <FILE>F:/Atmel\7.0\Packs\atmel\ATmega_DFP\1.2.209\avrasm\inc\m2560def.inc</FILE>
  </INCLUDED_FILES>
  <OBJECT_FILES>
-  <FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\Debug\Assignment V1.obj</FILE>
+  <FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\Debug\Assignment V1.obj</FILE>
  </OBJECT_FILES>
  <HEX_FILES>
   <FILE>Assignment V1.hex</FILE>
@@ -22,133 +22,133 @@
   <FILE>Assignment V1.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <Queue_len><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>28</LINE></Queue_len>
-  <Queue><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>30</LINE></Queue>
-  <Count><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>32</LINE></Count>
-  <Seconds><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>34</LINE></Seconds>
-  <RESET><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>231</LINE></RESET>
-  <EXT_INT0><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>367</LINE></EXT_INT0>
-  <EXT_INT1><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>382</LINE></EXT_INT1>
-  <Timer0OVF><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>405</LINE></Timer0OVF>
-  <Timer1OVF><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>447</LINE></Timer1OVF>
-  <divisors><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>225</LINE></divisors>
-  <lcd_command><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>995</LINE></lcd_command>
-  <lcd_wait><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1015</LINE></lcd_wait>
-  <sleep_5ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1053</LINE></sleep_5ms>
-  <sleep_1ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1040</LINE></sleep_1ms>
-  <lcd_data><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1004</LINE></lcd_data>
-  <show_floor><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1233</LINE></show_floor>
-  <main><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>555</LINE></main>
-  <INT0_END><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>371</LINE></INT0_END>
-  <RE_OPEN><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>390</LINE></RE_OPEN>
-  <HELD_OPEN><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>393</LINE></HELD_OPEN>
-  <LET_CLOSE><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>396</LINE></LET_CLOSE>
-  <INT1_END><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>399</LINE></INT1_END>
-  <Not_second><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>431</LINE></Not_second>
-  <End_I><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>435</LINE></End_I>
-  <invert_flash><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>458</LINE></invert_flash>
-  <count_flash><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>470</LINE></count_flash>
-  <flash_to_zero><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>462</LINE></flash_to_zero>
-  <flash_to_one><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>465</LINE></flash_to_one>
-  <invert_end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>467</LINE></invert_end>
-  <flash_continue><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>472</LINE></flash_continue>
-  <DB2><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>493</LINE></DB2>
-  <action1><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>482</LINE></action1>
-  <END_DB1><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>489</LINE></END_DB1>
-  <valid_interrupt2><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>498</LINE></valid_interrupt2>
-  <End_timer1><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>538</LINE></End_timer1>
-  <action2><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>504</LINE></action2>
-  <RE_OPEN_ACTION><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>512</LINE></RE_OPEN_ACTION>
-  <LET_CLOSE_ACTION><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>523</LINE></LET_CLOSE_ACTION>
-  <HELD_OPEN_ACTION><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>517</LINE></HELD_OPEN_ACTION>
-  <END_DB2><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>532</LINE></END_DB2>
-  <convert_to_ascii><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1273</LINE></convert_to_ascii>
-  <scan><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1424</LINE></scan>
-  <add_to_queue><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>577</LINE></add_to_queue>
-  <emergency_func><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>751</LINE></emergency_func>
-  <insert_request><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1081</LINE></insert_request>
-  <read_queue><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>591</LINE></read_queue>
-  <stop_here><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>661</LINE></stop_here>
-  <to_main><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>613</LINE></to_main>
-  <check_direction><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>616</LINE></check_direction>
-  <direction_up><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>621</LINE></direction_up>
-  <direction_down><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>625</LINE></direction_down>
-  <moving><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>629</LINE></moving>
-  <moving_up><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>644</LINE></moving_up>
-  <moving_down><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>651</LINE></moving_down>
-  <opening_sequence><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>670</LINE></opening_sequence>
-  <doors_open_sequence><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>692</LINE></doors_open_sequence>
-  <to_closing_sequence><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>687</LINE></to_closing_sequence>
-  <end_main><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>736</LINE></end_main>
-  <LED_flash><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1369</LINE></LED_flash>
-  <opening_done><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>681</LINE></opening_done>
-  <closing_sequence><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>712</LINE></closing_sequence>
-  <to_main2><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>689</LINE></to_main2>
-  <doors_open_done><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>706</LINE></doors_open_done>
-  <closing_done><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>723</LINE></closing_done>
-  <shuffle_queue><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1523</LINE></shuffle_queue>
-  <drop_floor_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>799</LINE></drop_floor_loop>
-  <Strobe_flash><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1397</LINE></Strobe_flash>
-  <drop_floor_end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>813</LINE></drop_floor_end>
-  <emergency_opening><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>815</LINE></emergency_opening>
-  <continue_e_opening><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>825</LINE></continue_e_opening>
-  <emergency_opening_done><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>833</LINE></emergency_opening_done>
-  <emergency_doors_open><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>837</LINE></emergency_doors_open>
-  <continue_e_doors_open><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>848</LINE></continue_e_doors_open>
-  <emergency_closing><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>859</LINE></emergency_closing>
-  <emergency_doors_open_done><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>856</LINE></emergency_doors_open_done>
-  <continue_e_closing><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>869</LINE></continue_e_closing>
-  <emergency_closing_done><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>876</LINE></emergency_closing_done>
-  <emergency_halt_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>883</LINE></emergency_halt_loop>
-  <continue_e_halt><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>891</LINE></continue_e_halt>
-  <restore_floor><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>896</LINE></restore_floor>
-  <restore_floor_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>924</LINE></restore_floor_loop>
-  <restore_floor_end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>936</LINE></restore_floor_end>
-  <lcd_wait_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1022</LINE></lcd_wait_loop>
-  <delayloop_1ms><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1046</LINE></delayloop_1ms>
-  <pause><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1061</LINE></pause>
-  <under_11><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1110</LINE></under_11>
-  <end_insert_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1209</LINE></end_insert_loop>
-  <valid_insert><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1115</LINE></valid_insert>
-  <input_continue><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1122</LINE></input_continue>
-  <up_search><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1133</LINE></up_search>
-  <down_search><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1164</LINE></down_search>
-  <up_descending_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1149</LINE></up_descending_loop>
-  <up_ascending_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1136</LINE></up_ascending_loop>
-  <end_search><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1192</LINE></end_search>
-  <jumping_to_end_insert><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1161</LINE></jumping_to_end_insert>
-  <insert_start><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1195</LINE></insert_start>
-  <down_ascending_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1180</LINE></down_ascending_loop>
-  <down_descending_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1167</LINE></down_descending_loop>
-  <insert_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1200</LINE></insert_loop>
-  <loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1244</LINE></loop>
-  <end_show_floor><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1260</LINE></end_show_floor>
-  <grtr8><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1251</LINE></grtr8>
-  <end_x><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1254</LINE></end_x>
-  <start><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1292</LINE></start>
-  <convert_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1298</LINE></convert_loop>
-  <end_convert><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1347</LINE></end_convert>
-  <divide><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1305</LINE></divide>
-  <loop_start><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1310</LINE></loop_start>
-  <end_divide><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1322</LINE></end_divide>
-  <end_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1320</LINE></end_loop>
-  <check_zero><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1338</LINE></check_zero>
-  <LED_up><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1379</LINE></LED_up>
-  <LED_down><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1382</LINE></LED_down>
-  <LED_END><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1387</LINE></LED_END>
-  <strobe_on><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1405</LINE></strobe_on>
-  <strobe_off><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1408</LINE></strobe_off>
-  <strobe_end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1411</LINE></strobe_end>
-  <colloop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1438</LINE></colloop>
-  <scan_end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1508</LINE></scan_end>
-  <delay><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1444</LINE></delay>
-  <nextcol><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1469</LINE></nextcol>
-  <rowloop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1456</LINE></rowloop>
-  <show><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1474</LINE></show>
-  <check_bottom_row><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1489</LINE></check_bottom_row>
-  <end_show><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1503</LINE></end_show>
-  <asterisk><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1499</LINE></asterisk>
-  <shuffle_loop><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1542</LINE></shuffle_loop>
-  <shuffle_loop_end><FILE>C:\Users\andre\OneDrive - UNSW\University\COMP2121- CURRENT\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1553</LINE></shuffle_loop_end>
+  <Queue_len><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>28</LINE></Queue_len>
+  <Queue><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>30</LINE></Queue>
+  <Count><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>32</LINE></Count>
+  <Seconds><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>34</LINE></Seconds>
+  <RESET><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>231</LINE></RESET>
+  <EXT_INT0><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>367</LINE></EXT_INT0>
+  <EXT_INT1><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>382</LINE></EXT_INT1>
+  <Timer0OVF><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>405</LINE></Timer0OVF>
+  <Timer1OVF><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>447</LINE></Timer1OVF>
+  <divisors><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>225</LINE></divisors>
+  <lcd_command><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>995</LINE></lcd_command>
+  <lcd_wait><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1015</LINE></lcd_wait>
+  <sleep_5ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1053</LINE></sleep_5ms>
+  <sleep_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1040</LINE></sleep_1ms>
+  <lcd_data><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1004</LINE></lcd_data>
+  <show_floor><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1233</LINE></show_floor>
+  <main><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>555</LINE></main>
+  <INT0_END><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>371</LINE></INT0_END>
+  <RE_OPEN><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>390</LINE></RE_OPEN>
+  <HELD_OPEN><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>393</LINE></HELD_OPEN>
+  <LET_CLOSE><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>396</LINE></LET_CLOSE>
+  <INT1_END><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>399</LINE></INT1_END>
+  <Not_second><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>431</LINE></Not_second>
+  <End_I><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>435</LINE></End_I>
+  <invert_flash><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>458</LINE></invert_flash>
+  <count_flash><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>470</LINE></count_flash>
+  <flash_to_zero><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>462</LINE></flash_to_zero>
+  <flash_to_one><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>465</LINE></flash_to_one>
+  <invert_end><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>467</LINE></invert_end>
+  <flash_continue><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>472</LINE></flash_continue>
+  <DB2><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>493</LINE></DB2>
+  <action1><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>482</LINE></action1>
+  <END_DB1><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>489</LINE></END_DB1>
+  <valid_interrupt2><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>498</LINE></valid_interrupt2>
+  <End_timer1><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>538</LINE></End_timer1>
+  <action2><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>504</LINE></action2>
+  <RE_OPEN_ACTION><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>512</LINE></RE_OPEN_ACTION>
+  <LET_CLOSE_ACTION><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>523</LINE></LET_CLOSE_ACTION>
+  <HELD_OPEN_ACTION><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>517</LINE></HELD_OPEN_ACTION>
+  <END_DB2><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>532</LINE></END_DB2>
+  <convert_to_ascii><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1273</LINE></convert_to_ascii>
+  <scan><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1424</LINE></scan>
+  <add_to_queue><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>577</LINE></add_to_queue>
+  <emergency_func><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>751</LINE></emergency_func>
+  <insert_request><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1081</LINE></insert_request>
+  <read_queue><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>591</LINE></read_queue>
+  <stop_here><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>661</LINE></stop_here>
+  <to_main><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>613</LINE></to_main>
+  <check_direction><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>616</LINE></check_direction>
+  <direction_up><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>621</LINE></direction_up>
+  <direction_down><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>625</LINE></direction_down>
+  <moving><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>629</LINE></moving>
+  <moving_up><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>644</LINE></moving_up>
+  <moving_down><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>651</LINE></moving_down>
+  <opening_sequence><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>670</LINE></opening_sequence>
+  <doors_open_sequence><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>692</LINE></doors_open_sequence>
+  <to_closing_sequence><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>687</LINE></to_closing_sequence>
+  <end_main><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>736</LINE></end_main>
+  <LED_flash><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1369</LINE></LED_flash>
+  <opening_done><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>681</LINE></opening_done>
+  <closing_sequence><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>712</LINE></closing_sequence>
+  <to_main2><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>689</LINE></to_main2>
+  <doors_open_done><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>706</LINE></doors_open_done>
+  <closing_done><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>723</LINE></closing_done>
+  <shuffle_queue><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1523</LINE></shuffle_queue>
+  <drop_floor_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>799</LINE></drop_floor_loop>
+  <Strobe_flash><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1397</LINE></Strobe_flash>
+  <drop_floor_end><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>813</LINE></drop_floor_end>
+  <emergency_opening><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>815</LINE></emergency_opening>
+  <continue_e_opening><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>825</LINE></continue_e_opening>
+  <emergency_opening_done><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>833</LINE></emergency_opening_done>
+  <emergency_doors_open><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>837</LINE></emergency_doors_open>
+  <continue_e_doors_open><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>848</LINE></continue_e_doors_open>
+  <emergency_closing><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>859</LINE></emergency_closing>
+  <emergency_doors_open_done><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>856</LINE></emergency_doors_open_done>
+  <continue_e_closing><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>869</LINE></continue_e_closing>
+  <emergency_closing_done><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>876</LINE></emergency_closing_done>
+  <emergency_halt_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>883</LINE></emergency_halt_loop>
+  <continue_e_halt><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>891</LINE></continue_e_halt>
+  <restore_floor><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>896</LINE></restore_floor>
+  <restore_floor_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>924</LINE></restore_floor_loop>
+  <restore_floor_end><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>936</LINE></restore_floor_end>
+  <lcd_wait_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1022</LINE></lcd_wait_loop>
+  <delayloop_1ms><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1046</LINE></delayloop_1ms>
+  <pause><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1061</LINE></pause>
+  <under_11><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1110</LINE></under_11>
+  <end_insert_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1209</LINE></end_insert_loop>
+  <valid_insert><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1115</LINE></valid_insert>
+  <input_continue><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1122</LINE></input_continue>
+  <up_search><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1133</LINE></up_search>
+  <down_search><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1164</LINE></down_search>
+  <up_descending_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1149</LINE></up_descending_loop>
+  <up_ascending_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1136</LINE></up_ascending_loop>
+  <end_search><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1192</LINE></end_search>
+  <jumping_to_end_insert><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1161</LINE></jumping_to_end_insert>
+  <insert_start><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1195</LINE></insert_start>
+  <down_ascending_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1180</LINE></down_ascending_loop>
+  <down_descending_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1167</LINE></down_descending_loop>
+  <insert_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1200</LINE></insert_loop>
+  <loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1244</LINE></loop>
+  <end_show_floor><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1260</LINE></end_show_floor>
+  <grtr8><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1251</LINE></grtr8>
+  <end_x><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1254</LINE></end_x>
+  <start><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1292</LINE></start>
+  <convert_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1298</LINE></convert_loop>
+  <end_convert><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1347</LINE></end_convert>
+  <divide><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1305</LINE></divide>
+  <loop_start><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1310</LINE></loop_start>
+  <end_divide><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1322</LINE></end_divide>
+  <end_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1320</LINE></end_loop>
+  <check_zero><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1338</LINE></check_zero>
+  <LED_up><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1379</LINE></LED_up>
+  <LED_down><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1382</LINE></LED_down>
+  <LED_END><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1387</LINE></LED_END>
+  <strobe_on><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1405</LINE></strobe_on>
+  <strobe_off><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1408</LINE></strobe_off>
+  <strobe_end><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1411</LINE></strobe_end>
+  <colloop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1438</LINE></colloop>
+  <scan_end><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1508</LINE></scan_end>
+  <delay><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1444</LINE></delay>
+  <nextcol><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1469</LINE></nextcol>
+  <rowloop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1456</LINE></rowloop>
+  <show><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1474</LINE></show>
+  <check_bottom_row><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1489</LINE></check_bottom_row>
+  <end_show><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1503</LINE></end_show>
+  <asterisk><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1499</LINE></asterisk>
+  <shuffle_loop><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1542</LINE></shuffle_loop>
+  <shuffle_loop_end><FILE>E:\19t1\COMP2121\COMP2121-LabWork\Lift Project\Assignment V1\Assignment V1\main.asm</FILE><LINE>1553</LINE></shuffle_loop_end>
  </LABELS>
 </ASSEMBLER_INFO>

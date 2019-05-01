@@ -630,7 +630,7 @@ moving:
 	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
 	cpi r24, 20								; if not stopping, wait 2 seconds at each floor before moving
-	ldi temp1, high(20)
+	ldi temp1, high(0)
 	cpc r25, temp1 
 
 	brlt to_main
@@ -674,7 +674,7 @@ opening_sequence:
 	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
 	cpi r24, 10								; door takes 1 second to open
-	ldi temp1, high(10)
+	ldi temp1, high(0)
 	cpc r25, temp1
 	brge opening_done						; when 1 second has passed, go to opening done
 	rjmp main
@@ -699,7 +699,7 @@ doors_open_sequence:
 	check_register_bit held					; check if button is held
 	breq to_main2							; if it is jump to main and restart loop
 	cpi r24, 30								; wait 3 seconds on floor with door open
-	ldi temp1, high(30)
+	ldi temp1, high(0)
 	cpc r25, temp1
 	brge doors_open_done					; after 3 seoncds go to doors open done
 	rjmp main
@@ -716,7 +716,7 @@ closing_sequence:
 	lds r24, Seconds		 				; load seconds
 	lds r25, Seconds+1
 	cpi r24, 10								; door takes 1 second to close
-	ldi temp1, high(10)
+	ldi temp1, high(0)
 	cpc r25, temp1				
 	brge closing_done						; after 1 second go to closing done
 	rjmp main
