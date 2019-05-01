@@ -575,6 +575,11 @@ main:
 	set_register_bit emergency				; if it is, set emergency bit
 	rcall emergency_func					; and call emergency function
 add_to_queue:
+	lds temp1, Queue_len					; is the queue empty?
+	cpi temp1, 0
+	brne insert	
+	clear Seconds							; clear seconds to ensure 2 second travel time between floors
+insert:
 	rcall insert_request					; for numbers, call insert request to add to queue
 	
 // ---------------------------------------- SCANNING THE KEYPAD	/\
@@ -629,8 +634,8 @@ moving:
 	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
 	cpi r24, 20								; if not stopping, wait 2 seconds at each floor before moving
-	ldi temp1, high(0)
-	cpc r25, temp1 
+	;ldi temp1, high(0)
+	;cpc r25, temp1 
 
 	brlt to_main
 	//out PORTG, one
@@ -672,8 +677,8 @@ opening_sequence:
 	lds r24, Seconds						; load seconds
 	lds r25, Seconds+1
 	cpi r24, 10								; door takes 1 second to open
-	ldi temp1, high(0)
-	cpc r25, temp1
+	;ldi temp1, high(0)
+	;cpc r25, temp1
 	brge opening_done						; when 1 second has passed, go to opening done
 	rjmp main
 
@@ -698,8 +703,8 @@ doors_open_sequence:
 	check_register_bit held					; check if button is held
 	breq to_main2							; if it is jump to main and restart loop
 	cpi r24, 30								; wait 3 seconds on floor with door open
-//	ldi temp1, high(0)
-//	cpc r25, temp1
+	;ldi temp1, high(0)
+	;cpc r25, temp1
 	brge doors_open_done					; after 3 seoncds go to doors open done
 	rjmp main
 doors_open_done:
@@ -715,8 +720,8 @@ closing_sequence:
 	lds r24, Seconds		 				; load seconds
 	lds r25, Seconds+1
 	cpi r24, 10								; door takes 1 second to close
-	ldi temp1, high(0)
-	cpc r25, temp1				
+	;ldi temp1, high(0)
+	;cpc r25, temp1				
 	brge closing_done						; after 1 second go to closing done
 	rjmp main
 closing_done:
@@ -754,7 +759,7 @@ emergency_func:
 	in temp1, SREG							; push SREG so that it isnt changed after the function
 	push temp1
 	
-	lds temp1, Count						; load Count and Seconds
+/*	lds temp1, Count						; load Count and Seconds
 	push temp1
 	
 	lds temp1, Count+1
@@ -764,7 +769,7 @@ emergency_func:
 	push temp1
 	
 	lds temp1, Seconds+1
-	push temp1
+	push temp1*/
 	
 	push old_floor							; push old_floor, to be restored after emergency is over
 	push current_floor
@@ -985,7 +990,7 @@ restore_floor_end:
 	pop current_floor
 	pop old_floor
 
-	pop temp1
+/*	pop temp1
 	sts Seconds+1, temp1
 
 	pop temp1
@@ -995,7 +1000,7 @@ restore_floor_end:
 	sts Count+1, temp1
  	
 	pop temp1
-	sts Count, temp1
+	sts Count, temp1*/
 
 	pop temp1
 	out SREG, temp1
